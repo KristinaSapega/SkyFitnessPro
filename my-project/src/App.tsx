@@ -1,8 +1,13 @@
+import Header from "./components/Header";
+import Main from "./components/Main";
 
 function App() {
   return (
-    <div className="bg-blue-500 text-white p-4">
-      Hello, Tailwind!
+    <div className="flex flex-col items-center bg-[#FAFAFA]">
+      <div className="w-[1440px]  pt-[50px] px-[140px]">
+        <Header />
+        <Main />
+      </div>
     </div>
   );
 }
