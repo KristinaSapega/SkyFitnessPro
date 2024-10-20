@@ -107,10 +107,10 @@ const Form = () => {
       </div>
       <div className="h-[34px]">
         {isEmptyField && (
-          <h3 className="animate-err err">Заполните все поля!</h3>
+          <h3 className="err animate-err">Заполните все поля!</h3>
         )}
         {!matchPasswords && (
-          <h3 className="animate-err err">Пароли не совпадают</h3>
+          <h3 className="err animate-err">Пароли не совпадают</h3>
         )}
       </div>
       <div className="m-0 flex flex-col gap-[10px] p-0">
@@ -125,7 +125,7 @@ const Form = () => {
         <Link to={"/login"} className="w">
           <button
             name="reg"
-            className="buttonSecondary hover:bg-btnSecondaryHover active:bg-btnSecondaryActive invalid:bg-btnSecondaryInactive w-[278px] border-[1px] border-solid border-black bg-white"
+            className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
           >
             Войти
           </button>
