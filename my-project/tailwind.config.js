@@ -24,7 +24,7 @@ export default {
       screens: {
           'tablet': '375px',
           'laptop': '768px',
-          'desktop': '1024px',
+          'desktop': '1440px',
             },
     },
   },
