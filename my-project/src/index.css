@@ -9,7 +9,7 @@
 }
 @layer components {
   input {
-    @apply h-[52px] rounded-[1px] border-[8px] border-solid border-[#D0CECE] p-4 focus:outline-none;
+    @apply h-[52px] rounded-[8px] border-[1px] border-solid border-[#D0CECE] p-4 focus:outline-none;
   }
   .buttonPrimary {
     @apply bg-btnPrimaryRegular h-[52px] rounded-[46px];
