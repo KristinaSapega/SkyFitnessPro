@@ -1,6 +1,6 @@
 import React from "react";
 import TrainingItem from "./TrainingItem";
-
+import { useNavigate } from "react-router-dom";
 const items = [
   {
     id: 1,
@@ -49,10 +49,14 @@ const items = [
 ];
 
 const TrainingList = () => {
+  const navigate = useNavigate();
+  const handleClick = ()=>{
+    navigate("/course")
+  }
   return (
-    <ul className="flex flex-wrap gap-[40px] mt-[50px]">
+    <ul onClick={handleClick} className="mt-[50px] flex flex-wrap gap-[40px]">
       {items.map((train) => (
-        <TrainingItem train={train} />
+        <TrainingItem train={train} key={train.id} />
       ))}
     </ul>
   );
