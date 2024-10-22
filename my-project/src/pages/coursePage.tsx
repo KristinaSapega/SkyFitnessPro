@@ -1,3 +1,5 @@
+import { CoursePagesComp } from "../components/coursePagesComp";
+
 export default function CoursePage() {
-  return <div></div>;
+  return <CoursePagesComp />;
 }

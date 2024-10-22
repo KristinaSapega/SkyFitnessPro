@@ -49,12 +49,8 @@ const items = [
 ];
 
 const TrainingList = () => {
-  const navigate = useNavigate();
-  const handleClick = ()=>{
-    navigate("/course")
-  }
   return (
-    <ul onClick={handleClick} className="mt-[50px] flex flex-wrap gap-[40px]">
+    <ul className="mt-[50px] flex flex-wrap gap-[40px]">
       {items.map((train) => (
         <TrainingItem train={train} key={train.id} />
       ))}
