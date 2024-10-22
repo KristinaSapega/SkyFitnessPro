@@ -4,7 +4,7 @@ import Main from "./components/Main";
 
 function App() {
   return (
-    <div className="w-screen max-w-full bg-[#FAFAFA] px-[140px] py-[50px]">
+    <div className="flex flex-col items-center w-screen max-w-full bg-[#FAFAFA] px-[140px] py-[50px]">
       {/* <div className="w-full"> */}
       <Outlet />
       {/* </div> */}
