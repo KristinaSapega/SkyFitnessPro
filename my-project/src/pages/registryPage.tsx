@@ -7,7 +7,7 @@ export function RegistryPage(props: IAppProps) {
   return (
     <>
       <Main />
-      <div className="absolute top-0 h-full w-full">
+      <div className="absolute left-0 top-0 h-full w-full min-w-[375px]">
         <Registry />
       </div>
     </>

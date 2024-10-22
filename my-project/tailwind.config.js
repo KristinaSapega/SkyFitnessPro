@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["Roboto"],
+        sans: ["Roboto"],
       },
       colors(theme) {
         return {
