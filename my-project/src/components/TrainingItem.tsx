@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+
 import Tags from "./Tags";
 import { useNavigate } from "react-router-dom";
 
@@ -6,6 +7,7 @@ interface Train {
   id: number;
   urlImg: string;
   trainType: string;
+  trainName: string;
   calendar: string;
   time: string;
   level: string;
@@ -14,11 +16,15 @@ interface Train {
 const TrainingItem: React.FC<{ train: Train }> = ({ train }) => {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate("/course");
+    navigate(`/course/${train.trainName}`);
+    localStorage.setItem("PAGE", train.trainName);
   };
 
   return (
-    <li onClick={handleClick} className="relative h-[510px] w-[360px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">
+    <li
+      onClick={handleClick}
+      className="relative h-[510px] w-[360px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
+    >
       <div className="h-[325px] overflow-hidden rounded-[30px]">
         <img
           className="w-full object-cover"
@@ -30,7 +36,7 @@ const TrainingItem: React.FC<{ train: Train }> = ({ train }) => {
         <h3 className="mb-[20px] text-3xl font-medium">{train.trainType}</h3>
         <ul className="flex flex-wrap gap-[6px]">
           {[train.calendar, train.time, train.level].map((tag, index) => (
-            <Tags tag={tag} index={index} />
+            <Tags tag={tag} index={index} key={index} />
           ))}
         </ul>
       </div>

@@ -2,7 +2,7 @@
 
 export const HeaderUserPopUp = () => {
   return (
-    <div className="absolute right-[140px] top-[70px] box-border flex h-[258px] w-[266px] flex-col items-center rounded-[30px] bg-white p-[30px] shadow-[0_4px_67px_-12px_rgba(0,0,0,0.13)]">
+    <div className="shadowBlack013 absolute right-[140px] top-[70px] box-border flex h-[258px] w-[266px] flex-col items-center rounded-[30px] bg-white p-[30px]">
       <p className="font-[roboto] text-[18px] font-normal leading-[19.8px] text-black">
         Сергей
       </p>

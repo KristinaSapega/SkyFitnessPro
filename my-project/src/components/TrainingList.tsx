@@ -1,11 +1,11 @@
-import React from "react";
 import TrainingItem from "./TrainingItem";
-import { useNavigate } from "react-router-dom";
+
 const items = [
   {
     id: 1,
     urlImg: "yoga.png",
     trainType: "йога",
+    trainName: "yoga",
     calendar: "25 дней",
     time: "25-50 мин/день",
     level: "Сложность",
@@ -15,6 +15,7 @@ const items = [
     id: 2,
     urlImg: "stretching.png",
     trainType: "Стретчинг",
+    trainName: "stretching",
     calendar: "25 дней",
     time: "25-50 мин/день",
     level: "Сложность",
@@ -24,6 +25,7 @@ const items = [
     id: 3,
     urlImg: "danceFitness.png",
     trainType: "Зумба",
+    trainName: "dance-fitness",
     calendar: "25 дней",
     time: "25-50 мин/день",
     level: "Сложность",
@@ -33,6 +35,7 @@ const items = [
     id: 4,
     urlImg: "stepAirobic.png",
     trainType: "Степ-аэробика",
+    trainName: "step-airobic",
     calendar: "25 дней",
     time: "25-50 мин/день",
     level: "Сложность",
@@ -42,6 +45,7 @@ const items = [
     id: 5,
     urlImg: "bodyFlex.png",
     trainType: "Бодифлекс",
+    trainName: "body-flex",
     calendar: "25 дней",
     time: "25-50 мин/день",
     level: "Сложность",
