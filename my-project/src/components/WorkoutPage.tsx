@@ -9,8 +9,9 @@ export const WorkoutPage = () => {
             </a>
           </div>
           <nav className="flex items-center gap-[13px] desktop:gap-[16px]">
-            <img className="" src="avatar_mini.svg" alt="avatar" />
+            
             <a className="flex gap-3 items-center" href="">
+            <img className="w-[30px] desktop:w-10" src="avatar_mini.svg" alt="avatar" />
               <h3 className="hidden desktop:text-2xl desktop:block">Сергей</h3>
               <div className="size-1.5 desktop:size-2 border-b-2 border-l-2 border-black rotate-[-45deg]"></div>
             </a>
@@ -33,7 +34,7 @@ export const WorkoutPage = () => {
               <ul className="pt-5 flex flex-col gap-6 desktop:grid grid-cols-3 desktop:gap-x-[60px]">
                 <li className=" flex flex-col">
                   <label className="text-[18px] desktop:text-lg pb-[10px]" htmlFor="">
-                    Упражнение %
+                    Название упражнения %
                   </label>
                   <progress
                     className="w-[283px] desktop:w-80 h-[6px] [&::-webkit-progress-bar]:rounded-3xl [&::-webkit-progress-value]:rounded-3xl [&::-webkit-progress-bar]:bg-[#F7F7F7] [&::-webkit-progress-value]:bg-[#00C1FF] [&::-moz-progress-bar]:bg-[#00C1FF]"
