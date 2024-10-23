@@ -8,6 +8,9 @@
   box-sizing: border-box;
 }
 @layer components {
+  body:has(.entry) {
+    @apply h-full overflow-hidden;
+  }
   input {
     @apply h-[52px] rounded-[8px] border-[1px] border-solid border-[#D0CECE] p-4 focus:outline-none;
   }
