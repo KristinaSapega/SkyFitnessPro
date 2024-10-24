@@ -17,7 +17,6 @@ const TrainingItem: React.FC<{ train: Train }> = ({ train }) => {
   const navigate = useNavigate();
   const handleClick = () => {
     navigate(`/course/${train.trainName}`);
-    localStorage.setItem("PAGE", train.trainName);
   };
 
   return (

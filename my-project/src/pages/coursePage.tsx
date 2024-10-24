@@ -1,4 +1,4 @@
-import { CoursePagesComp } from "../components/coursePagesComp";
+import { CoursePagesComp } from "../components/CoursePagesComp";
 
 export default function CoursePage() {
   return <CoursePagesComp />;

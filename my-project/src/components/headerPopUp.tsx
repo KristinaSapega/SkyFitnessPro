@@ -3,10 +3,10 @@
 export const HeaderUserPopUp = () => {
   return (
     <div className="shadowBlack013 absolute right-[140px] top-[70px] box-border flex h-[258px] w-[266px] flex-col items-center rounded-[30px] bg-white p-[30px]">
-      <p className="font-[roboto] text-[18px] font-normal leading-[19.8px] text-black">
+      <p className="text-[18px] font-normal leading-[19.8px] text-black">
         Сергей
       </p>
-      <p className="mt-[10px] font-[roboto] text-[18px] font-normal leading-[19.8px] text-[#999999]">
+      <p className="mt-[10px] text-[18px] font-normal leading-[19.8px] text-[#999999]">
         sergey.petrov96@mail.ru
       </p>
 

@@ -1,14 +1,15 @@
 "use client";
-
-import { HeroImage } from "./heroImages";
 import Header from "./Header";
+import { useParams } from "react-router-dom";
+import { HeroImage } from "./HeroImages";
 
 export const CoursePagesComp = () => {
+  const params = useParams<{ nameEN: string | undefined }>();
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-[1440px] px-[140px]">
         <Header />
-        <HeroImage param={localStorage.getItem("PAGE")} />
+        <HeroImage param={params.nameEN} />
         <p className="mb-[40px] text-[44px] font-semibold text-black">
           Подойдет для вас, если:
         </p>
@@ -33,7 +34,6 @@ export const CoursePagesComp = () => {
             </p>
           </div>
         </div>
-
         <div className="mt-[60px]">
           <p className="mb-[40px] text-[44px] font-semibold text-black">
             Направления
@@ -85,7 +85,6 @@ export const CoursePagesComp = () => {
             </div>
           </div>
         </div>
-
         <div className="mb-[60px] mt-[102px]">
           <div className="shadowBlack013 relative box-border flex h-[486px] w-[1160px] rounded-[30px] bg-white bg-[url(/vector_6084.png)] bg-[right_55px_top_120px] bg-no-repeat p-[40px]">
             <div className="pb-[40px]">
