@@ -81,10 +81,10 @@ const Form = () => {
       </div>
       <div className="h-[34px]">
         {isEmptyField && (
-          <h3 className="animate-err err">Заполните все поля!</h3>
+          <h3 className="err animate-err">Заполните все поля!</h3>
         )}
         {!matchPasswords && (
-          <h3 className="animate-err err">Пароли не совпадают</h3>
+          <h3 className="err animate-err">Пароли не совпадают</h3>
         )}
       </div>
       <div className="m-0 flex flex-col gap-[10px] p-0">
@@ -99,7 +99,7 @@ const Form = () => {
         <Link to={"/registry"} className="w">
           <button
             name="reg"
-            className="buttonSecondary hover:bg-btnSecondaryHover active:bg-btnSecondaryActive invalid:bg-btnSecondaryInactive w-[278px] border-[1px] border-solid border-black bg-white"
+            className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
           >
             Зарегистрироваться
           </button>
@@ -114,7 +114,7 @@ const Login = () => {
     <div className="flex h-full w-full items-center justify-center bg-black/[.4]">
       <section className="flex h-[425px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10">
         <Link to={"/"}>
-          <img className="w-55 h-[35px]" src="/logo.svg" alt="logo"></img>
+          <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
         </Link>
         <Form />
       </section>
