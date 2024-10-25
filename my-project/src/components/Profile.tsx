@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Header from "./Header";
 import { User } from "./User";
 
@@ -32,6 +33,15 @@ const items = [
 ];
 
 export const Profile = () => {
+    const [activeButton, setActiveButton] = useState<number | null> (null);
+
+  const handleMouseDown = (id: number) => {
+    setActiveButton(id);
+  };
+
+  const handleMouseUp = () => {
+    setActiveButton(null);
+  };
   return (
     <div className="flex flex-col items-center">
       <div className="w-[1160px]">
@@ -95,8 +105,12 @@ export const Profile = () => {
                     </div>
                   </div>
                   <button
-                    className="mt-[40px] mb-[15px] h-[52px] w-full rounded-full bg-btnPrimaryRegular  text-black"
-                    onClick={() => console.log("Start training")}
+                    className={`mt-[40px] mb-[15px] h-[52px] w-full rounded-full bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive ${
+                        activeButton === course.id ? "text-white" : "text-black"
+                      }`}
+                      onMouseDown={() => handleMouseDown(course.id)}
+                      onMouseUp={handleMouseUp}
+                      onClick={() => console.log("Start training")}
                   >
                     {course.progress === 0
                       ? "Начать тренировки"
