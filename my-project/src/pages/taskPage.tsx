@@ -1,3 +1,6 @@
+import { WorkoutPage } from "../components/Workoutpage";
+
+
 export function TaskPage() {
-  return <div></div>;
+  return <WorkoutPage/>;
 }

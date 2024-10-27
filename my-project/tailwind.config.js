@@ -21,6 +21,11 @@ export default {
       animation: {
         err: "pulse 20ms 20",
       },
+      screens: {
+          'tablet': '375px',
+          'laptop': '768px',
+          'desktop': '1440px',
+            },
     },
   },
   plugins: [],
