@@ -1,10 +1,3 @@
-// type WorkoutType = {
-//     id: string,
-//     exercises: [string, number | null],
-//     name: string,
-//     quantity: number | null,
-// }
-
 export const workout = 
 {
     _id: "hfgxlo",

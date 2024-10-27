@@ -1,26 +1,5 @@
-import { json } from "react-router-dom";
 import Header from "./Header";
-
-const workout = {
-  _id: "hfgxlo",
-  exercises: [
-    {
-      name: "Наклон вперед",
-      quantity: 10,
-    },
-    {
-      name: "Наклон назад",
-      quantity: 10,
-    },
-    {
-      name: "Поднятие ног, согнутых в коленях",
-      quantity: 5,
-    },
-  ],
-  name: "Красота и здоровье / Йога на каждый день / 2 день / Алексей Казубский",
-  video: "https://www.youtube.com/embed/v-xTLFDhoD0",
-};
-
+import { workout } from "./dataList";
 
 export const WorkoutPage = () => {
   return (
@@ -32,9 +11,9 @@ export const WorkoutPage = () => {
             <h1 className="mb-[10px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
               Йога
             </h1>
-              <span className="text-[18px] underline desktop:text-[32px] ">
+              <h3 className="text-[18px] underline desktop:text-[32px] ">
               {workout.name}
-              </span>
+              </h3>
             <iframe
               className="my-6 aspect-video h-auto w-full max-w-full rounded-[8.87px] desktop:my-[40px] desktop:rounded-3xl"
               src={workout.video}
@@ -45,10 +24,12 @@ export const WorkoutPage = () => {
               <h2 className="text-[32px]">Упражнения тренировки 2</h2>
               <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[60px]">
                 {workout.exercises.map((items) => (
+                  
                   <li className="flex flex-col">
                     <label
                       className="pb-[10px] text-[18px] desktop:text-lg"
                       htmlFor=""
+                      
                     >
                       {items.name} {100 / items.quantity }%
                     </label>
