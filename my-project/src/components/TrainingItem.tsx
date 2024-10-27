@@ -1,5 +1,6 @@
 import React from "react";
 import Tags from "./Tags";
+import { items } from "../data";
 
 interface Train {
   id: number;
@@ -12,19 +13,19 @@ interface Train {
 
 const TrainingItem: React.FC<{ train: Train }> = ({ train }) => {
   return (
-    <li className="w-[360px] h-[510px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021] relative">
-      <div className="overflow-hidden h-[325px] rounded-[30px]">
+    <li className="relative h-[510px] w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">
+      <div className="h-[325px] overflow-hidden rounded-[30px]">
         <img
           className="w-full object-cover"
           src={train.urlImg}
           alt={train.trainType}
         />
       </div>
-      <div className="py-[24px] px-[30px]">
-        <h3 className="font-medium text-3xl mb-[20px]">{train.trainType}</h3>
+      <div className="px-[30px] py-[24px]">
+        <h3 className="mb-[20px] text-3xl font-medium">{train.trainType}</h3>
         <ul className="flex flex-wrap gap-[6px]">
           {[train.calendar, train.time, train.level].map((tag, index) => (
-            <Tags tag={tag} index={index}/>
+            <Tags tag={tag} index={index} key={index} />
           ))}
         </ul>
       </div>
