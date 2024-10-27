@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface WorkoutOption {
   id: number;
@@ -11,14 +12,20 @@ interface WorkoutSelectPopupProps {
 }
 
 const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
-  const [selectedWorkouts, setSelectedWorkouts] = useState<number[]>([]);
+  const [selectedWorkout, setSelectedWorkout] = useState<number | null>(null);
   const popupRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
   const handleSelection = (id: number) => {
-    if (selectedWorkouts.includes(id)) {
-      setSelectedWorkouts(selectedWorkouts.filter((workoutId) => workoutId !== id));
+    setSelectedWorkout(id === selectedWorkout ? null : id);
+  };
+
+  const handleStart = () => {
+    if (selectedWorkout !== null) {
+      navigate(`/task/${selectedWorkout}`);
+      onClose();
     } else {
-      setSelectedWorkouts([...selectedWorkouts, id]);
+      alert("Пожалуйста, выберите тренировку");
     }
   };
 
@@ -41,23 +48,19 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
     { id: 3, name: "Асаны стоя", description: "Йога на каждый день / 3 день" },
     { id: 4, name: "Растягиваем мышцы бедра", description: "Йога на каждый день / 4 день" },
     { id: 5, name: "Гибкость спины", description: "Йога на каждый день / 5 день" },
-    { id: 6, name: "Гибкость спины", description: "Йога на каждый день / 5 день" },
-    { id: 7, name: "Гибкость спины", description: "Йога на каждый день / 5 день" },
+    { id: 6, name: "Гибкость спины", description: "Йога на каждый день / 6 день" },
   ];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div
-        ref={popupRef}
-        className="bg-white rounded-[30px] p-10 w-[460px]"
-      >
-        <h2 className="text-center text-3xl font-semibold mb-4">Выберите тренировку</h2>
-        <form className="h-[450px] max-w-[380px] mt-12 w-full overflow-auto">
+      <div ref={popupRef} className="bg-white rounded-[30px] p-10 w-[460px]">
+        <h2 className="text-center text-3xl font-normal mb-4">Выберите тренировку</h2>
+        <form className="h-[450px] max-w-[400px] mt-12 w-full overflow-auto">
           <ul>
             {workoutOptions.map((workout) => (
               <li
                 key={workout.id}
-                className="p-4 border-b flex justify-between items-center"
+                className="p-3 border-b flex justify-between items-center"
               >
                 <div>
                   <label className="cursor-pointer flex items-center">
@@ -65,16 +68,18 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
                       type="checkbox"
                       name="workout"
                       value={workout.id}
-                      checked={selectedWorkouts.includes(workout.id)}
+                      checked={selectedWorkout === workout.id}
                       onChange={() => handleSelection(workout.id)}
                       className="hidden peer"
                     />
                     <span
-                      className={`w-5 h-5 rounded-full border-2 border-gray-300 flex justify-center items-center mr-3 peer-checked:border-[#BCEC30] peer-checked:bg-cover peer-checked:bg-center`}
+                      className={`w-5 h-5 rounded-full border-2 border-gray-300 flex justify-center items-center mr-3 peer-checked:border-btnPrimaryRegular`}
                       style={{
-                        backgroundImage: selectedWorkouts.includes(workout.id)
-                          ? "url('../../../public/checked.svg')"
+                        backgroundImage: selectedWorkout === workout.id
+                          ? "url('../../../checked.svg')"
                           : "none",
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
                       }}
                     ></span>
                     <div>
@@ -88,8 +93,8 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
           </ul>
         </form>
         <button
-          onClick={onClose}
-          className="w-full mt-4 h-[52px] bg-[#BCEC30] rounded-[46px]"
+          onClick={handleStart}
+          className="w-full mt-4 h-[52px] bg-btnPrimaryRegular rounded-[46px]"
         >
           Начать
         </button>

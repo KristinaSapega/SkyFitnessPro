@@ -1,5 +1,5 @@
 import { useState } from "react";
-import SuccessPopup from "../ProgressSuccess/ProgressSuccess";
+import ProgressSuccess from "./ProgressSuccess";
 
 interface MyProgressPopupProps {
     onClose: () => void;
@@ -34,7 +34,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
                 <input
                   type="text"
                   placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-[#D0CECE]"
+                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
                 />
               </div>
               <div className="flex flex-col mb-4 max-w-[320px] w-full">
@@ -44,7 +44,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
                 <input
                   type="text"
                   placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-[#D0CECE]"
+                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
                 />
               </div>
               <div className="flex flex-col mb-4 max-w-[320px] w-full">
@@ -54,7 +54,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
                 <input
                   type="text"
                   placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-[#D0CECE]"
+                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
                 />
               </div>
               <div className="flex flex-col mb-4 max-w-[320px] w-full">
@@ -64,7 +64,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
                 <input
                   type="text"
                   placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-[#D0CECE]"
+                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
                 />
               </div>
               <div className="flex flex-col mb-4 max-w-[320px] w-full">
@@ -74,7 +74,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
                 <input
                   type="text"
                   placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-[#D0CECE]"
+                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
                 />
               </div>
               <div className="flex flex-col mb-4 max-w-[320px] w-full">
@@ -84,7 +84,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
                 <input
                   type="text"
                   placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-[#D0CECE]"
+                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
                 />
               </div>
             </form>
@@ -98,7 +98,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
         </div>
       )}
 
-      {isSuccessPopupVisible && <SuccessPopup />}
+      {isSuccessPopupVisible && <ProgressSuccess />}
     </>
   );
 }
