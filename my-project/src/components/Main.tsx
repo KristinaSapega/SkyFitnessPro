@@ -24,7 +24,7 @@ const Main = () => {
         <div className="mb-[81px] mt-[34px] flex justify-center">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="h-[52px] w-[127px] rounded-[46px] bg-[#BCEC30]"
+            className="buttonPrimary h-[52px] w-[127px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
           >
             Наверх ↑
           </button>
