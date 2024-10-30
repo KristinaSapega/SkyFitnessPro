@@ -6,6 +6,7 @@ const Main = () => {
     <main className="flex flex-col items-center">
       <div className="w-[1160px]">
         <Header />
+
         <div className="mt-[60px] flex justify-between">
           <h1 className="h-[120px] w-[850px] text-6xl font-medium">
             Начните заниматься спортом и улучшите качество жизни

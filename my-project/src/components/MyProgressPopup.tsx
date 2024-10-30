@@ -89,7 +89,7 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
               </div>
             </form>
             <button
-              className="mt-4 bg-[#BCEC30] px-4 py-2 rounded w-full rounded-full text-lg"
+              className="mt-4 buttonPrimary bg-btnPrimaryRegular px-4 py-2  rounded w-full rounded-full hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive active:text-white"
               onClick={handleSave}
             >
               Сохранить

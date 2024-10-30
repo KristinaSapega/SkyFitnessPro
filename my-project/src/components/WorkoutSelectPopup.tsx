@@ -94,7 +94,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
         </form>
         <button
           onClick={handleStart}
-          className="w-full mt-4 h-[52px] bg-btnPrimaryRegular rounded-[46px]"
+          className="w-full mt-4 buttonPrimary active:text-white bg-btnPrimaryRegular rounded-[46px]  hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
         >
           Начать
         </button>

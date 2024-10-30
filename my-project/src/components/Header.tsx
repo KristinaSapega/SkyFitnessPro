@@ -1,17 +1,6 @@
-import { useState } from "react";
-import WorkoutSelectPopup from "./WorkoutSelectPopup";
-import MyProgressPopup from "./MyProgressPopup";
+"use client";
 
 const Header = () => {
-  const [isTrainPopupOpen, setIsTrainPopupOpen] = useState(false);
-  const [isProgressPopupOpen, setIsProgressPopupOpen] = useState(false);
-
-  const openTrainPopup = () => setIsTrainPopupOpen(true);
-  const closeTrainPopup = () => setIsTrainPopupOpen(false);
-
-  const openProgressPopup = () => setIsProgressPopupOpen(true);
-  const closeProgressPopup = () => setIsProgressPopupOpen(false);
-
   return (
     <header className="just flex justify-between">
       <div>
@@ -22,17 +11,9 @@ const Header = () => {
           Онлайн-тренировки для занятий дома
         </p>
       </div>
-        <button onClick={openTrainPopup}>
-          Попап тренировки
-        </button>
-        <button onClick={openProgressPopup}>
-          Попап прогресса
-        </button>
       <button className="buttonPrimary w-[103px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive">
         Войти
       </button>
-      {isTrainPopupOpen && <WorkoutSelectPopup onClose={closeTrainPopup} />}
-      {isProgressPopupOpen && <MyProgressPopup onClose={closeProgressPopup} />}
     </header>
   );
 };
