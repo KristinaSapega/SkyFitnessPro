@@ -16,6 +16,7 @@ export default {
           btnSecondaryHover: " #F7F7F7",
           btnSecondaryRegular: "#fff",
           btnSecondaryInactive: "#fff",
+          borderInputPrimary: "#D0CECE"
         };
       },
       animation: {
