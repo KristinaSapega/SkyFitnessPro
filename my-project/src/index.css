@@ -41,4 +41,13 @@
   .err {
     @apply text-center leading-[34px] text-red-600;
   }
+  .corPageBlockGradient {
+    @apply bg-gradient-to-r from-[#151720] to-[#1E212E];
+  }
+  .corPageTextBlack06 {
+    @apply text-[rgba(0,0,0,0.6)];
+  }
+  .shadowBlack013 {
+    @apply shadow-[0_4px_67px_-12px_rgba(0,0,0,0.13)];
+  }
 }

@@ -19,8 +19,8 @@ export const AppRouters = createBrowserRouter([
       { path: "/login", element: <LoginPage /> },
       { path: "/registry", element: <RegistryPage /> },
       { path: "/user", element: <UserPage /> },
-      { path: "/task", element: <TaskPage /> },
-      { path: "/course", element: <CoursePage /> },
+      { path: "/task/:id", element: <TaskPage /> },
+      { path: "/course/:nameEN", element: <CoursePage /> },
     ],
   },
 ]);
