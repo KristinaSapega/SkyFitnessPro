@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { User } from "firebase/auth";
 
-export const HeaderUserPopUp = () => {
+type popUpType = {
+  setPopupOpen: (isOpen: boolean) => void;
+};
+
+export const HeaderUserPopUp = ({ setPopupOpen }: popUpType) => {
   const user: User | null = auth.currentUser;
   const email: string | null = user?.email ?? null;
   const name: string | null = user?.displayName ?? null;
@@ -18,6 +22,7 @@ export const HeaderUserPopUp = () => {
   const handleLogout = () => {
     auth.signOut();
     navigate("/");
+    setPopupOpen(false);
   };
 
   return (
