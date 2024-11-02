@@ -5,6 +5,7 @@ import { HeroImage } from "./HeroImages";
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
+  console.log(params);
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-[1440px] px-[140px]">
