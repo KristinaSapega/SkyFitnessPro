@@ -109,7 +109,7 @@ export const CoursePagesComp = () => {
                   помогают противостоять стрессам
                 </li>
               </ul>
-              <button className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive">
+              <button id="tragetSection" className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive">
                 Войдите, чтобы добавить курс
               </button>
             </div>{" "}

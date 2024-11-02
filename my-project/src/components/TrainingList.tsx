@@ -58,6 +58,8 @@ import { useEffect, useState } from "react";
 const TrainingList = () => {
   const [items, setItems] = useState([]);
 
+  const [userTrainList, setUserTrainList] = useState([]);
+
   useEffect(() => {
     const dataRef = ref(database, "/courses");
     onValue(dataRef, (snapshot) => {
@@ -67,11 +69,9 @@ const TrainingList = () => {
   }, [database]);
   return (
     <ul className="mt-[50px] flex flex-wrap gap-[40px]">
-     {items.map((item, index) => (
-        <TrainingItem train={item} key={index} />
+      {items.map((item, index) => (
+        <TrainingItem train={item} key={index} setUserTrainList={setUserTrainList} />
       ))}
-
-
     </ul>
   );
 };

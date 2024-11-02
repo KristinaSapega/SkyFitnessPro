@@ -1,9 +1,10 @@
 "use client";
 
-import CoursePage from "../pages/coursePage";
 import { MainCardsImage } from "./MainCardsImage";
 import Tags from "./Tags";
 import { useNavigate } from "react-router-dom";
+import { User } from "./User";
+import { Component, useState } from "react";
 
 type Component = {
   train: {
@@ -17,11 +18,20 @@ type Component = {
     workouts: [];
   };
 };
-
-const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
+let user = null; //user - берем из состояния
+//список занятий пользователя
+const TrainingItem: React.FC<{ train: Component }> = ({ train,setUserTrainList }) => {
   const currentTrain = Object.values(train)[0];
-
   const navigate = useNavigate();
+  const handleClickAddTrain = (e) => {
+    if (user) {
+      setUserTrainList(prevState => [...prevState, train]);
+    }
+    else {
+navigate("/login");
+e.stopPropagation()
+    }
+  };
   const handleClick = () => {
     navigate(`/course/${currentTrain._id}`);
   };
@@ -49,7 +59,10 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           ))}
         </ul>
       </div>
-      <button className="absolute right-[20px] top-[20px]">
+      <button
+        onClick={handleClickAddTrain}
+        className="absolute right-[20px] top-[20px]"
+      >
         <img src="add-in-Circle.svg" alt="plus" />
       </button>
     </li>
