@@ -1,6 +1,6 @@
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useModal } from "../hooks/useModal";
 
 type EntryType = {
   email: string;
@@ -16,6 +16,8 @@ const Form = () => {
   const refRePass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
+  const { changeModal } = useModal();
+
   const [entry, setEntry] = useState<EntryType>({
     email: "",
     pass: "",
@@ -24,8 +26,6 @@ const Form = () => {
     isEmptyField: false,
   });
   const { email, pass, rePass, matchPasswords, isEmptyField } = entry;
-
-  const navigate = useNavigate();
 
   const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEntry({
@@ -49,7 +49,7 @@ const Form = () => {
 
     try {
       if (pass === rePass) {
-        navigate("/login");
+        changeModal();
       } else {
         setEntry({ ...entry, matchPasswords: false });
         refPass.current?.classList.add("border-red-600");
@@ -122,28 +122,37 @@ const Form = () => {
         >
           Зарегистрироваться
         </button>
-        <Link to={"/login"} className="w">
-          <button
-            name="reg"
-            className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
-          >
-            Войти
-          </button>
-        </Link>
+        <button
+          name="reg"
+          className="buttonSecondary invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive w-[278px] border-[1px] border-solid border-black bg-white"
+          onClick={() => changeModal()}
+        >
+          Войти
+        </button>
       </div>
     </form>
   );
 };
 
 const Registry = () => {
+  const { isOpen, changeValue } = useModal();
+  if (!isOpen) return null;
   return (
-    <div className="flex h-full w-full items-center justify-center bg-black/[.4]">
-      <section className="flex h-[487px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10">
-        <Link to={"/"}>
-          <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
-        </Link>
-        <Form />
-      </section>
+    <div
+      className="entry fixed left-0 top-0 h-full w-full min-w-[375px]"
+      onClick={() => changeValue()}
+    >
+      <div className="flex h-full w-full items-center justify-center bg-black/[.4]">
+        <section
+          className="flex h-[487px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Link to={"/"}>
+            <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
+          </Link>
+          <Form />
+        </section>
+      </div>
     </div>
   );
 };
