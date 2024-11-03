@@ -5,7 +5,6 @@ import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 
 const Main = () => {
-  const { isRegistry } = useModal();
   return (
     <main className="flex flex-col items-center">
       <div className="w-[1160px]">
@@ -34,7 +33,6 @@ const Main = () => {
             </button>
           </div>
         </>
-        {isRegistry ? <Registry /> : <Login />}
       </div>
     </main>
   );
