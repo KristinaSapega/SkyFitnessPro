@@ -32,6 +32,7 @@ navigate("/login");
 e.stopPropagation()
     }
   };
+
   const handleClick = () => {
     navigate(`/course/${currentTrain._id}`);
   };
