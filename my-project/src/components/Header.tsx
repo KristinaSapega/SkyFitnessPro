@@ -1,6 +1,12 @@
-"use client";
+import { useModal } from "../hooks/useModal";
 
 const Header = () => {
+  const { changeValue } = useModal();
+
+  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    changeValue();
+  };
   return (
     <header className="just flex justify-between">
       <div>
@@ -11,7 +17,10 @@ const Header = () => {
           Онлайн-тренировки для занятий дома
         </p>
       </div>
-      <button className="buttonPrimary w-[103px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive">
+      <button
+        className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive w-[103px]"
+        onClick={openModal}
+      >
         Войти
       </button>
     </header>
