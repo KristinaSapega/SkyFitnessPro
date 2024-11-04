@@ -139,7 +139,7 @@ const Registry = () => {
   if (!isOpen) return null;
   return (
     <div
-      className="entry fixed left-0 top-0 h-full w-full min-w-[375px]"
+      className="entry fixed left-0 top-0 h-full w-full min-w-[375px] z-50"
       onClick={() => changeValue()}
     >
       <div className="flex h-full w-full items-center justify-center bg-black/[.4]">

@@ -1,45 +1,98 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
+
+export type UserType = {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL: string;
+};
 
 export const User = () => {
-    const [isButtonPressed, setIsButtonPressed] = useState(false);
+  const [isButtonPressed, setIsButtonPressed] = useState(false);
+  const navigate = useNavigate();
+  const [userinfo, setUserinfo] = useState<{
+    uid: string;
+    email: string;
+    displayName: string;
+    photoURL: string;
+  }>({
+    uid: "",
+    email: "",
+    displayName: "",
+    photoURL: "",
+  });
 
-    return (
-        <>
-            <h1 className="text-lg md:text-xl lg:text-4xl font-bold mb-8">Профиль</h1>
-            <div className="border rounded-3xl bg-white p-6 shadow-lg mt-10 mb-12">
-                <div className="flex flex-wrap gap-6">
-                    <div className="flex justify-center items-center mx-auto">
-                        <img
-                            src="Mask group.svg"
-                            className="max-w-full h-auto justify-center"
-                            alt="Profile"
-                        />
-                    </div>
-                    <div className="flex-1 flex flex-col justify-center gap-6">
-                        <p className="font-bold text-3xl">Сергей</p>
-                        <div>
-                            <span className="text-[18px] font-small">Логин: sergey.petrov96</span>
-                            <p className="text-[18px] font-small">Пароль: 4fkhdj880d</p>
-                        </div>
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserinfo({
+          uid: user.uid ?? "",
+          email: user.email ?? "",
+          displayName: user.displayName ?? "",
+          photoURL: user.photoURL ?? "",
+        });
+      }
+    });
+  }, [auth]);
 
-                        <div className="flex flex-col md:flex-row items-center gap-2 max-w-full">
-                            <button
-                                className={`flex-1 text-xl h-[52px] max-w-60 min-w-60 bg-btnPrimaryRegular hover:bg-btnPrimaryHover  active:bg-btnPrimaryActive py-2 px-4 rounded-full 
-                                    ${isButtonPressed ? "text-white" 
-                                        : "text-black"
-                                    }`}
-                                onMouseDown={() => setIsButtonPressed(true)}
-                                onMouseUp={() => setIsButtonPressed(false)}
-                            >
-                                Изменить пароль
-                            </button>
-                            <button className="flex-1 text-xl h-[52px] max-w-60 min-w-60 border border-black  hover:bg-btnSecondaryHover active:bg-btnSecondaryActive py-2 px-4 rounded-full">
-                                Выйти
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  const handleLogout = () => {
+    auth.signOut();
+    navigate("/");
+  };
+
+  return (
+    <>
+      <h1 className="mb-8 text-lg font-bold md:text-xl lg:text-4xl">Профиль</h1>
+      <div className="mb-12 mt-10 rounded-3xl border bg-white p-6 shadow-lg">
+        <div className="flex flex-wrap gap-6">
+          <div className="mx-auto flex items-center justify-center">
+            <img
+              //   src="Mask group.svg"
+              src={auth.currentUser?.photoURL ?? "Mask group.svg"}
+              className="h-auto max-w-full justify-center rounded-[20px]"
+              alt="Profile"
+              width={205}
+              height={205}
+            />
+          </div>
+          <div className="flex flex-1 flex-col justify-center gap-6">
+            <p className="text-3xl font-bold">{userinfo.displayName}</p>
+            <div>
+              <span className="font-small text-[18px]">
+                Логин: {userinfo.email}
+              </span>
+              <div className="font-small flex items-center text-[18px]">
+                <p>Пароль:</p>
+                <input
+                  className="border-none"
+                  type="password"
+                  placeholder="😊😊😊😊"
+                  readOnly
+                />
+              </div>
             </div>
-        </>
-    )
-}
+
+            <div className="flex max-w-full flex-col items-center gap-2 md:flex-row">
+              <button
+                className={`h-[52px] min-w-60 max-w-60 flex-1 rounded-full bg-btnPrimaryRegular px-4 py-2 text-xl hover:bg-btnPrimaryHover active:bg-btnPrimaryActive ${
+                  isButtonPressed ? "text-white" : "text-black"
+                }`}
+                onMouseDown={() => setIsButtonPressed(true)}
+                onMouseUp={() => setIsButtonPressed(false)}
+              >
+                Изменить пароль
+              </button>
+              <button
+              onClick={handleLogout}
+              className="h-[52px] min-w-60 max-w-60 flex-1 rounded-full border border-black px-4 py-2 text-xl hover:bg-btnSecondaryHover active:bg-btnSecondaryActive">
+                Выйти
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
