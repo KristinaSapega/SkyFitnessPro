@@ -2,6 +2,8 @@ import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useModal } from "../hooks/useModal";
 
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 type EntryType = {
   email: string;
   pass: string;
@@ -49,6 +51,7 @@ const Form = () => {
 
     try {
       if (pass === rePass) {
+        await createUserWithEmailAndPassword(auth, email, pass);
         changeModal();
       } else {
         setEntry({ ...entry, matchPasswords: false });
@@ -124,7 +127,7 @@ const Form = () => {
         </button>
         <button
           name="reg"
-          className="buttonSecondary invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive w-[278px] border-[1px] border-solid border-black bg-white"
+          className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
           onClick={() => changeModal()}
         >
           Войти
@@ -139,7 +142,7 @@ const Registry = () => {
   if (!isOpen) return null;
   return (
     <div
-      className="entry fixed left-0 top-0 h-full w-full min-w-[375px] z-50"
+      className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
       onClick={() => changeValue()}
     >
       <div className="flex h-full w-full items-center justify-center bg-black/[.4]">

@@ -51,14 +51,13 @@ const Form = () => {
     }
   };
 
-  // авторизация Firebase
   const handleLogin = () => {
-    signInWithEmailAndPassword(auth, entry.email, entry.pass)
+    signInWithEmailAndPassword(auth, email, pass)
       .then(() => {
         changeValue();
       })
-      .catch((data) => {
-        if (data) {
+      .catch((err) => {
+        if (err) {
           setEntry({ ...entry, err: true });
         }
       });
