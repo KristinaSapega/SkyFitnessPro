@@ -18,7 +18,7 @@ const Header = () => {
         </p>
       </div>
       <button
-        className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive w-[103px]"
+        className="buttonPrimary w-[103px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
         onClick={openModal}
       >
         Войти
