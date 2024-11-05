@@ -1,5 +1,3 @@
-"use client";
-
 import Tags from "./Tags";
 import { useNavigate } from "react-router-dom";
 

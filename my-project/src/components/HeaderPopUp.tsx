@@ -1,5 +1,3 @@
-"use client";
-
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { User } from "firebase/auth";

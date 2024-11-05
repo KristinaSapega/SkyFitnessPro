@@ -1,6 +1,3 @@
-
-("use client");
-
 import { useLocation, useNavigate } from "react-router-dom";
 import UserHeaderItem from "./UserHeaderItem";
 import React from "react";
