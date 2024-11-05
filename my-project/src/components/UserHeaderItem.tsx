@@ -5,8 +5,6 @@ import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 import Login from "./Login";
 
-
-
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
@@ -29,7 +27,7 @@ function UserHeaderItem() {
   };
 
   const togglePopup = () => {
-    setPopupOpen((prev) => !prev);
+    setPopupOpen(!popupOpen);
   };
 
   return (
