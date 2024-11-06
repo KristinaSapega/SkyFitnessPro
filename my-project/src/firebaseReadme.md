@@ -83,3 +83,23 @@ onValue(dataRef, (snapshot) => {
 const data = snapshot.val();
 console.log(data);
 });
+
+///// Метод создания и обновления пользовательского прогресса в базе данных FB.
+Если FB в папке "user" найдет объект с "именем" === "UID" пользователя он перезапишет данные которые будут помещены в шаблон.
+Важно заполнить шаблон полностью, возможно сработает спред.
+
+Если в папке "user" нет подходящего объекта FB создаст новый объект с шаблонным содержимым.
+
+const writeUserDataInBase = (uid: string) => {
+set(ref(database, "users/" + auth.currentUser?.uid),
+{
+\_id: auth.currentUser?.uid,
+courses: [0],
+workouts: {
+0: 0,
+},
+});
+};
+
+///// Метод удаления объектов из базы
+remove(ref(database, "users/" + auth.currentUser?.uid));

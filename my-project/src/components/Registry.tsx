@@ -2,6 +2,8 @@ import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useModal } from "../hooks/useModal";
 
+import { auth } from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 type EntryType = {
   email: string;
   pass: string;
@@ -25,6 +27,7 @@ const Form = () => {
     matchPasswords: true,
     isEmptyField: false,
   });
+  const [error, setError] = useState<string | null>(null);
   const { email, pass, rePass, matchPasswords, isEmptyField } = entry;
 
   const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +37,7 @@ const Form = () => {
       matchPasswords: true,
       isEmptyField: false,
     });
+    setError("");
   };
 
   const regUser = async (e: FormEvent<HTMLFormElement>) => {
@@ -49,6 +53,7 @@ const Form = () => {
 
     try {
       if (pass === rePass) {
+        await createUserWithEmailAndPassword(auth, email, pass);
         changeModal();
       } else {
         setEntry({ ...entry, matchPasswords: false });
@@ -57,8 +62,14 @@ const Form = () => {
         refBtn.current?.setAttribute("disabled", "");
         throw new Error("Пароли не совпадают");
       }
-    } catch (error) {
-      if (error instanceof Error) console.error(error.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message.includes("already")) {
+          setError("Данная почта уже используется. Попробуйте войти.");
+        } else {
+          setError(err.message.replace("Firebase:", ""));
+        }
+      }
     }
   };
 
@@ -75,6 +86,7 @@ const Form = () => {
             setEntry({ ...entry, isEmptyField: false });
             refLogin.current?.classList.remove("border-red-600");
             refBtn.current?.removeAttribute("disabled");
+            setError("");
           }}
           placeholder="Эл. почта"
         />
@@ -88,6 +100,7 @@ const Form = () => {
             setEntry({ ...entry, isEmptyField: false, matchPasswords: true });
             refPass.current?.classList.remove("border-red-600");
             refBtn.current?.removeAttribute("disabled");
+            setError("");
           }}
           placeholder="Пароль"
         />
@@ -101,16 +114,21 @@ const Form = () => {
             setEntry({ ...entry, isEmptyField: false, matchPasswords: true });
             refRePass.current?.classList.remove("border-red-600");
             refBtn.current?.removeAttribute("disabled");
+            setError("");
           }}
           placeholder="Повторить пароль"
         />
       </div>
-      <div className="h-[34px]">
+      <div className="h-fit min-h-[34px] text-center">
         {isEmptyField && (
-          <h3 className="err animate-err">Заполните все поля!</h3>
+          <h3 className="err block animate-err align-middle text-[14px]">
+            Заполните все поля!
+          </h3>
         )}
-        {!matchPasswords && (
-          <h3 className="err animate-err">Пароли не совпадают</h3>
+        {error && (
+          <h3 className="err inline-block animate-err align-middle text-[14px] leading-[15px] before:h-full before:content-['']">
+            {error}
+          </h3>
         )}
       </div>
       <div className="m-0 flex flex-col gap-[10px] p-0">
@@ -124,7 +142,7 @@ const Form = () => {
         </button>
         <button
           name="reg"
-          className="buttonSecondary invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive w-[278px] border-[1px] border-solid border-black bg-white"
+          className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
           onClick={() => changeModal()}
         >
           Войти
@@ -139,12 +157,12 @@ const Registry = () => {
   if (!isOpen) return null;
   return (
     <div
-      className="entry fixed left-0 top-0 h-full w-full min-w-[375px]"
+      className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
       onClick={() => changeValue()}
     >
-      <div className="flex h-full w-full items-center justify-center bg-black/[.4]">
+      <div className="flex h-full w-full items-center justify-center bg-black/[.1]">
         <section
-          className="flex h-[487px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
+          className="flex min-h-[487px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
           onClick={(e) => e.stopPropagation()}
         >
           <Link to={"/"}>
