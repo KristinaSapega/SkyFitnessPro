@@ -137,7 +137,7 @@ const Login = () => {
       className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
       onClick={() => changeValue()}
     >
-      <div className="flex h-full w-full items-center justify-center bg-black/[.4]">
+      <div className="flex h-full w-full items-center justify-center bg-black/[.04]">
         <section
           className="flex h-[425px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
           onClick={(e) => e.stopPropagation()}
