@@ -1,6 +1,9 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useModal } from "../hooks/useModal";
+import { auth } from "../firebase";
 
 type EntryType = {
   email: string;
@@ -8,6 +11,7 @@ type EntryType = {
   rePass: string;
   matchPasswords: boolean;
   isEmptyField: boolean;
+  err: boolean;
 };
 
 const Form = () => {
@@ -15,7 +19,7 @@ const Form = () => {
   const refPass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
-  const { changeModal } = useModal();
+  const { changeModal, changeValue } = useModal();
 
   const [entry, setEntry] = useState<EntryType>({
     email: "",
@@ -23,8 +27,9 @@ const Form = () => {
     rePass: "",
     matchPasswords: true,
     isEmptyField: false,
+    err: false,
   });
-  const { email, pass, matchPasswords, isEmptyField } = entry;
+  const { email, pass, matchPasswords, isEmptyField, err } = entry;
 
   const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEntry({
@@ -44,6 +49,19 @@ const Form = () => {
       !pass && refPass.current?.classList.add("border-red-600");
       return;
     }
+  };
+
+  // авторизация Firebase
+  const handleLogin = () => {
+    signInWithEmailAndPassword(auth, entry.email, entry.pass)
+      .then(() => {
+        changeValue();
+      })
+      .catch((data) => {
+        if (data) {
+          setEntry({ ...entry, err: true });
+        }
+      });
   };
 
   return (
@@ -86,9 +104,11 @@ const Form = () => {
         {!matchPasswords && (
           <h3 className="err animate-err">Пароли не совпадают</h3>
         )}
+        {err && <h3 className="err animate-err">Не верный логин или пароль</h3>}
       </div>
       <div className="m-0 flex flex-col gap-[10px] p-0">
         <button
+          onClick={handleLogin}
           ref={refBtn}
           name="reg"
           className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
@@ -111,9 +131,10 @@ const Form = () => {
 const Login = () => {
   const { isOpen, changeValue } = useModal();
   if (!isOpen) return null;
+
   return (
     <div
-      className="entry fixed left-0 top-0 h-full w-full min-w-[375px]"
+      className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
       onClick={() => changeValue()}
     >
       <div className="flex h-full w-full items-center justify-center bg-black/[.1]">
