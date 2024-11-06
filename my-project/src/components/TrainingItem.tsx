@@ -18,7 +18,7 @@ type Component = {
     workouts: [];
   };
 };
-let user = null; //user - берем из состояния
+
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const currentTrain = Object.values(train)[0];
