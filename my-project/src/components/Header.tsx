@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import UserHeaderItem from "./UserHeaderItem";
-import React from "react";
 
 const Header = () => {
   const location: string = useLocation().pathname;
@@ -26,4 +25,4 @@ const Header = () => {
   );
 };
 
-export default React.memo(Header);
+export default Header;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Header from "./Header";
-import { User } from "./User";
+import { UserCabinet } from "./User";
 
 const items = [
   {
@@ -33,7 +33,7 @@ const items = [
 ];
 
 export const Profile = () => {
-    const [activeButton, setActiveButton] = useState<number | null> (null);
+  const [activeButton, setActiveButton] = useState<number | null>(null);
 
   const handleMouseDown = (id: number) => {
     setActiveButton(id);
@@ -47,7 +47,7 @@ export const Profile = () => {
       <div className="w-[1160px]">
         <Header />
         <div className="mt-14">
-          <User />
+          <UserCabinet />
           <h1 className="my-8 text-lg font-bold md:text-xl lg:text-4xl">
             Мои курсы
           </h1>
@@ -105,12 +105,12 @@ export const Profile = () => {
                     </div>
                   </div>
                   <button
-                    className={`mt-[40px] mb-[15px] h-[52px] w-full rounded-full bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive ${
-                        activeButton === course.id ? "text-white" : "text-black"
-                      }`}
-                      onMouseDown={() => handleMouseDown(course.id)}
-                      onMouseUp={handleMouseUp}
-                      onClick={() => console.log("Start training")}
+                    className={`mb-[15px] mt-[40px] h-[52px] w-full rounded-full bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive ${
+                      activeButton === course.id ? "text-white" : "text-black"
+                    }`}
+                    onMouseDown={() => handleMouseDown(course.id)}
+                    onMouseUp={handleMouseUp}
+                    onClick={() => console.log("Start training")}
                   >
                     {course.progress === 0
                       ? "Начать тренировки"
