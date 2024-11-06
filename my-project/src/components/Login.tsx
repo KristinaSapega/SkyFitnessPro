@@ -98,7 +98,9 @@ const Form = () => {
       </div>
       <div className="h-[34px]">
         {isEmptyField && (
-          <h3 className="err animate-err">Заполните все поля!</h3>
+          <h3 className="err block animate-err align-middle text-[14px]">
+            Заполните все поля!
+          </h3>
         )}
         {!matchPasswords && (
           <h3 className="err animate-err">Пароли не совпадают</h3>
