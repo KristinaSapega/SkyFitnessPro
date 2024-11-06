@@ -1,9 +1,7 @@
-"use client";
-
 import { MainCardsImage } from "./MainCardsImage";
 import Tags from "./Tags";
 import { useNavigate } from "react-router-dom";
-import { User } from "./User";
+
 import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 import Login from "./Login";
@@ -22,28 +20,19 @@ type Component = {
 };
 let user = null; //user - берем из состояния
 //список занятий пользователя
-const TrainingItem: React.FC<{ train: Component }> = ({
-  train,
-}) => {
+const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const currentTrain = Object.values(train)[0];
   const navigate = useNavigate();
   const { changeValue, isRegistry } = useModal();
 
-
-
   const handleClickAddTrain = () => {
     alert("Пользователь не авторизован");
     changeValue();
-
   };
 
   const handleClick = () => {
     navigate(`/course/${currentTrain._id}`);
   };
-
-
-
-
 
   return (
     <li className="relative h-[510px] w-[360px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">

@@ -1,4 +1,4 @@
-"use client";
+
 import Header from "./Header";
 import { useParams } from "react-router-dom";
 import { HeroImage } from "./HeroImages";

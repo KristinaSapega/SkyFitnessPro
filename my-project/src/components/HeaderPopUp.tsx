@@ -1,5 +1,3 @@
-"use client";
-
 import { useNavigate } from "react-router-dom";
 import { auth } from "../firebase";
 import { User } from "firebase/auth";
@@ -17,6 +15,7 @@ export const HeaderUserPopUp = ({ setPopupOpen }: popUpType) => {
 
   const handleOpenUserPage = () => {
     navigate("/user");
+    setPopupOpen(false);
   };
 
   const handleLogout = () => {
@@ -24,6 +23,7 @@ export const HeaderUserPopUp = ({ setPopupOpen }: popUpType) => {
     navigate("/");
     setPopupOpen(false);
   };
+
 
   return (
     <div className="shadowBlack013 box-border flex h-[258px] w-[266px] flex-col items-center rounded-[30px] bg-white p-[30px]">

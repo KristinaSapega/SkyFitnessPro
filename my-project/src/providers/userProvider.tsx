@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useMemo, useState } from "react";
+import { createContext, ReactNode, useState } from "react";
 
 export type UserType = {
   isOpen: boolean;

@@ -1,45 +1,114 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { auth } from "../firebase";
 import { useNavigate } from "react-router-dom";
+import {
+  onAuthStateChanged,
+  updatePassword,
+  updateProfile,
+} from "firebase/auth";
+import { User } from "firebase/auth";
 
 export type UserType = {
   uid: string;
   email: string;
   displayName: string;
   photoURL: string;
+  currentUser: User | null;
 };
 
-export const User = () => {
-  const [isButtonPressed, setIsButtonPressed] = useState(false);
-  const navigate = useNavigate();
-  const [userinfo, setUserinfo] = useState<{
-    uid: string;
-    email: string;
-    displayName: string;
-    photoURL: string;
-  }>({
+type EntryType = {
+  name: string;
+  pass: string;
+  err: boolean;
+  loadings: boolean;
+};
+
+export const UserCabinet = () => {
+  const [activInputName, setactivInputName] = useState(true);
+  const [activInpuPass, setactivInputPass] = useState(true);
+  const [userinfo, setUserinfo] = useState<UserType>({
     uid: "",
     email: "",
     displayName: "",
     photoURL: "",
+    currentUser: null,
+  });
+  const navigate = useNavigate();
+
+  const [entry, setEntry] = useState<EntryType>({
+    name: "",
+    pass: "",
+    err: false,
+    loadings: false,
   });
 
+  // Получение данных пользователя
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserinfo({
           uid: user.uid ?? "",
           email: user.email ?? "",
           displayName: user.displayName ?? "",
           photoURL: user.photoURL ?? "",
+          currentUser: user,
         });
       }
     });
   }, [auth]);
 
+  // Выход из учетной записи
   const handleLogout = () => {
     auth.signOut();
     navigate("/");
+  };
+
+  // Обработчик изменения имени
+  const handleNameChange = () => {
+    setactivInputName(!activInputName);
+
+    if (!activInputName && userinfo.currentUser && entry.name) {
+      updateProfile(userinfo.currentUser, { displayName: entry.name }).then(
+        () => {
+          navigate("/user");
+          alert("Ваше имя изменено");
+        },
+      );
+    }
+  };
+
+  // Инпуты логина и пароля
+  const refName = useRef<HTMLInputElement | null>(null);
+  const refPass = useRef<HTMLInputElement | null>(null);
+
+  // ОБработчик ввода
+  const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEntry({
+      ...entry,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // задай интервал на изменение entry.loadings 3 секунды
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (entry.loadings) {
+        setEntry({ ...entry, loadings: false });
+      }
+    }, 2000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [entry.loadings]);
+
+  // Обработчик изменения пароля
+  const handlePassChange = () => {
+    setactivInputPass(!activInpuPass);
+    if (!activInpuPass && userinfo.currentUser && entry.pass) {
+      updatePassword(userinfo.currentUser, entry.pass).then(() => {
+        setEntry({ ...entry, loadings: true });
+      });
+    }
   };
 
   return (
@@ -49,7 +118,6 @@ export const User = () => {
         <div className="flex flex-wrap gap-6">
           <div className="mx-auto flex items-center justify-center">
             <img
-              //   src="Mask group.svg"
               src={auth.currentUser?.photoURL ?? "Mask group.svg"}
               className="h-auto max-w-full justify-center rounded-[20px]"
               alt="Profile"
@@ -57,36 +125,77 @@ export const User = () => {
               height={205}
             />
           </div>
-          <div className="flex flex-1 flex-col justify-center gap-6">
-            <p className="text-3xl font-bold">{userinfo.displayName}</p>
-            <div>
+          <div className="flex flex-1 flex-col justify-center gap-[12px]">
+            <div className="relative flex items-center gap-[12px]">
+              <input
+                ref={refName}
+                name="name"
+                onChange={inputChange}
+                className={
+                  activInputName
+                    ? "w-[240px] border-none pb-3 pl-0 text-3xl font-bold placeholder-black"
+                    : "w-[240px] pb-3 text-3xl font-bold"
+                }
+                type="text"
+                placeholder={auth.currentUser?.displayName ?? "Гость"}
+                readOnly={activInputName}
+              />
+              {activInputName && (
+                <button
+                  className="left-[100px] top-[18px]"
+                  onClick={handleNameChange}
+                >
+                  ✏️
+                </button>
+              )}
+              {!activInputName && (
+                <button
+                  className="left-[270px] text-[24px]"
+                  onClick={handleNameChange}
+                >
+                  ✅
+                </button>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-[18px]">
               <span className="font-small text-[18px]">
                 Логин: {userinfo.email}
               </span>
               <div className="font-small flex items-center text-[18px]">
                 <p>Пароль:</p>
                 <input
-                  className="border-none"
+                  ref={refPass}
+                  name="pass"
+                  onChange={inputChange}
+                  className={
+                    activInpuPass
+                      ? "box-border h-[36px] w-[170px] border-none placeholder-black"
+                      : "ml-[6px] box-border h-[36px] w-[170px]"
+                  }
                   type="password"
-                  placeholder="😊😊😊😊"
-                  readOnly
+                  placeholder="••••••••"
+                  readOnly={activInpuPass}
                 />
+                {entry.loadings && (
+                  <p className="ml-[12px] animate-pulse font-bold text-btnPrimaryHover">
+                    Готово 👌
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="flex max-w-full flex-col items-center gap-2 md:flex-row">
               <button
-                className={`h-[52px] min-w-60 max-w-60 flex-1 rounded-full bg-btnPrimaryRegular px-4 py-2 text-xl hover:bg-btnPrimaryHover active:bg-btnPrimaryActive ${
-                  isButtonPressed ? "text-white" : "text-black"
-                }`}
-                onMouseDown={() => setIsButtonPressed(true)}
-                onMouseUp={() => setIsButtonPressed(false)}
+                onClick={handlePassChange}
+                className="buttonPrimary w-[192px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
               >
-                Изменить пароль
+                {activInpuPass ? "Изменить пароль" : "Сохранить"}
               </button>
               <button
-              onClick={handleLogout}
-              className="h-[52px] min-w-60 max-w-60 flex-1 rounded-full border border-black px-4 py-2 text-xl hover:bg-btnSecondaryHover active:bg-btnSecondaryActive">
+                onClick={handleLogout}
+                className="buttonSecondary w-[192px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
+              >
                 Выйти
               </button>
             </div>
