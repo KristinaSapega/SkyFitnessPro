@@ -89,13 +89,24 @@ export const UserCabinet = () => {
     });
   };
 
+  // задай интервал на изменение entry.loadings 3 секунды
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (entry.loadings) {
+        setEntry({ ...entry, loadings: false });
+      }
+    }, 2000);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [entry.loadings]);
+
   // Обработчик изменения пароля
   const handlePassChange = () => {
     setactivInputPass(!activInpuPass);
     if (!activInpuPass && userinfo.currentUser && entry.pass) {
       updatePassword(userinfo.currentUser, entry.pass).then(() => {
-        navigate("/user");
-        alert("Ваш пароль изменен");
+        setEntry({ ...entry, loadings: true });
       });
     }
   };
@@ -166,6 +177,11 @@ export const UserCabinet = () => {
                   placeholder="••••••••"
                   readOnly={activInpuPass}
                 />
+                {entry.loadings && (
+                  <p className="ml-[12px] animate-pulse font-bold text-btnPrimaryHover">
+                    Готово 👌
+                  </p>
+                )}
               </div>
             </div>
 
