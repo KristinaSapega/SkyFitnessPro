@@ -1,92 +1,108 @@
-
 import Header from "./Header";
 import { useParams } from "react-router-dom";
 import { HeroImage } from "./HeroImages";
 import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 import Login from "./Login";
+import { onValue, ref } from "firebase/database";
+import { database } from "../firebase";
+import { useEffect, useState } from "react";
+
+
+type TrainingItem = {
+  _id: string | undefined;
+  urlImg: string;
+  trainType: string;
+  nameRU: string;
+  calendar: string;
+  time: string;
+  level: string;
+  workouts: [];
+  fitting: string[];
+  directions: string[];
+};
+
+const ItemsComponent: React.FC<{ index: number; item: string }> = ({
+  index,
+  item,
+}) => {
+  return (
+    <>
+      <div
+        key={index}
+        className="corPageBlockGradient box-border flex h-[141px] w-[368px] items-center gap-x-[25px] rounded-[20px] p-[20px]"
+      >
+        <p className="text-[75px] font-medium text-btnPrimaryRegular">
+          {index + 1}
+        </p>
+        <p className="text-[20px] font-normal leading-[22.4px] text-white">
+          {item}
+        </p>
+      </div>
+    </>
+  );
+};
+const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
+  index,
+  item,
+}) => {
+  return (
+    <>
+      <div key={index}>
+        <div className="flex items-center gap-x-[8px]">
+          <img src="/star.svg" alt="logo" width={26} height={26} />
+          <p className="text-[24px] font-normal leading-[26.4px] text-black">
+            {item}
+          </p>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
   const { isRegistry, changeValue } = useModal();
+  const [items, setItems] = useState([]);
+
+  const train: TrainingItem = items.find(
+    (item: TrainingItem) => item._id === params?.nameEN,
+  );
+
+  const fittings: string[] = train ? train.fitting : [];
+  const directions: string[] = train ? train.directions : [];
+
+  useEffect(() => {
+    const dataRef = ref(database, "/courses");
+    onValue(dataRef, (snapshot) => {
+      const data = snapshot.val();
+      setItems(data);
+    });
+  }, [database]);
+
   return (
     <div className="flex flex-col items-center">
       <div className="relative w-[1440px] px-[140px]">
         <Header />
-
         <HeroImage param={params.nameEN} />
         <p className="mb-[40px] text-[44px] font-semibold text-black">
           Подойдет для вас, если:
         </p>
-        <div className="flex gap-x-[17px]">
-          <div className="corPageBlockGradient box-border flex h-[141px] w-[368px] items-center gap-x-[25px] rounded-[20px] p-[20px]">
-            <p className="text-btnPrimaryRegular text-[75px] font-medium">1</p>
-            <p className="text-[24px] font-normal leading-[26.4px] text-white">
-              Давно хотели попробовать йогу, но не решались начать
-            </p>
-          </div>
-          <div className="corPageBlockGradient box-border flex h-[141px] w-[431px] items-center gap-x-[25px] rounded-[20px] p-[20px]">
-            <p className="text-btnPrimaryRegular text-[75px] font-medium">2</p>
-            <p className="text-[24px] font-normal leading-[26.4px] text-white">
-              Хотите укрепить позвоночник, избавиться от болей в спине и
-              суставах
-            </p>
-          </div>
-          <div className="corPageBlockGradient box-border flex h-[141px] w-[327px] items-center gap-x-[25px] rounded-[20px] p-[20px]">
-            <p className="text-btnPrimaryRegular text-[75px] font-medium">3</p>
-            <p className="text-[24px] font-normal leading-[26.4px] text-white">
-              Ищете активность, полезную для тела и души
-            </p>
-          </div>
+        <div className="flex justify-between gap-x-[17px]">
+          {fittings.map((item, index) => (
+            <ItemsComponent item={item} index={index} key={index} />
+          ))}
         </div>
         <section>
           <div className="mt-[60px]">
             <p className="mb-[40px] text-[44px] font-semibold text-black">
               Направления
             </p>
-            <div className="bg-btnPrimaryRegular box-border flex h-[146px] w-[1160px] justify-around gap-x-[124px] rounded-[30px] p-[30px]">
-              <div className="flex flex-col gap-y-[34px]">
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Йога для новичков
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Классическая йога
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-y-[34px]">
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Йогатерапия
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Кундалини-йога
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-y-[34px]">
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Хатха-йога
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Аштанга-йога
-                  </p>
-                </div>
-              </div>
+            <div className="box-border grid h-[146px] w-[1160px] grid-cols-3 content-center items-center gap-[34px] rounded-[30px] bg-btnPrimaryRegular pl-[30px]">
+              {directions.map((item, index) => (
+                <ItemsComponentItem item={item} index={index} key={index} />
+              ))}
+              {/* <div className="gap-[34px]"></div> */}
             </div>
           </div>
           <div className="mb-[60px] mt-[102px]">
@@ -113,7 +129,7 @@ export const CoursePagesComp = () => {
                   </li>
                 </ul>
                 <button
-                  className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive w-[437px]"
+                  className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
                   onClick={changeValue}
                 >
                   Войдите, чтобы добавить курс
