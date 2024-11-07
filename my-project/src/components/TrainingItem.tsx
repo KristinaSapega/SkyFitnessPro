@@ -18,7 +18,7 @@ type Component = {
     workouts: [];
   };
 };
-let user = null; //user - берем из состояния
+
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const currentTrain = Object.values(train)[0];
@@ -33,6 +33,15 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const handleClick = () => {
     navigate(`/course/${currentTrain._id}`);
   };
+
+  function dayTitle(number: number) {
+    let lastNum;
+    if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
+    lastNum = number % 10;
+    if (lastNum == 1) return "день";
+    if ([2, 3, 4].includes(lastNum)) return "дня";
+    if ([5, 6, 7, 8, 9, 0].includes(lastNum)) return "дней";
+  }
 
   return (
     <li className="relative h-[510px] w-[360px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">
@@ -51,7 +60,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           </h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
-              currentTrain.workouts.length + " Дней",
+              `${currentTrain.workouts.length} ${dayTitle(currentTrain.workouts.length)}`,
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (
