@@ -19,6 +19,7 @@ export type Component = {
   directions: string[];
 };
 
+
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
@@ -32,6 +33,15 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const handleClick = () => {
     navigate(`/course/${train._id}`);
   };
+
+  function dayTitle(number: number) {
+    let lastNum;
+    if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
+    lastNum = number % 10;
+    if (lastNum == 1) return "день";
+    if ([2, 3, 4].includes(lastNum)) return "дня";
+    if ([5, 6, 7, 8, 9, 0].includes(lastNum)) return "дней";
+  }
 
   return (
     <li className="relative h-[510px] w-[360px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">
