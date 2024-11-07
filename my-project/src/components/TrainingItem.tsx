@@ -6,22 +6,21 @@ import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 import Login from "./Login";
 
-type Component = {
-  train: {
-    _id: string;
-    urlImg: string;
-    trainType: string;
-    nameRU: string;
-    calendar: string;
-    time: string;
-    level: string;
-    workouts: [];
-  };
+export type Component = {
+  _id: string | undefined;
+  urlImg: string;
+  trainType: string;
+  nameRU: string;
+  calendar: string;
+  time: string;
+  level: string;
+  workouts: [];
+  fitting: string[];
+  directions: string[];
 };
-let user = null; //user - берем из состояния
+
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
-  const currentTrain = Object.values(train)[0];
   const navigate = useNavigate();
   const { changeValue, isRegistry } = useModal();
 
@@ -31,7 +30,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   };
 
   const handleClick = () => {
-    navigate(`/course/${currentTrain._id}`);
+    navigate(`/course/${train._id}`);
   };
 
   return (
@@ -43,15 +42,13 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
         <img src="add-in-Circle.svg" alt="plus" />
       </button>
       <div onClick={handleClick}>
-        <MainCardsImage param={currentTrain._id} />
+        <MainCardsImage param={train._id} />
 
         <div className="px-[30px] py-[24px]">
-          <h3 className="mb-[20px] text-3xl font-medium">
-            {currentTrain.nameRU}
-          </h3>
+          <h3 className="mb-[20px] text-3xl font-medium">{train.nameRU}</h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
-              currentTrain.workouts.length + " Дней",
+              train.workouts.length + " Дней",
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (
