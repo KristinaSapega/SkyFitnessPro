@@ -19,7 +19,6 @@ export type Component = {
   directions: string[];
 };
 
-
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
@@ -58,11 +57,12 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           <h3 className="mb-[20px] text-3xl font-medium">{train.nameRU}</h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
-              train.workouts.length + " Дней",
+              `${train.workouts.length} ${dayTitle(train.workouts.length)}`,
+              +" Дней",
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (
-              <Tags tag={tag} index={index} key={index} />
+              <Tags tag={String(tag)} index={index} key={index} />
             ))}
           </ul>
         </div>
