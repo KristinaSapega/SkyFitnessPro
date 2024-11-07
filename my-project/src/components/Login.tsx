@@ -11,7 +11,6 @@ type EntryType = {
   rePass: string;
   matchPasswords: boolean;
   isEmptyField: boolean;
-  err: boolean;
 };
 
 const Form = () => {
@@ -21,15 +20,15 @@ const Form = () => {
 
   const { changeModal, changeValue } = useModal();
 
+  const [error, setError] = useState<string | null>(null);
   const [entry, setEntry] = useState<EntryType>({
     email: "",
     pass: "",
     rePass: "",
     matchPasswords: true,
     isEmptyField: false,
-    err: false,
   });
-  const { email, pass, matchPasswords, isEmptyField, err } = entry;
+  const { email, pass, matchPasswords, isEmptyField } = entry;
 
   const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEntry({
@@ -51,15 +50,18 @@ const Form = () => {
     }
   };
 
-  // авторизация Firebase
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, entry.email, entry.pass)
       .then(() => {
         changeValue();
       })
-      .catch((data) => {
-        if (data) {
-          setEntry({ ...entry, err: true });
+      .catch((err) => {
+        if (err) {
+          if ("code" in err) {
+            if (err.message === "auth/invalid-credential") {
+              setError(err.message.replace("Firebase:", ""));
+            }
+          }
         }
       });
   };
@@ -97,14 +99,21 @@ const Form = () => {
           required
         />
       </div>
-      <div className="h-[34px]">
+      <div className="h-fit min-h-[34px] text-center">
         {isEmptyField && (
           <h3 className="err animate-err">Заполните все поля!</h3>
         )}
         {!matchPasswords && (
           <h3 className="err animate-err">Пароли не совпадают</h3>
         )}
-        {err && <h3 className="err animate-err">Не верный логин или пароль</h3>}
+        {error && (
+          <h3 className="err inline-block animate-err align-middle text-[14px] leading-[15px] before:h-full before:content-['']">
+            {error}
+            {error.includes("auth/invalid-credential") && (
+              <span>Восстановить пароль?</span>
+            )}
+          </h3>
+        )}
       </div>
       <div className="m-0 flex flex-col gap-[10px] p-0">
         <button
