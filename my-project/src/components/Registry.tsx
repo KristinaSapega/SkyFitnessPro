@@ -29,7 +29,7 @@ const Form = () => {
     isEmptyField: false,
   });
   const [error, setError] = useState<string | null>(null);
-  const { email, pass, rePass, matchPasswords, isEmptyField } = entry;
+  const { email, pass, rePass, isEmptyField } = entry;
 
   const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEntry({

@@ -1,4 +1,9 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  updatePassword,
+} from "firebase/auth";
 
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -13,7 +18,147 @@ type EntryType = {
   isEmptyField: boolean;
 };
 
-const Form = () => {
+const RestorePassword = ({ email }: Pick<EntryType, "email">) => {
+  const [isClicked, setIsClicked] = useState(false);
+  return (
+    <>
+      {!isClicked ? (
+        <div
+          className="mt-12 text-center text-[18px]"
+          onClick={() => setIsClicked(true)}
+        >
+          Ссылка для восстановления пароля отправлена на &nbsp;
+          {email}
+        </div>
+      ) : (
+        <NewPassword email={email} />
+      )}
+    </>
+  );
+};
+
+// Если понадобиться менять пароль через диалоговое окно. Сейчас он меняется через сайт
+
+const NewPassword = ({ email }: Pick<EntryType, "email">) => {
+  const refPass = useRef<HTMLInputElement | null>(null);
+  const refRePass = useRef<HTMLInputElement | null>(null);
+  const refBtn = useRef<HTMLButtonElement | null>(null);
+
+  const { changeValue } = useModal();
+  type NewPassType = Omit<EntryType, "email">;
+  const [entry, setEntry] = useState<NewPassType>({
+    pass: "",
+    rePass: "",
+    matchPasswords: true,
+    isEmptyField: false,
+  });
+  const [error, setError] = useState<string | null>(null);
+  const { pass, rePass, isEmptyField } = entry;
+
+  const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEntry({
+      ...entry,
+      [e.target.name]: e.target.value,
+      matchPasswords: true,
+      isEmptyField: false,
+    });
+    setError("");
+  };
+
+  const regUser = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!pass || !rePass) {
+      setEntry({ ...entry, isEmptyField: true });
+      !pass && refPass.current?.classList.add("border-red-600");
+      !rePass && refRePass.current?.classList.add("border-red-600");
+      refBtn.current?.setAttribute("disabled", "");
+      return;
+    }
+
+    try {
+      debugger;
+      if (pass === rePass) {
+        if (auth.currentUser) await updatePassword(auth.currentUser, pass);
+        changeValue();
+      } else {
+        setEntry({ ...entry, matchPasswords: false });
+        refPass.current?.classList.add("border-red-600");
+        refRePass.current?.classList.add("border-red-600");
+        refBtn.current?.setAttribute("disabled", "");
+        throw new Error("Пароли не совпадают");
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message.replace("Firebase:", ""));
+      }
+    }
+  };
+
+  return (
+    <form onSubmit={regUser}>
+      <div className="mt-12 flex flex-col gap-[10px]">
+        <input
+          ref={refPass}
+          className="focus:invalid:border-red-600"
+          type="password"
+          name="pass"
+          onChange={inputChange}
+          onFocus={() => {
+            setEntry({ ...entry, isEmptyField: false, matchPasswords: true });
+            refPass.current?.classList.remove("border-red-600");
+            refBtn.current?.removeAttribute("disabled");
+            setError("");
+          }}
+          placeholder="Пароль"
+        />
+        <input
+          ref={refRePass}
+          className=""
+          type="password"
+          name="rePass"
+          onChange={inputChange}
+          onFocus={() => {
+            setEntry({ ...entry, isEmptyField: false, matchPasswords: true });
+            refRePass.current?.classList.remove("border-red-600");
+            refBtn.current?.removeAttribute("disabled");
+            setError("");
+          }}
+          placeholder="Повторите пароль"
+        />
+      </div>
+      <div className="h-fit min-h-[34px] text-center">
+        {isEmptyField && (
+          <h3 className="err block animate-err align-middle text-[14px]">
+            Заполните все поля!
+          </h3>
+        )}
+        {error && (
+          <h3 className="err inline-block animate-err align-middle text-[14px] leading-[15px] before:h-full before:content-['']">
+            {error}
+          </h3>
+        )}
+      </div>
+      <div className="m-0 flex flex-col gap-[10px] p-0">
+        <button
+          ref={refBtn}
+          name="reg"
+          className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
+          type="submit"
+        >
+          Подтвердить
+        </button>
+      </div>
+    </form>
+  );
+};
+
+type ReqPassword = {
+  isRestore: boolean;
+  setEmail: (email: string) => void;
+  setIsRestore: (restore: boolean) => void;
+};
+
+const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
   const refLogin = useRef<HTMLInputElement | null>(null);
   const refPass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
@@ -21,6 +166,7 @@ const Form = () => {
   const { changeModal, changeValue } = useModal();
 
   const [error, setError] = useState<string | null>(null);
+  const [reqChangePass, setReqChangePass] = useState<string | null>(null);
   const [entry, setEntry] = useState<EntryType>({
     email: "",
     pass: "",
@@ -50,6 +196,12 @@ const Form = () => {
     }
   };
 
+  const restorePassword = () => {
+    sendPasswordResetEmail(auth, email);
+    setEmail(email);
+    setIsRestore(true);
+  };
+
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, entry.email, entry.pass)
       .then(() => {
@@ -58,14 +210,17 @@ const Form = () => {
       .catch((err) => {
         if (err) {
           if ("code" in err) {
-            if (err.message === "auth/invalid-credential") {
+            if (err.code === "auth/invalid-credential") {
+              setError("Пароль введен неверно, попробуйте еще раз. ");
+              setReqChangePass("Восстановить пароль?");
+            } else {
               setError(err.message.replace("Firebase:", ""));
             }
           }
         }
       });
   };
-
+  if (isRestore) return null;
   return (
     <form onSubmit={loginUser} noValidate>
       <div className="mt-12 flex flex-col gap-[10px]">
@@ -75,7 +230,6 @@ const Form = () => {
           type="email"
           name="email"
           onChange={inputChange}
-          onClick={() => console.log(refLogin)}
           onFocus={() => {
             setEntry({ ...entry, isEmptyField: false });
             refLogin.current?.classList.remove("border-red-600");
@@ -109,8 +263,13 @@ const Form = () => {
         {error && (
           <h3 className="err inline-block animate-err align-middle text-[14px] leading-[15px] before:h-full before:content-['']">
             {error}
-            {error.includes("auth/invalid-credential") && (
-              <span>Восстановить пароль?</span>
+            {reqChangePass && (
+              <span
+                className="underLineText cursor-pointer"
+                onClick={restorePassword}
+              >
+                {reqChangePass}
+              </span>
             )}
           </h3>
         )}
@@ -141,20 +300,39 @@ const Login = () => {
   const { isOpen, changeValue } = useModal();
   if (!isOpen) return null;
 
+  const [email, setEmail] = useState<string>("");
+
+  const handleEmail = (email: string) => {
+    setEmail(email);
+  };
+
+  const [isRestore, setIsRestore] = useState(false);
+
   return (
     <div
       className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
-      onClick={() => changeValue()}
+      onClick={() => {
+        changeValue();
+        setIsRestore(false);
+      }}
     >
       <div className="flex h-full w-full items-center justify-center bg-black/[.1]">
         <section
-          className="flex h-[425px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
+          className="flex h-fit min-h-[233px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
           onClick={(e) => e.stopPropagation()}
         >
           <Link to={"/"}>
             <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
           </Link>
-          <Form />
+          {isRestore ? (
+            <RestorePassword email={email} />
+          ) : (
+            <Form
+              isRestore={isRestore}
+              setIsRestore={setIsRestore}
+              setEmail={handleEmail}
+            />
+          )}
         </section>
       </div>
     </div>
