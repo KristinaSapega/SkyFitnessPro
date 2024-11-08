@@ -1,7 +1,64 @@
-"use client";
 import Header from "./Header";
 import { useParams, useNavigate } from "react-router-dom";
 import { HeroImage } from "./HeroImages";
+import { useModal } from "../hooks/useModal";
+import Registry from "./Registry";
+import Login from "./Login";
+import { onValue, ref } from "firebase/database";
+import { database } from "../firebase";
+import { useEffect, useState } from "react";
+
+
+type TrainingItem = {
+  _id: string | undefined;
+  urlImg: string;
+  trainType: string;
+  nameRU: string;
+  calendar: string;
+  time: string;
+  level: string;
+  workouts: [];
+  fitting: string[];
+  directions: string[];
+};
+
+const ItemsComponent: React.FC<{ index: number; item: string }> = ({
+  index,
+  item,
+}) => {
+  return (
+    <>
+      <div
+        key={index}
+        className="corPageBlockGradient box-border flex h-[141px] w-[368px] items-center gap-x-[25px] rounded-[20px] p-[20px]"
+      >
+        <p className="text-[75px] font-medium text-btnPrimaryRegular">
+          {index + 1}
+        </p>
+        <p className="text-[20px] font-normal leading-[22.4px] text-white">
+          {item}
+        </p>
+      </div>
+    </>
+  );
+};
+const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
+  index,
+  item,
+}) => {
+  return (
+    <>
+      <div key={index}>
+        <div className="flex items-center gap-x-[8px]">
+          <img src="/star.svg" alt="logo" width={26} height={26} />
+          <p className="text-[24px] font-normal leading-[26.4px] text-black">
+            {item}
+          </p>
+        </div>
+      </div>
+    </>
+  );
+};
 import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 import Login from "./Login";
@@ -11,6 +68,24 @@ import { ref, set, get, update } from "firebase/database";
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
+  const { isRegistry, changeValue } = useModal();
+  const [items, setItems] = useState([]);
+
+  const train: TrainingItem = items.find(
+    (item: TrainingItem) => item._id === params?.nameEN,
+  );
+
+  const fittings: string[] = train ? train.fitting : [];
+  const directions: string[] = train ? train.directions : [];
+
+  useEffect(() => {
+    const dataRef = ref(database, "/courses");
+    onValue(dataRef, (snapshot) => {
+      const data = snapshot.val();
+      setItems(data);
+    });
+  }, [database]);
+
   const { isRegistry, changeValue } = useModal();
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [userCourses, setUserCourses] = useState<string[]>([]);
@@ -41,7 +116,7 @@ export const CoursePagesComp = () => {
       const coursesRef = ref(database, "/courses");
       const coursesSnapshot = await get(coursesRef);
       const allCourses = coursesSnapshot.val();
-      
+
       if (!allCourses || !Array.isArray(allCourses)) {
         console.error("Courses data массив не правильного формата");
         return;
