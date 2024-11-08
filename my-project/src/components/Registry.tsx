@@ -4,6 +4,7 @@ import { useModal } from "../hooks/useModal";
 
 import { auth } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+
 type EntryType = {
   email: string;
   pass: string;
@@ -18,7 +19,7 @@ const Form = () => {
   const refRePass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
-  const { changeModal } = useModal();
+  const { changeModal, changeValue } = useModal();
 
   const [entry, setEntry] = useState<EntryType>({
     email: "",
@@ -54,7 +55,7 @@ const Form = () => {
     try {
       if (pass === rePass) {
         await createUserWithEmailAndPassword(auth, email, pass);
-        changeModal();
+        changeValue();
       } else {
         setEntry({ ...entry, matchPasswords: false });
         refPass.current?.classList.add("border-red-600");

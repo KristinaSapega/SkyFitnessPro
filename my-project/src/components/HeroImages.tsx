@@ -1,5 +1,3 @@
-"use client";
-
 type heroImageType = {
   param: string | undefined;
 };

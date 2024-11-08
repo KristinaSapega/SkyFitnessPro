@@ -13,9 +13,6 @@ const TrainingList = () => {
       setItems(data);
     });
   }, [database]);
-
-  console.log(items)
-
   return (
     <ul className="mt-[50px] flex flex-wrap gap-[40px]">
       {items.map((item, index) => (

@@ -93,7 +93,7 @@ console.log(data);
 const writeUserDataInBase = (uid: string) => {
 set(ref(database, "users/" + auth.currentUser?.uid),
 {
-\_id: auth.currentUser?.uid,
+_id: auth.currentUser?.uid,
 courses: [0],
 workouts: {
 0: 0,

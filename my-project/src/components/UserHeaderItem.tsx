@@ -4,24 +4,22 @@ import { HeaderUserPopUp } from "./HeaderPopUp";
 import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 import Login from "./Login";
-
-
+import { onAuthStateChanged } from "firebase/auth";
 
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
+  const { changeValue, isRegistry } = useModal();
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsAuth(true);
       } else {
         setIsAuth(false);
       }
     });
-  }, [auth]);
-
-  const { changeValue, isRegistry } = useModal();
+  }, []);
 
   const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -34,7 +32,7 @@ function UserHeaderItem() {
 
   return (
     <>
-      {isAuth === true ? (
+      {isAuth ? (
         <>
           <div className="z-40 flex items-start">
             <div
@@ -49,7 +47,8 @@ function UserHeaderItem() {
                 height={42}
               />
               <p className="ml-[16px] mr-[12px] select-none font-[roboto] text-[24px] font-normal">
-                {auth.currentUser?.displayName}
+                {auth.currentUser?.displayName ?? "Гость"}
+                
               </p>
               <img
                 src="/rectangle_3765.svg"
@@ -70,7 +69,7 @@ function UserHeaderItem() {
           </button>
         </>
       )}
-      {popupOpen === true && (
+      {popupOpen && (
         <div className="box absolute right-[0px] top-[70px] z-50">
           <HeaderUserPopUp setPopupOpen={setPopupOpen} />
         </div>
@@ -80,4 +79,4 @@ function UserHeaderItem() {
   );
 }
 
-export default React.memo(UserHeaderItem);
+export default UserHeaderItem;

@@ -137,7 +137,7 @@ const Login = () => {
       className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
       onClick={() => changeValue()}
     >
-      <div className="flex h-full w-full items-center justify-center bg-black/[.4]">
+      <div className="flex h-full w-full items-center justify-center bg-black/[.1]">
         <section
           className="flex h-[425px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
           onClick={(e) => e.stopPropagation()}
@@ -146,7 +146,6 @@ const Login = () => {
             <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
           </Link>
           <Form />
-          {/* <p onClick={handleLogin} className="pt-[9px] cursor-pointer text-cyan-500">Харкодный вход</p> */}
         </section>
       </div>
     </div>

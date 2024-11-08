@@ -14,24 +14,22 @@ export const CoursePagesComp = () => {
   const { isRegistry, changeValue } = useModal();
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [userCourses, setUserCourses] = useState<string[]>([]);
-
   const navigate = useNavigate();
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       setIsAuth(!!user);
+      if (user) fetchUserCourses(user.uid);
     });
   }, []);
 
   const fetchUserCourses = async (uid: string) => {
     try {
-      const userRef = ref(database, "users/" + uid);
+      const userRef = ref(database, `users/${uid}`);
       const snapshot = await get(userRef);
       if (snapshot.exists()) {
         const data = snapshot.val();
-        if (data.courses) {
-          setUserCourses(data.courses);
-        }
+        setUserCourses(data.courses || []);
       }
     } catch (error) {
       console.error("Ошибка при получении данных пользователя ", error);
@@ -40,41 +38,61 @@ export const CoursePagesComp = () => {
 
   const writeUserDataInBase = async (uid: string, courseID: string) => {
     try {
-      const userRef = ref(database, "users/" + uid);
+      const coursesRef = ref(database, "/courses");
+      const coursesSnapshot = await get(coursesRef);
+      const allCourses = coursesSnapshot.val();
+      
+      if (!allCourses || !Array.isArray(allCourses)) {
+        console.error("Courses data массив не правильного формата");
+        return;
+      }
+
+      const courseData = allCourses.find((course: any) => course._id === courseID);
+      if (!courseData) {
+        console.error("в Course data не найден course ID:", courseID);
+        return;
+      }
+
+      const courseWorkouts = courseData.workouts || [];
+      const userRef = ref(database, `users/${uid}`);
       const snapshot = await get(userRef);
 
       if (snapshot.exists()) {
-        const currentCourses = snapshot.val().courses || [];
+        const userData = snapshot.val();
+        const currentCourses = userData.courses || [];
+        const currentWorkouts = userData.workouts || [];
+
         if (!currentCourses.includes(courseID)) {
           await update(userRef, {
             courses: [...currentCourses, courseID],
+            workouts: [...new Set([...currentWorkouts, ...courseWorkouts])],
           });
+          setUserCourses([...currentCourses, courseID]);
         }
       } else {
-        const newData = {
+        const newUserData = {
           _id: uid,
           courses: [courseID],
-          workouts: {
-            0: 0,
-          },
+          workouts: courseWorkouts,
         };
-        await set(userRef, newData);
+        await set(userRef, newUserData);
+        setUserCourses([courseID]);
       }
-      fetchUserCourses(uid);
     } catch (error) {
-      console.error("Ошибка при записи данных пользователя: ", error);
+      console.error("Ошибка при добавлении данных к пользователю", error);
     }
   };
 
   const handleAddCourse = async () => {
     if (auth.currentUser && params.nameEN) {
       await writeUserDataInBase(auth.currentUser.uid, params.nameEN);
-      await fetchUserCourses(auth.currentUser.uid);
       navigate("/user");
     } else {
       console.error("Пользователь не авторизован или идентификатор курса отсутствует");
     }
   };
+
+  const isCourseAdded = userCourses.includes(params.nameEN || "");
 
   return (
     <div className="flex flex-col items-center">
@@ -179,15 +197,23 @@ export const CoursePagesComp = () => {
                   </li>
                 </ul>
                 {isAuth ? (
-                  <button
-                    className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive w-[437px]"
-                    onClick={handleAddCourse}
-                  >
-                    Добавить курс
-                  </button>
+                  isCourseAdded ? (
+                    <button
+                      className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive w-[437px]"
+                    >
+                      Перейти
+                    </button>
+                  ) : (
+                    <button
+                      className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive w-[437px]"
+                      onClick={handleAddCourse}
+                    >
+                      Добавить курс
+                    </button>
+                  )
                 ) : (
                   <button
-                    className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive w-[437px]"
+                    className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive w-[437px]"
                     onClick={changeValue}
                   >
                     Войдите, чтобы добавить курс

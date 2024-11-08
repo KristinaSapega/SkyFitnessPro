@@ -1,42 +1,47 @@
 import { useState, useEffect } from "react";
 import Header from "./Header";
-import { User } from "./User";
+import { UserCabinet } from "./User";
 import { auth, database } from "../firebase";
 import { ref, get } from "firebase/database";
+import { MainCardsImage } from "./MainCardsImage";
 
 export const Profile = () => {
-  const [activeButton, setActiveButton] = useState<number | null>(null);
+  const [activeButton, setActiveButton] = useState<string | null>(null);
   const [userCourses, setUserCourses] = useState<any[]>([]);
-  const [allCourses, setAllCourses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchUserCourses = async (uid: string) => {
       try {
-        const userRef = ref(database, "users/" + uid);
-        const snapshot = await get(userRef);
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          if (data.courses) {
-            setUserCourses(data.courses);
-          }
+        const userCoursesRef = ref(database, `users/${uid}/courses`);
+        const coursesSnapshot = await get(userCoursesRef);
+
+        if (coursesSnapshot.exists()) {
+          const courseIDs = coursesSnapshot.val();
+
+          const allCoursesRef = ref(database, "courses");
+          const allCoursesSnapshot = await get(allCoursesRef);
+          const allCoursesData = allCoursesSnapshot.exists() ? allCoursesSnapshot.val() : [];
+
+          const allCourses = Array.isArray(allCoursesData) ? allCoursesData : Object.values(allCoursesData);
+
+          const userCoursesData = allCourses
+            .filter((course: any) => courseIDs.includes(course._id))
+            .map((course: any) => ({
+              ...course,
+              calendar: "30 дней",
+              time: "20-50 мин/день",
+              level: "Сложность",
+              progress: 0,
+            }));
+
+          setUserCourses(userCoursesData);
         }
       } catch (error) {
-        console.error("Error fetching user courses: ", error);
+        console.error("Ошибка при получении данных пользователя", error);
       } finally {
         setIsLoading(false);
       }
-    };
-
-    const fetchAllCourses = async () => {
-      const coursesData = [
-        { _id: "6i67sm", urlImg: "stepAirobic.png", nameRU: "Степ-аэробика", calendar: "30 дней", time: "20-50 мин/день", level: "Сложность", progress: 40 },
-        { _id: "ab1c3f", urlImg: "yoga.png", nameRU: "Йога", calendar: "25 дней", time: "20-50 мин/день", level: "Сложность", progress: 0 },
-        { _id: "kfpq8e", urlImg: "stretching.png", nameRU: "Стретчинг", calendar: "25 дней", time: "20-50 мин/день", level: "Сложность", progress: 0 },
-        { _id: "q02a6i", urlImg: "bodyFlex.png", nameRU: "Бодифлекс", calendar: "30 дней", time: "20-50 мин/день", level: "Сложность", progress: 20 },
-        { _id: "ypox9r", urlImg: "danceFitness.png", nameRU: "Зумба", calendar: "25 дней", time: "20-50 мин/день", level: "Сложность", progress: 100 },
-      ];
-      setAllCourses(coursesData);
     };
 
     const initialize = async () => {
@@ -47,24 +52,18 @@ export const Profile = () => {
           setIsLoading(false);
         }
       });
-
-      await fetchAllCourses();
     };
 
     initialize();
   }, []);
 
-  const handleMouseDown = (id: number) => {
+  const handleMouseDown = (id: string) => {
     setActiveButton(id);
   };
 
   const handleMouseUp = () => {
     setActiveButton(null);
   };
-
-  const filteredCourses = allCourses.filter((course) =>
-    userCourses.includes(course._id)
-  );
 
   if (isLoading) {
     return "";
@@ -75,13 +74,13 @@ export const Profile = () => {
       <div className="w-[1160px]">
         <Header />
         <div className="mt-14">
-          <User />
+          <UserCabinet />
           <h1 className="my-8 text-lg font-bold md:text-xl lg:text-4xl">
             Мои курсы
           </h1>
           <div className="mt-12 flex justify-start gap-[40px]">
-            {filteredCourses.length > 0 ? (
-              filteredCourses.map((course) => (
+            {userCourses.length > 0 ? (
+              userCourses.map((course) => (
                 <div
                   key={course._id}
                   className="relative h-[649px] w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
@@ -97,13 +96,8 @@ export const Profile = () => {
                       height={32}
                     />
                   </button>
-                  <div className="h-[325px] overflow-hidden rounded-[30px]">
-                    <img
-                      className="w-full object-cover"
-                      src={course.urlImg}
-                      alt={course.nameRU}
-                    />
-                  </div>
+                  <MainCardsImage param={course._id} />
+
                   <div className="px-[30px] py-[24px]">
                     <h3 className="mb-[20px] text-3xl font-medium">
                       {course.nameRU}
