@@ -18,28 +18,28 @@
     @apply h-[52px] rounded-[8px] border-[1px] border-solid border-[#D0CECE] p-4 focus:outline-none;
   }
   .buttonPrimary {
-    @apply bg-btnPrimaryRegular h-[52px] rounded-[46px];
+    @apply h-[52px] rounded-[46px] bg-btnPrimaryRegular;
   }
   .buttonPrimary:hover {
-    @apply bg-btnPrimaryHover h-[52px] rounded-[46px];
+    @apply h-[52px] rounded-[46px] bg-btnPrimaryHover;
   }
   .buttonPrimary:active {
-    @apply bg-btnPrimaryActive h-[52px] rounded-[46px] text-white;
+    @apply h-[52px] rounded-[46px] bg-btnPrimaryActive text-white;
   }
   .buttonPrimary:invalid {
-    @apply bg-btnPrimaryInactive h-[52px] rounded-[46px] text-[#999];
+    @apply h-[52px] rounded-[46px] bg-btnPrimaryInactive text-[#999];
   }
   .buttonSecondary {
-    @apply bg-btnSecondaryRegular h-[52px] rounded-[46px];
+    @apply h-[52px] rounded-[46px] bg-btnSecondaryRegular;
   }
   .buttonSecondary:hover {
-    @apply bg-btnSecondaryHover h-[52px] rounded-[46px];
+    @apply h-[52px] rounded-[46px] bg-btnSecondaryHover;
   }
   .buttonSecondary:active {
-    @apply bg-btnSecondaryActive h-[52px] rounded-[46px];
+    @apply h-[52px] rounded-[46px] bg-btnSecondaryActive;
   }
   .buttonSecondary:invalid {
-    @apply bg-btnSecondaryInactive h-[52px] rounded-[46px] text-[#999];
+    @apply h-[52px] rounded-[46px] bg-btnSecondaryInactive text-[#999];
   }
   .err {
     @apply text-center leading-[34px] text-red-600;
@@ -52,5 +52,12 @@
   }
   .shadowBlack013 {
     @apply shadow-[0_4px_67px_-12px_rgba(0,0,0,0.13)];
+  }
+}
+
+@layer utilities {
+  .underLineText {
+    text-decoration-skip-ink: none;
+    text-decoration: underline;
   }
 }

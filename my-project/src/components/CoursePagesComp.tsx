@@ -1,13 +1,11 @@
 import Header from "./Header";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { HeroImage } from "./HeroImages";
-import { useModal } from "../hooks/useModal";
-import Registry from "./Registry";
 import Login from "./Login";
-import { onValue, ref } from "firebase/database";
-import { database } from "../firebase";
+import { auth, database } from "../firebase";
 import { useEffect, useState } from "react";
-
+import { ref, set, get, update, onValue } from "firebase/database";
+import { useModal } from "../hooks/useModal";
 
 type TrainingItem = {
   _id: string | undefined;
@@ -62,15 +60,38 @@ const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
-  const { isRegistry, changeValue } = useModal();
-  const [items, setItems] = useState([]);
+  const { kindOfModal, changeOpenValue } = useModal();
+  const [userCourses, setUserCourses] = useState<string[]>([]);
+  const [items, setItems] = useState<TrainingItem[]>([]);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const train: TrainingItem = items.find(
+  const train = items.find(
     (item: TrainingItem) => item._id === params?.nameEN,
-  );
+  ) as TrainingItem | undefined;
 
   const fittings: string[] = train ? train.fitting : [];
   const directions: string[] = train ? train.directions : [];
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      setIsAuth(!!user);
+      if (user) fetchUserCourses(user.uid);
+    });
+  }, []);
+
+  const fetchUserCourses = async (uid: string) => {
+    try {
+      const userRef = ref(database, `users/${uid}`);
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        setUserCourses(data.courses || []);
+      }
+    } catch (error) {
+      console.error("Ошибка при получении данных пользователя ", error);
+    }
+  };
 
   useEffect(() => {
     const dataRef = ref(database, "/courses");
@@ -79,6 +100,82 @@ export const CoursePagesComp = () => {
       setItems(data);
     });
   }, [database]);
+
+  const writeUserDataInBase = async (uid: string, courseID: string) => {
+    try {
+      const coursesRef = ref(database, "/courses");
+      const coursesSnapshot = await get(coursesRef);
+      const allCourses = coursesSnapshot.val();
+
+      if (!allCourses || !Array.isArray(allCourses)) {
+        console.error("Courses data массив не правильного формата");
+        return;
+      }
+
+      const courseData = allCourses.find(
+        (course: any) => course._id === courseID,
+      );
+      if (!courseData) {
+        console.error("в Course data не найден course ID:", courseID);
+        return;
+      }
+
+      const courseWorkouts = courseData.workouts || [];
+      const userRef = ref(database, `users/${uid}`);
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        const currentCourses = userData.courses || [];
+        const currentWorkouts = userData.workouts || [];
+
+        if (!currentCourses.includes(courseID)) {
+          await update(userRef, {
+            courses: [...currentCourses, courseID],
+            workouts: {
+              ...currentWorkouts,
+              ...Object.fromEntries(
+                courseWorkouts.map((workout: string) => [workout, 0]),
+              ),
+            },
+          });
+          setUserCourses([...currentCourses, courseID]);
+        }
+      } else {
+        const formattedWorkouts = Object.fromEntries(
+          courseWorkouts.map((workout: string) => [workout, 0]),
+        );
+
+        const newUserData = {
+          _id: uid,
+          courses: [courseID],
+          workouts: formattedWorkouts,
+        };
+        await set(userRef, newUserData);
+        setUserCourses([courseID]);
+      }
+    } catch (error) {
+      console.error("Ошибка при добавлении данных к пользователю", error);
+    }
+  };
+
+  const handleAddCourse = async () => {
+    if (auth.currentUser && params.nameEN) {
+      await writeUserDataInBase(auth.currentUser.uid, params.nameEN);
+      navigate("/user");
+    } else {
+      console.error(
+        "Пользователь не авторизован или идентификатор курса отсутствует",
+      );
+    }
+  };
+
+  const isCourseAdded = userCourses.includes(params.nameEN || "");
+
+  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    changeOpenValue();
+  };
 
   return (
     <div className="flex flex-col items-center">
@@ -102,7 +199,6 @@ export const CoursePagesComp = () => {
               {directions.map((item, index) => (
                 <ItemsComponentItem item={item} index={index} key={index} />
               ))}
-              {/* <div className="gap-[34px]"></div> */}
             </div>
           </div>
           <div className="mb-[60px] mt-[102px]">
@@ -128,12 +224,27 @@ export const CoursePagesComp = () => {
                     помогают противостоять стрессам
                   </li>
                 </ul>
-                <button
-                  className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
-                  onClick={changeValue}
-                >
-                  Войдите, чтобы добавить курс
-                </button>
+                {isAuth ? (
+                  isCourseAdded ? (
+                    <button className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive">
+                      Перейти
+                    </button>
+                  ) : (
+                    <button
+                      className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+                      onClick={handleAddCourse}
+                    >
+                      Добавить курс
+                    </button>
+                  )
+                ) : (
+                  <button
+                    className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+                    onClick={openModal}
+                  >
+                    Войдите, чтобы добавить курс
+                  </button>
+                )}
               </div>
               <img
                 className="absolute bottom-5 right-10"
@@ -145,7 +256,7 @@ export const CoursePagesComp = () => {
             </div>
           </div>
         </section>
-        {isRegistry ? <Registry /> : <Login />}
+        {kindOfModal === "login" && <Login />}
       </div>
     </div>
   );

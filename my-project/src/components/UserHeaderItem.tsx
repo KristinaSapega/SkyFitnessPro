@@ -2,14 +2,14 @@ import { auth } from "../firebase";
 import React, { useEffect, useState } from "react";
 import { HeaderUserPopUp } from "./HeaderPopUp";
 import { useModal } from "../hooks/useModal";
-import Registry from "./Registry";
 import Login from "./Login";
 import { onAuthStateChanged } from "firebase/auth";
+import Registry from "./Registry";
 
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { changeValue, isRegistry } = useModal();
+  const { changeOpenValue, kindOfModal } = useModal();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -23,7 +23,7 @@ function UserHeaderItem() {
 
   const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    changeValue();
+    changeOpenValue();
   };
 
   const togglePopup = () => {
@@ -73,7 +73,8 @@ function UserHeaderItem() {
           <HeaderUserPopUp setPopupOpen={setPopupOpen} />
         </div>
       )}
-      {isRegistry ? <Registry /> : <Login />}
+      {kindOfModal === "login" && <Login />}
+      {kindOfModal === "registry" && <Registry />}
     </>
   );
 }

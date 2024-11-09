@@ -3,8 +3,8 @@ import Tags from "./Tags";
 import { useNavigate } from "react-router-dom";
 
 import { useModal } from "../hooks/useModal";
-import Registry from "./Registry";
 import Login from "./Login";
+import Registry from "./Registry";
 
 export type Component = {
   _id: string | undefined;
@@ -22,11 +22,11 @@ export type Component = {
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
-  const { changeValue, isRegistry } = useModal();
+  const { changeOpenValue, kindOfModal } = useModal();
 
   const handleClickAddTrain = () => {
     alert("Пользователь не авторизован");
-    changeValue();
+    changeOpenValue();
   };
 
   const handleClick = () => {
@@ -67,7 +67,8 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           </ul>
         </div>
       </div>
-      {isRegistry ? <Registry /> : <Login />}
+      {kindOfModal === "login" && <Login />}
+      {kindOfModal === "registry" && <Registry />}
     </li>
   );
 };
