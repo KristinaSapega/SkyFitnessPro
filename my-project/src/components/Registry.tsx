@@ -19,7 +19,7 @@ const Form = () => {
   const refRePass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
-  const { changeModal, changeValue } = useModal();
+  const { changeModal, changeOpenValue } = useModal();
 
   const [entry, setEntry] = useState<EntryType>({
     email: "",
@@ -52,10 +52,26 @@ const Form = () => {
       return;
     }
 
+    if (isEmptyField) return;
+
     try {
       if (pass === rePass) {
-        await createUserWithEmailAndPassword(auth, email, pass);
-        changeValue();
+        await createUserWithEmailAndPassword(auth, email, pass)
+          .then(() => changeOpenValue())
+          .catch((err) => {
+            if ("code" in err) {
+              if (err.code.includes("already")) {
+                setError("Данная почта уже используется. Попробуйте войти.");
+              } else if (err.code.includes("weak-password")) {
+                setError("Пароль должен содержать не менее 6 символов");
+              } else if (err.code.includes("invalid-email")) {
+                setError("Введите корректный email");
+                refLogin.current?.classList.add("border-red-600");
+              } else {
+                setError(err.message.replace("Firebase:", ""));
+              }
+            }
+          });
       } else {
         setEntry({ ...entry, matchPasswords: false });
         refPass.current?.classList.add("border-red-600");
@@ -65,12 +81,16 @@ const Form = () => {
       }
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message.includes("already")) {
-          setError("Данная почта уже используется. Попробуйте войти.");
-        } else {
-          setError(err.message.replace("Firebase:", ""));
-        }
+        setError(err.message);
       }
+      //   if (err instanceof Error) {
+      //     if (err.message.includes("already")) {
+      //       setError("Данная почта уже используется. Попробуйте войти.");
+      //     } else {
+      //       setError(err.message.replace("Firebase:", ""));
+      //     }
+      //   }
+      // }
     }
   };
 
@@ -144,7 +164,7 @@ const Form = () => {
         <button
           name="reg"
           className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
-          onClick={() => changeModal()}
+          onClick={() => changeModal("login")}
         >
           Войти
         </button>
@@ -154,12 +174,12 @@ const Form = () => {
 };
 
 const Registry = () => {
-  const { isOpen, changeValue } = useModal();
+  const { isOpen, changeOpenValue } = useModal();
   if (!isOpen) return null;
   return (
     <div
       className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
-      onClick={() => changeValue()}
+      onClick={() => changeOpenValue()}
     >
       <div className="flex h-full w-full items-center justify-center bg-black/[.1]">
         <section

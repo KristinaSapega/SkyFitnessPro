@@ -1,28 +1,30 @@
 import { createContext, ReactNode, useState } from "react";
 
-export type UserType = {
+export type ModalType = {
   isOpen: boolean;
-  isRegistry: boolean;
-  changeValue: () => void;
-  changeModal: () => void;
+  kindOfModal: "login" | "registry" | "info";
+  changeOpenValue: () => void;
+  changeModal: (name: "login" | "registry" | "info") => void;
 };
 
-export const UserContext = createContext<UserType | undefined>(undefined);
+export const UserContext = createContext<ModalType | undefined>(undefined);
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isRegistry, setIsRegistry] = useState(false);
+  const [kindOfModal, setKindOfModal] = useState<"login" | "registry" | "info">(
+    "login",
+  );
 
-  const changeValue = () => {
+  const changeOpenValue = () => {
     setIsOpen(!isOpen);
   };
-  const changeModal = () => {
-    setIsRegistry(!isRegistry);
+  const changeModal = (name: "login" | "registry" | "info") => {
+    setKindOfModal(name);
   };
 
   return (
     <UserContext.Provider
-      value={{ isOpen, changeValue, isRegistry, changeModal }}
+      value={{ isOpen, changeOpenValue, kindOfModal, changeModal }}
     >
       {children}
     </UserContext.Provider>

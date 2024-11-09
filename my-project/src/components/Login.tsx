@@ -1,14 +1,13 @@
 import {
-  createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  updatePassword,
 } from "firebase/auth";
 
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useModal } from "../hooks/useModal";
 import { auth } from "../firebase";
+import Registry from "./Registry";
 
 type EntryType = {
   email: string;
@@ -19,151 +18,30 @@ type EntryType = {
 };
 
 const RestorePassword = ({ email }: Pick<EntryType, "email">) => {
-  const [isClicked, setIsClicked] = useState(false);
+  const { changeModal } = useModal();
   return (
     <>
-      {!isClicked ? (
-        <div
-          className="mt-12 text-center text-[18px]"
-          onClick={() => setIsClicked(true)}
-        >
-          Ссылка для восстановления пароля отправлена на &nbsp;
-          {email}
-        </div>
-      ) : (
-        <NewPassword email={email} />
-      )}
+      <div
+        className="mt-12 text-center text-[18px]"
+        onClick={() => changeModal("login")}
+      >
+        Ссылка для восстановления пароля отправлена на &nbsp;
+        {email}
+      </div>
     </>
   );
 };
 
-// Если понадобиться менять пароль через диалоговое окно. Сейчас он меняется через сайт
-
-const NewPassword = ({ email }: Pick<EntryType, "email">) => {
-  const refPass = useRef<HTMLInputElement | null>(null);
-  const refRePass = useRef<HTMLInputElement | null>(null);
-  const refBtn = useRef<HTMLButtonElement | null>(null);
-
-  const { changeValue } = useModal();
-  type NewPassType = Omit<EntryType, "email">;
-  const [entry, setEntry] = useState<NewPassType>({
-    pass: "",
-    rePass: "",
-    matchPasswords: true,
-    isEmptyField: false,
-  });
-  const [error, setError] = useState<string | null>(null);
-  const { pass, rePass, isEmptyField } = entry;
-
-  const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEntry({
-      ...entry,
-      [e.target.name]: e.target.value,
-      matchPasswords: true,
-      isEmptyField: false,
-    });
-    setError("");
-  };
-
-  const regUser = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!pass || !rePass) {
-      setEntry({ ...entry, isEmptyField: true });
-      !pass && refPass.current?.classList.add("border-red-600");
-      !rePass && refRePass.current?.classList.add("border-red-600");
-      refBtn.current?.setAttribute("disabled", "");
-      return;
-    }
-
-    try {
-      debugger;
-      if (pass === rePass) {
-        if (auth.currentUser) await updatePassword(auth.currentUser, pass);
-        changeValue();
-      } else {
-        setEntry({ ...entry, matchPasswords: false });
-        refPass.current?.classList.add("border-red-600");
-        refRePass.current?.classList.add("border-red-600");
-        refBtn.current?.setAttribute("disabled", "");
-        throw new Error("Пароли не совпадают");
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message.replace("Firebase:", ""));
-      }
-    }
-  };
-
-  return (
-    <form onSubmit={regUser}>
-      <div className="mt-12 flex flex-col gap-[10px]">
-        <input
-          ref={refPass}
-          className="focus:invalid:border-red-600"
-          type="password"
-          name="pass"
-          onChange={inputChange}
-          onFocus={() => {
-            setEntry({ ...entry, isEmptyField: false, matchPasswords: true });
-            refPass.current?.classList.remove("border-red-600");
-            refBtn.current?.removeAttribute("disabled");
-            setError("");
-          }}
-          placeholder="Пароль"
-        />
-        <input
-          ref={refRePass}
-          className=""
-          type="password"
-          name="rePass"
-          onChange={inputChange}
-          onFocus={() => {
-            setEntry({ ...entry, isEmptyField: false, matchPasswords: true });
-            refRePass.current?.classList.remove("border-red-600");
-            refBtn.current?.removeAttribute("disabled");
-            setError("");
-          }}
-          placeholder="Повторите пароль"
-        />
-      </div>
-      <div className="h-fit min-h-[34px] text-center">
-        {isEmptyField && (
-          <h3 className="err block animate-err align-middle text-[14px]">
-            Заполните все поля!
-          </h3>
-        )}
-        {error && (
-          <h3 className="err inline-block animate-err align-middle text-[14px] leading-[15px] before:h-full before:content-['']">
-            {error}
-          </h3>
-        )}
-      </div>
-      <div className="m-0 flex flex-col gap-[10px] p-0">
-        <button
-          ref={refBtn}
-          name="reg"
-          className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
-          type="submit"
-        >
-          Подтвердить
-        </button>
-      </div>
-    </form>
-  );
-};
-
 type ReqPassword = {
-  isRestore: boolean;
   setEmail: (email: string) => void;
-  setIsRestore: (restore: boolean) => void;
 };
 
-const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
+const Form = ({ setEmail }: ReqPassword) => {
   const refLogin = useRef<HTMLInputElement | null>(null);
   const refPass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
-  const { changeModal, changeValue } = useModal();
+  const { changeModal, changeOpenValue } = useModal();
 
   const [error, setError] = useState<string | null>(null);
   const [reqChangePass, setReqChangePass] = useState<string | null>(null);
@@ -187,6 +65,7 @@ const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
 
   const loginUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!email || !pass) {
       refBtn.current?.setAttribute("disabled", "");
       setEntry({ ...entry, isEmptyField: true });
@@ -194,18 +73,12 @@ const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
       !pass && refPass.current?.classList.add("border-red-600");
       return;
     }
-  };
 
-  const restorePassword = () => {
-    sendPasswordResetEmail(auth, email);
-    setEmail(email);
-    setIsRestore(true);
-  };
+    if (isEmptyField) return null;
 
-  const handleLogin = () => {
     signInWithEmailAndPassword(auth, entry.email, entry.pass)
       .then(() => {
-        changeValue();
+        changeOpenValue();
       })
       .catch((err) => {
         if (err) {
@@ -220,13 +93,18 @@ const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
         }
       });
   };
-  if (isRestore) return null;
+
+  const restorePassword = () => {
+    sendPasswordResetEmail(auth, email);
+    setEmail(email);
+    changeModal("info");
+  };
+
   return (
     <form onSubmit={loginUser} noValidate>
       <div className="mt-12 flex flex-col gap-[10px]">
         <input
           ref={refLogin}
-          className="focus:invalid:border-red-600"
           type="email"
           name="email"
           onChange={inputChange}
@@ -240,7 +118,6 @@ const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
         />
         <input
           ref={refPass}
-          className="focus:invalid:border-red-600"
           type="password"
           name="pass"
           onChange={inputChange}
@@ -276,7 +153,6 @@ const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
       </div>
       <div className="m-0 flex flex-col gap-[10px] p-0">
         <button
-          onClick={handleLogin}
           ref={refBtn}
           name="reg"
           className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
@@ -287,7 +163,9 @@ const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
         <button
           name="reg"
           className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
-          onClick={changeModal}
+          onClick={() => {
+            changeModal("registry");
+          }}
         >
           Зарегистрироваться
         </button>
@@ -297,7 +175,7 @@ const Form = ({ isRestore, setEmail, setIsRestore }: ReqPassword) => {
 };
 
 const Login = () => {
-  const { isOpen, changeValue } = useModal();
+  const { isOpen, changeOpenValue, kindOfModal } = useModal();
   if (!isOpen) return null;
 
   const [email, setEmail] = useState<string>("");
@@ -306,14 +184,11 @@ const Login = () => {
     setEmail(email);
   };
 
-  const [isRestore, setIsRestore] = useState(false);
-
   return (
     <div
       className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
       onClick={() => {
-        changeValue();
-        setIsRestore(false);
+        changeOpenValue();
       }}
     >
       <div className="flex h-full w-full items-center justify-center bg-black/[.1]">
@@ -324,14 +199,12 @@ const Login = () => {
           <Link to={"/"}>
             <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
           </Link>
-          {isRestore ? (
-            <RestorePassword email={email} />
+          {kindOfModal === "login" ? (
+            <Form setEmail={handleEmail} />
+          ) : kindOfModal === "registry" ? (
+            <Registry />
           ) : (
-            <Form
-              isRestore={isRestore}
-              setIsRestore={setIsRestore}
-              setEmail={handleEmail}
-            />
+            <RestorePassword email={email} />
           )}
         </section>
       </div>
