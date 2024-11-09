@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useModal } from "../hooks/useModal";
 import Registry from "./Registry";
 import Login from "./Login";
+import { auth } from "../firebase";
+import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
 
 export type Component = {
   _id: string | undefined;
@@ -23,10 +26,24 @@ export type Component = {
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
   const { changeValue, isRegistry } = useModal();
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuth(true);
+      } else {
+        setIsAuth(false);
+      }
+    });
+  }, []);
+  
 
   const handleClickAddTrain = () => {
+    if(!isAuth) {
     alert("Пользователь не авторизован");
     changeValue();
+    }
   };
 
   const handleClick = () => {
@@ -46,9 +63,10 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
     <li className="relative h-[510px] w-[360px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">
       <button
         onClick={handleClickAddTrain}
-        className="absolute right-[20px] top-[20px]"
+        className="group cursor-[url(coursor.svg),_pointer] absolute right-[20px] top-[20px]"
       >
         <img src="add-in-Circle.svg" alt="plus" />
+        <div className="absolute hidden group-hover:block left-[43px] top-[45px] w-[110px] h-[27px] border-[0.5px] border-black rounded-[5px] bg-white z-10"><p className="text-sm mt-1">Добавить курс</p></div>
       </button>
       <div onClick={handleClick}>
         <MainCardsImage param={train._id} />

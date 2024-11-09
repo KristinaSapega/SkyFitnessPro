@@ -58,7 +58,7 @@ export const Profile = () => {
                 className="relative h-[649px] w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
               >
                 <button
-                  className="absolute right-[20px] top-[20px]"
+                  className="group cursor-[url(coursor.svg),_pointer] absolute right-[20px] top-[20px]"
                   onClick={() => console.log("Delete course", course.id)}
                 >
                   <img
@@ -67,6 +67,7 @@ export const Profile = () => {
                     width={32}
                     height={32}
                   />
+                  <div className="absolute hidden group-hover:block left-[43px] top-[45px] w-[100px] h-[27px] border-[0.5px] border-black rounded-[5px] bg-white z-10"><p className="text-sm mt-1">Удалить курс</p></div>
                 </button>
                 <div className="h-[325px] overflow-hidden rounded-[30px]">
                   <img
