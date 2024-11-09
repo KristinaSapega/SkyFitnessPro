@@ -14,7 +14,7 @@ const Header = () => {
         <div onClick={handleGoToMainPage} className="cursor-pointer">
           <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
           {location !== "/user" && (
-            <p className="mt-[16px] text-[18px] font-normal leading-[19.8px] text-[#00000050]">
+            <p className="mt-[16px] text-[18px] font-normal leading-[19.8px] text-[#00000050] hidden lg:block">
               Онлайн-тренировки для занятий дома
             </p>
           )}

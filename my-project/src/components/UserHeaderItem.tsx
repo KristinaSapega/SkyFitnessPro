@@ -48,7 +48,6 @@ function UserHeaderItem() {
               />
               <p className="ml-[16px] mr-[12px] select-none font-[roboto] text-[24px] font-normal">
                 {auth.currentUser?.displayName ?? "Гость"}
-                
               </p>
               <img
                 src="/rectangle_3765.svg"
@@ -63,7 +62,7 @@ function UserHeaderItem() {
         <>
           <button
             onClick={openModal}
-            className="buttonPrimary z-40 w-[103px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
+            className="buttonPrimary z-40 h-[36px] w-[83px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive sm:h-auto sm:w-[103px]"
           >
             Войти
           </button>

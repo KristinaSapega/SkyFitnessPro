@@ -14,7 +14,7 @@ const TrainingList = () => {
     });
   }, [database]);
   return (
-    <ul className="mt-[50px] flex flex-wrap gap-[40px]">
+    <ul className="mt-[50px] flex flex-wrap gap-[20px] sm:gap-[30px] lg:gap-[40px] sm:justify-start justify-center">
       {items.map((item, index) => (
         <TrainingItem train={item} key={index} />
       ))}

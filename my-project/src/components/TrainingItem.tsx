@@ -34,6 +34,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   };
 
   function dayTitle(number: number) {
+    console.log(number);
     let lastNum;
     if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
     lastNum = number % 10;
@@ -58,7 +59,6 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           <ul className="flex flex-wrap gap-[6px]">
             {[
               `${train.workouts.length} ${dayTitle(train.workouts.length)}`,
-              +" Дней",
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (
