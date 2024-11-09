@@ -14,6 +14,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
   const [kindOfModal, setKindOfModal] = useState<"login" | "registry" | "info">(
     "login",
   );
+  console.log(kindOfModal);
 
   const changeOpenValue = () => {
     setIsOpen(!isOpen);

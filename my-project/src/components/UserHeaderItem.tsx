@@ -4,6 +4,7 @@ import { HeaderUserPopUp } from "./HeaderPopUp";
 import { useModal } from "../hooks/useModal";
 import Login from "./Login";
 import { onAuthStateChanged } from "firebase/auth";
+import Registry from "./Registry";
 
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
@@ -73,6 +74,7 @@ function UserHeaderItem() {
         </div>
       )}
       {kindOfModal === "login" && <Login />}
+      {kindOfModal === "registry" && <Registry />}
     </>
   );
 }
