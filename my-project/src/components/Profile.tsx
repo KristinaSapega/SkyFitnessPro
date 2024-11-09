@@ -4,10 +4,13 @@ import { UserCabinet } from "./User";
 import { auth, database } from "../firebase";
 import { ref, get } from "firebase/database";
 import { MainCardsImage } from "./MainCardsImage";
+import WorkoutSelectPopup from "./WorkoutSelectPopup";
 
 export const Profile = () => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [userCourses, setUserCourses] = useState<any[]>([]);
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [showWorkoutPopup, setShowWorkoutPopup] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -68,6 +71,11 @@ export const Profile = () => {
   const handleMouseUp = () => {
     setActiveButton(null);
   };
+
+  const handleWorkoutButtonClick = (courseId: string) => {
+    setSelectedCourseId(courseId); // Устанавливаем выбранный курс
+    setShowWorkoutPopup(true); // Открываем попап
+  }
 
   if (isLoading) {
     return "";
@@ -137,7 +145,7 @@ export const Profile = () => {
                       }`}
                       onMouseDown={() => handleMouseDown(course._id)}
                       onMouseUp={handleMouseUp}
-                      onClick={() => alert("Начать тренировку")}
+                      onClick={() => handleWorkoutButtonClick(course._id)}
                     >
                       {course.progress === 0
                         ? "Начать тренировки"
@@ -154,6 +162,13 @@ export const Profile = () => {
           </div>
         </div>
       </div>
+      {/* WorkoutSelectPopup отображается при showWorkoutPopup */}
+      {showWorkoutPopup && selectedCourseId && (
+        <WorkoutSelectPopup
+        courseId={selectedCourseId}
+        onClose={() => setShowWorkoutPopup(false)}
+        />
+      )}
     </div>
   );
 };

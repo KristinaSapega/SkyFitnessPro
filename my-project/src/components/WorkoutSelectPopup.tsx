@@ -8,6 +8,7 @@ interface WorkoutOption {
 }
 
 interface WorkoutSelectPopupProps {
+  courseId: string;
   onClose: () => void;
 }
 
