@@ -3,8 +3,8 @@ import Tags from "./Tags";
 import { useNavigate } from "react-router-dom";
 
 import { useModal } from "../hooks/useModal";
-import Registry from "./Registry";
 import Login from "./Login";
+import Registry from "./Registry";
 
 export type Component = {
   _id: string | undefined;
@@ -22,11 +22,11 @@ export type Component = {
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
-  const { changeValue, isRegistry } = useModal();
+  const { changeOpenValue, kindOfModal } = useModal();
 
   const handleClickAddTrain = () => {
     alert("Пользователь не авторизован");
-    changeValue();
+    changeOpenValue();
   };
 
   const handleClick = () => {
@@ -57,8 +57,8 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           <h3 className="mb-[20px] text-3xl font-medium">{train.nameRU}</h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
-              `${train.workouts.length} ${dayTitle(train.workouts.length)}`,
-              +" Дней",
+              `${train.workouts.length} ${dayTitle(train.workouts.length)}` +
+              " Дней",
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (
@@ -67,7 +67,8 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           </ul>
         </div>
       </div>
-      {isRegistry ? <Registry /> : <Login />}
+      {kindOfModal === "login" && <Login />}
+      {kindOfModal === "registry" && <Registry />}
     </li>
   );
 };
