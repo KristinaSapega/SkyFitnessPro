@@ -10,7 +10,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="just relative z-40 flex justify-between">
+      <header className="just relative z-40 flex justify-between sm:px-0 px-6 ">
         <div onClick={handleGoToMainPage} className="cursor-pointer">
           <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
           {location !== "/user" && (

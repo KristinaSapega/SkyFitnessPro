@@ -44,7 +44,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   }
 
   return (
-    <li className="relative h-[510px] w-[360px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">
+    <li className="relative h-[510px] w-[343px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]">
       <button
         onClick={handleClickAddTrain}
         className="absolute right-[20px] top-[20px]"
