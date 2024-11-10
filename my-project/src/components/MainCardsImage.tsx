@@ -18,7 +18,7 @@ export const MainCardsImage = ({ param }: MainCardsImageType) => {
 
     case "kfpq8e":
       src = (
-        <div className="h-[325px] overflow-hidden rounded-[30px]">
+        <div className="desktop:h-[325px] overflow-hidden rounded-[30px]">
           <img className="w-full object-cover" src={"stretching.png"} alt={"stretching"} />
         </div>
       );
@@ -26,7 +26,7 @@ export const MainCardsImage = ({ param }: MainCardsImageType) => {
 
     case "ypox9r":
         src=(
-      <div className="h-[325px] overflow-hidden rounded-[30px]">
+      <div className="desktop:h-[325px] overflow-hidden rounded-[30px]">
       <img className="w-full object-cover" src={"danceFitness.png"} alt={"danceFitness"} />
     </div>
         )
@@ -34,7 +34,7 @@ export const MainCardsImage = ({ param }: MainCardsImageType) => {
 
     case "6i67sm":
         src=(
-      <div className="h-[325px] overflow-hidden rounded-[30px]">
+      <div className="desktop:h-[325px] overflow-hidden rounded-[30px]">
       <img className="w-full object-cover" src={"stepAirobic.png"} alt={"stepAirobic"} />
     </div>
         )
@@ -43,7 +43,7 @@ export const MainCardsImage = ({ param }: MainCardsImageType) => {
     case "q02a6i":
       src = "bodyFlex.png";
       src=(
-        <div className="h-[325px] overflow-hidden rounded-[30px]">
+        <div className="desktop:h-[325px] overflow-hidden rounded-[30px]">
         <img className="w-full object-cover" src={"bodyFlex.png"} alt={"bodyFlex"} />
       </div>
       )

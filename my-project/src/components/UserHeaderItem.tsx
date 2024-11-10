@@ -39,11 +39,9 @@ function UserHeaderItem() {
             className="flex cursor-pointer items-center"
           >
             <img
-              className="rounded-[46px] mr-[12px]"
+              className="rounded-[46px] mr-[12px]  w-[36px] h-[36px]  desktop:w-[42px] desktop:h-[42px]"
               src={auth.currentUser?.photoURL ?? "/profile.svg"}
               alt="logo"
-              width={42}
-              height={42}
             />
             <p className="ml-[16px] mr-[12px] select-none font-[roboto] text-[24px] font-normal hidden sm:block">
               {auth.currentUser?.displayName ?? "Гость"}
