@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { database } from "../firebase";
+import { onValue, ref, get } from "firebase/database";
 
 interface WorkoutOption {
-  id: number;
+  _id: string;
   name: string;
   description: string;
 }
@@ -12,21 +14,26 @@ interface WorkoutSelectPopupProps {
   onClose: () => void;
 }
 
-const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
-  const [selectedWorkout, setSelectedWorkout] = useState<number | null>(null);
+const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ courseId, onClose }) => {
+  const [selectedWorkouts, setSelectedWorkouts] = useState<string[]>([]);
+  const [workoutOptions, setWorkoutOptions] = useState<WorkoutOption[]>([]);
   const popupRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
-  const handleSelection = (id: number) => {
-    setSelectedWorkout(id === selectedWorkout ? null : id);
+  const handleSelection = (id: string) => {
+    setSelectedWorkouts((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((workoutId) => workoutId !== id) // Убираем, если уже выбран
+        : [...prevSelected, id] // Добавляем, если еще не выбран
+    );
   };
 
   const handleStart = () => {
-    if (selectedWorkout !== null) {
-      navigate(`/task/${selectedWorkout}`);
+    if (selectedWorkouts.length > 0) {
+      navigate(`/task/${selectedWorkouts[0]}`); // Переход по первой выбранной тренировке, как пример
       onClose();
     } else {
-      alert("Пожалуйста, выберите тренировку");
+      alert("Пожалуйста, выберите хотя бы одну тренировку");
     }
   };
 
@@ -43,14 +50,58 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
     };
   }, [onClose]);
 
-  const workoutOptions: WorkoutOption[] = [
-    { id: 1, name: "Утренняя практика", description: "Йога на каждый день / 1 день" },
-    { id: 2, name: "Красота и здоровье", description: "Йога на каждый день / 2 день" },
-    { id: 3, name: "Асаны стоя", description: "Йога на каждый день / 3 день" },
-    { id: 4, name: "Растягиваем мышцы бедра", description: "Йога на каждый день / 4 день" },
-    { id: 5, name: "Гибкость спины", description: "Йога на каждый день / 5 день" },
-    { id: 6, name: "Гибкость спины", description: "Йога на каждый день / 6 день" },
-  ];
+  useEffect(() => {
+    const fetchFilteredWorkouts = async () => {
+      try {
+        console.log("Запрашиваем данные для всех курсов...");
+
+        const coursesRef = ref(database, 'courses');
+        const coursesSnapshot = await get(coursesRef);
+        const allCoursesData = coursesSnapshot.val();
+
+        console.log("Все данные курсов:", allCoursesData);
+
+        const courseData = Array.isArray(allCoursesData)
+          ? allCoursesData.find((course: any) => course._id === courseId)
+          : allCoursesData[courseId];
+
+        if (!courseData || !Array.isArray(courseData.workouts)) {
+          console.error(`Курс с courseId: ${courseId} не найден или workouts отсутствуют.`, courseData);
+          setWorkoutOptions([]);
+          return;
+        }
+
+        const workoutKeys = courseData.workouts;
+        console.log("Ключи тренировок:", workoutKeys);
+
+        const dataRef = ref(database, 'workouts');
+        const workoutsSnapshot = await get(dataRef);
+        const allWorkoutsData = workoutsSnapshot.val();
+
+        if (!allWorkoutsData) {
+          console.error("Нет данных для тренировок в базе данных.");
+          setWorkoutOptions([]);
+          return;
+        }
+
+        console.log("Все данные тренировок:", allWorkoutsData);
+
+        const workoutsArray = Object.values(allWorkoutsData) as WorkoutOption[];
+
+        const filteredWorkouts = workoutsArray.filter((workout) =>
+          workoutKeys.includes(workout._id)
+        );
+
+        console.log("Отфильтрованные тренировки:", filteredWorkouts);
+        setWorkoutOptions(filteredWorkouts);
+      } catch (error) {
+        console.error("Ошибка при получении данных о тренировках:", error);
+        setWorkoutOptions([]);
+      }
+    };
+
+    fetchFilteredWorkouts();
+  }, [courseId]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -59,24 +110,21 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
         <form className="h-[450px] max-w-[400px] mt-12 w-full overflow-auto">
           <ul>
             {workoutOptions.map((workout) => (
-              <li
-                key={workout.id}
-                className="p-3 border-b flex justify-between items-center"
-              >
+              <li key={workout._id} className="p-3 border-b flex justify-between items-center">
                 <div>
                   <label className="cursor-pointer flex items-center">
                     <input
                       type="checkbox"
                       name="workout"
-                      value={workout.id}
-                      checked={selectedWorkout === workout.id}
-                      onChange={() => handleSelection(workout.id)}
+                      value={workout._id}
+                      checked={selectedWorkouts.includes(workout._id)}
+                      onChange={() => handleSelection(workout._id)}
                       className="hidden peer"
                     />
                     <span
                       className={`w-5 h-5 rounded-full border-2 border-gray-300 flex justify-center items-center mr-3 peer-checked:border-btnPrimaryRegular`}
                       style={{
-                        backgroundImage: selectedWorkout === workout.id
+                        backgroundImage: selectedWorkouts.includes(workout._id)
                           ? "url('../../../checked.svg')"
                           : "none",
                         backgroundSize: "cover",
@@ -95,7 +143,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ onClose }) => {
         </form>
         <button
           onClick={handleStart}
-          className="w-full mt-4 buttonPrimary active:text-white bg-btnPrimaryRegular rounded-[46px]  hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
+          className="w-full mt-4 buttonPrimary active:text-white bg-btnPrimaryRegular rounded-[46px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
         >
           Начать
         </button>
