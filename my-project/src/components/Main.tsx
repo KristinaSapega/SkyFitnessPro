@@ -10,7 +10,7 @@ const Main = () => {
       <div className="min-h-[500px] min-w-[375px] max-w-[1160px]">
         <Header />
         <div className="mt-[40px] flex justify-between px-6 sm:px-0 desktop:mt-[60px]">
-          <h1 className="h-[105px] max-w-[327px] text-left font-['Roboto'] text-[32px] font-medium leading-[35.2px] sm:h-[120px] sm:max-w-[850px] sm:text-6xl sm:leading-[normal]">
+          <h1 className="h-[105px]  text-left font-['Roboto'] text-[32px] font-medium leading-[35.2px] sm:h-[120px] sm:w-[850px] sm:text-[60px] sm:leading-[60px]">
             Начните заниматься спортом и улучшите качество жизни
           </h1>
 

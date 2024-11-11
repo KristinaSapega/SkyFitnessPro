@@ -58,7 +58,6 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   };
 
   function dayTitle(number: number) {
-    console.log(number);
     let lastNum;
     if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
     lastNum = number % 10;
@@ -79,13 +78,11 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
         <MainCardsImage param={train._id} />
 
         <div className="pb-[15px] pl-[21.5px] pt-[24px] desktop:pb-[15px] desktop:pl-[30px] desktop:pt-[24px]">
-          <h3 className="mb-[20px] text-[24px] font-medium desktop:text-[32px] desktop:leading-[32.5px]">
-            {train.nameRU}
-          </h3>
+          <h3 className="mb-[20px] text-[24px] font-medium desktop:text-[32px] desktop:leading-[32.5px]">{train.nameRU}</h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
               `${train.workouts.length} ${dayTitle(train.workouts.length)}` +
-              " Дней",
+                " Дней",
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (

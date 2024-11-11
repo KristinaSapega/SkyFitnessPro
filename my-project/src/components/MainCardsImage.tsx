@@ -10,7 +10,7 @@ export const MainCardsImage = ({ param }: MainCardsImageType) => {
   switch (param) {
     case "ab1c3f":
       src = (
-        <div className="h-[325px] overflow-hidden rounded-[30px]">
+        <div className="desktop:h-[325px] overflow-hidden rounded-[30px]">
           <img className="w-full object-cover" src={"yoga.png"} alt={"yoga"} />
         </div>
       );
