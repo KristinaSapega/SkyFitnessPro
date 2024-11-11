@@ -57,7 +57,7 @@ function UserHeaderItem() {
       ) : (
         <button
           onClick={openModal}
-          className="buttonPrimary z-40 h-[36px] w-[83px]  hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive sm:h-auto sm:w-[103px]"
+          className="buttonPrimary z-40 h-[36px] w-[83px]  desktop:h-[52px] desktop:w-[103px]  hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive "
         >
           Войти
         </button>
