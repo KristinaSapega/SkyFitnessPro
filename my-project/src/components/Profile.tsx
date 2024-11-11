@@ -140,10 +140,8 @@ export const Profile = () => {
             calendar: "30 дней",
             time: "20-50 мин/день",
             level: "Сложность",
-            // progress: 26,
           }));
 
-          console.log(userrrrCoursesData);
 
           setUserCourses(userCoursesData);
         }
