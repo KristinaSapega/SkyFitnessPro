@@ -7,7 +7,7 @@ import { MainCardsImage } from "./MainCardsImage";
 import WorkoutSelectPopup from "./WorkoutSelectPopup";
 import { courseProgress } from "./CourseProgress";
 
-const MyCorses = ({ userCourses }) => {
+const MyCorses = ({ userCourses, setSelectedCourseId, setShowWorkoutPopup }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleMouseDown = (id: number) => {
@@ -16,6 +16,11 @@ const MyCorses = ({ userCourses }) => {
 
   const handleMouseUp = () => {
     setActiveButton(null);
+  };
+
+  const handleWorkoutButtonClick = (courseId: string) => {
+    setSelectedCourseId(courseId); // Устанавливаем выбранный курс
+    setShowWorkoutPopup(true); // Открываем попап
   };
 
   function dayTitle(number: number) {
@@ -88,7 +93,7 @@ const MyCorses = ({ userCourses }) => {
                 }`}
                 onMouseDown={() => handleMouseDown(course._id)}
                 onMouseUp={handleMouseUp}
-                onClick={() => alert("Начать тренировку")}
+                onClick={() => handleWorkoutButtonClick(course._id)}
               >
                 {course.progress === 0
                   ? "Начать тренировки"
@@ -142,7 +147,6 @@ export const Profile = () => {
             level: "Сложность",
           }));
 
-
           setUserCourses(userCoursesData);
         }
       } catch (error) {
@@ -165,11 +169,6 @@ export const Profile = () => {
     initialize();
   }, []);
 
-  const handleWorkoutButtonClick = (courseId: string) => {
-    setSelectedCourseId(courseId); // Устанавливаем выбранный курс
-    setShowWorkoutPopup(true); // Открываем попап
-  };
-
   if (isLoading) {
     return "";
   }
@@ -183,7 +182,11 @@ export const Profile = () => {
           <h1 className="my-8 text-lg font-bold md:text-xl lg:text-4xl">
             Мои курсы
           </h1>
-          <MyCorses userCourses={userCourses} />
+          <MyCorses
+            userCourses={userCourses}
+            setSelectedCourseId={setSelectedCourseId}
+            setShowWorkoutPopup={setShowWorkoutPopup}
+          />
         </div>
       </div>
       {/* WorkoutSelectPopup отображается при showWorkoutPopup */}
