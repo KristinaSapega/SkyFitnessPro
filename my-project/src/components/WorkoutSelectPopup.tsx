@@ -105,36 +105,41 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ courseId, onClo
         <h2 className="text-center text-3xl font-normal mb-4">Выберите тренировку</h2>
         <form className="h-[450px] max-w-[400px] mt-12 w-full overflow-auto">
           <ul>
-            {workoutOptions.map((workout) => (
-              <li key={workout._id} className="p-3 border-b flex justify-between items-center">
-                <div>
-                  <label className="cursor-pointer flex items-center">
-                    <input
-                      type="radio"
-                      name="workout"
-                      value={workout._id}
-                      checked={selectedWorkout === workout._id}
-                      onChange={() => handleSelection(workout._id)}
-                      className="hidden peer"
-                    />
-                    <span
-                      className={`w-5 h-5 rounded-full border-2 border-gray-300 flex justify-center items-center mr-3 peer-checked:border-btnPrimaryRegular`}
-                      style={{
-                        backgroundImage: selectedWorkout === workout._id
-                          ? "url('../../../checked.svg')"
-                          : "none",
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }}
-                    ></span>
-                    <div>
-                      <p className="font-normal text-2xl">{workout.name}</p>
-                      <p className="text-base font-normal">{workout.description}</p>
-                    </div>
-                  </label>
-                </div>
-              </li>
-            ))}
+            {workoutOptions.map((workout) => {
+              // Разделяем название тренировки на основную часть и дополнительную информацию
+              const [mainTitle, subtitle] = workout.name.split(" / ");
+
+              return (
+                <li key={workout._id} className="p-3 border-b flex justify-between items-center">
+                  <div>
+                    <label className="cursor-pointer flex items-center">
+                      <input
+                        type="radio"
+                        name="workout"
+                        value={workout._id}
+                        checked={selectedWorkout === workout._id}
+                        onChange={() => handleSelection(workout._id)}
+                        className="hidden peer"
+                      />
+                      <span
+                        className={`w-5 h-5 rounded-full border-2 border-gray-300 flex justify-center items-center mr-3 peer-checked:border-btnPrimaryRegular`}
+                        style={{
+                          backgroundImage: selectedWorkout === workout._id
+                            ? "url('../../../checked.svg')"
+                            : "none",
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
+                      ></span>
+                      <div>
+                        <p className="text-2xl ">{mainTitle}</p>
+                        <p className="text-base text-gray-600">{subtitle}</p>
+                      </div>
+                    </label>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </form>
         <button
