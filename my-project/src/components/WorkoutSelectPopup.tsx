@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { database } from "../firebase";
-import { onValue, ref, get } from "firebase/database";
+import { ref, get } from "firebase/database";
 
 interface WorkoutOption {
   _id: string;
@@ -15,25 +15,21 @@ interface WorkoutSelectPopupProps {
 }
 
 const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ courseId, onClose }) => {
-  const [selectedWorkouts, setSelectedWorkouts] = useState<string[]>([]);
+  const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null);
   const [workoutOptions, setWorkoutOptions] = useState<WorkoutOption[]>([]);
   const popupRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
   const handleSelection = (id: string) => {
-    setSelectedWorkouts((prevSelected) =>
-      prevSelected.includes(id)
-        ? prevSelected.filter((workoutId) => workoutId !== id) // Убираем, если уже выбран
-        : [...prevSelected, id] // Добавляем, если еще не выбран
-    );
+    setSelectedWorkout(id); 
   };
 
   const handleStart = () => {
-    if (selectedWorkouts.length > 0) {
-      navigate(`/task/${selectedWorkouts[0]}`); // Переход по первой выбранной тренировке, как пример
+    if (selectedWorkout) {
+      navigate(`/task/${selectedWorkout!}`);
       onClose();
     } else {
-      alert("Пожалуйста, выберите хотя бы одну тренировку");
+      alert("Пожалуйста, выберите тренировку");
     }
   };
 
@@ -114,17 +110,17 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({ courseId, onClo
                 <div>
                   <label className="cursor-pointer flex items-center">
                     <input
-                      type="checkbox"
+                      type="radio"
                       name="workout"
                       value={workout._id}
-                      checked={selectedWorkouts.includes(workout._id)}
+                      checked={selectedWorkout === workout._id}
                       onChange={() => handleSelection(workout._id)}
                       className="hidden peer"
                     />
                     <span
                       className={`w-5 h-5 rounded-full border-2 border-gray-300 flex justify-center items-center mr-3 peer-checked:border-btnPrimaryRegular`}
                       style={{
-                        backgroundImage: selectedWorkouts.includes(workout._id)
+                        backgroundImage: selectedWorkout === workout._id
                           ? "url('../../../checked.svg')"
                           : "none",
                         backgroundSize: "cover",
