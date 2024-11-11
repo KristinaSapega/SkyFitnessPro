@@ -1,5 +1,5 @@
-import { ref, set, get, update, onValue } from "firebase/database";
-import { auth, database } from "../firebase";
+import { ref, set, get, update } from "firebase/database";
+import { database } from "../firebase";
 
 const useWriteDataInBase = async (
   uid: string,
