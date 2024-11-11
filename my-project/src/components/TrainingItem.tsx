@@ -58,7 +58,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           <ul className="flex flex-wrap gap-[6px]">
             {[
               `${train.workouts.length} ${dayTitle(train.workouts.length)}` +
-              " ",
+                " Дней",
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (
