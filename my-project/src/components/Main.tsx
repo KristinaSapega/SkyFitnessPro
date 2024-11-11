@@ -24,7 +24,7 @@ const Main = () => {
           </div>
         </div>
         <TrainingList />
-        <div className="mb-[81px] mt-[34px] flex desktop:justify-center justify-end mr-[16px]">
+        <div className="mt-[34px] flex desktop:justify-center justify-end mr-[16px]">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="buttonPrimary h-[52px] w-[127px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
