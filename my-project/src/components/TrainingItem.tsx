@@ -61,9 +61,9 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
     let lastNum;
     if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
     lastNum = number % 10;
-    if (lastNum == 1) return "день";
-    if ([2, 3, 4].includes(lastNum)) return "дня";
-    if ([5, 6, 7, 8, 9, 0].includes(lastNum)) return "дней";
+    if (lastNum == 1) return "День";
+    if ([2, 3, 4].includes(lastNum)) return "Дня";
+    if ([5, 6, 7, 8, 9, 0].includes(lastNum)) return "Дней";
   }
 
   return (
@@ -82,8 +82,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           <h3 className="mb-[20px] text-[24px] font-medium desktop:text-[32px] desktop:leading-[32.5px]">{train.nameRU}</h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
-              `${train.workouts.length} ${dayTitle(train.workouts.length)}` +
-                " Дней",
+              `${train.workouts.length} ${dayTitle(train.workouts.length)}`,
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (

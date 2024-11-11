@@ -6,7 +6,7 @@ import { ref, get } from "firebase/database";
 import { MainCardsImage } from "./MainCardsImage";
 import { courseProgress } from "./CourseProgress";
 
-const MyCorses = ({userCourses}) => {
+const MyCorses = ({ userCourses }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   console.log(userCourses);
 
@@ -18,18 +18,17 @@ const MyCorses = ({userCourses}) => {
     setActiveButton(null);
   };
 
-
   function dayTitle(number: number) {
     let lastNum;
     if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
     lastNum = number % 10;
-    if (lastNum == 1) return "день";
-    if ([2, 3, 4].includes(lastNum)) return "дня";
-    if ([5, 6, 7, 8, 9, 0].includes(lastNum)) return "дней";
+    if (lastNum == 1) return "День";
+    if ([2, 3, 4].includes(lastNum)) return "Дня";
+    if ([5, 6, 7, 8, 9, 0].includes(lastNum)) return "Дней";
   }
 
   return (
-    <div className="mt-12 flex justify-start gap-[40px]">
+    <div className="mt-12 flex flex-wrap justify-start gap-[40px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div
@@ -37,8 +36,10 @@ const MyCorses = ({userCourses}) => {
             className="relative h-[649px] w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
           >
             <button
-              className="group cursor-[url(coursor.svg),_pointer] absolute right-[20px] top-[20px]"
-              onClick={() => alert("Удалим в следующий раз, а пока время тренировок")}
+              className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
+              onClick={() =>
+                alert("Удалим в следующий раз, а пока время тренировок")
+              }
             >
               <img
                 src="/remove-in-Circle.svg"
@@ -46,7 +47,9 @@ const MyCorses = ({userCourses}) => {
                 width={32}
                 height={32}
               />
-              <div className="absolute hidden group-hover:block left-[43px] top-[45px] w-[100px] h-[27px] border-[0.5px] border-black rounded-[5px] bg-white z-10"><p className="text-sm mt-1">Удалить курс</p></div>
+              <div className="absolute left-[43px] top-[45px] z-10 hidden h-[27px] w-[100px] rounded-[5px] border-[0.5px] border-black bg-white group-hover:block">
+                <p className="mt-1 text-sm">Удалить курс</p>
+              </div>
             </button>
             <MainCardsImage param={course._id} />
 
@@ -104,7 +107,6 @@ const MyCorses = ({userCourses}) => {
 };
 
 export const Profile = () => {
-  
   const [userCourses, setUserCourses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -163,13 +165,9 @@ export const Profile = () => {
     initialize();
   }, []);
 
-
-
   if (isLoading) {
     return "";
   }
-
-
 
   return (
     <div className="flex flex-col items-center">
