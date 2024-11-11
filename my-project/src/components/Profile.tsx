@@ -37,7 +37,7 @@ const MyCorses = ({userCourses}) => {
             className="relative h-[649px] w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
           >
             <button
-              className="absolute right-[20px] top-[20px]"
+              className="group cursor-[url(coursor.svg),_pointer] absolute right-[20px] top-[20px]"
               onClick={() => alert("Удалим в следующий раз, а пока время тренировок")}
             >
               <img
