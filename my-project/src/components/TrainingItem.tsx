@@ -1,10 +1,14 @@
 import { MainCardsImage } from "./MainCardsImage";
 import Tags from "./Tags";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useModal } from "../hooks/useModal";
 import Login from "./Login";
 import Registry from "./Registry";
+import useWriteDataInBase from "../hooks/useWriteDataInBase";
+import { auth, database } from "../firebase";
+import { useState } from "react";
+import { get, ref } from "firebase/database";
 
 export type Component = {
   _id: string | undefined;
@@ -23,10 +27,30 @@ export type Component = {
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
   const { changeOpenValue, kindOfModal } = useModal();
+  const [userCourses, setUserCourses] = useState<string[]>([]);
 
-  const handleClickAddTrain = () => {
-    alert("Пользователь не авторизован");
-    changeOpenValue();
+  const handleClickAddTrain = async () => {
+    if (auth.currentUser && train._id) {
+      fetchUserCourses(auth.currentUser.uid);
+      await useWriteDataInBase(auth.currentUser.uid, train._id, setUserCourses);
+      navigate("/user");
+    } else {
+      alert("Пользователь не авторизован");
+      changeOpenValue();
+    }
+  };
+
+  const fetchUserCourses = async (uid: string) => {
+    try {
+      const userRef = ref(database, `users/${uid}`);
+      const snapshot = await get(userRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        setUserCourses(data.courses || []);
+      }
+    } catch (error) {
+      console.error("Ошибка при получении данных пользователя ", error);
+    }
   };
 
   const handleClick = () => {
@@ -60,7 +84,8 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           </h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
-              `${train.workouts.length} ${dayTitle(train.workouts.length)}`,
+              `${train.workouts.length} ${dayTitle(train.workouts.length)}` +
+              " Дней",
               "25-50 мин/день",
               "Сложность",
             ].map((tag, index) => (
