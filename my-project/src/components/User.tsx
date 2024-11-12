@@ -110,23 +110,22 @@ export const UserCabinet = () => {
       });
     }
   };
-
   return (
     <>
-      <h1 className="mb-8 text-lg font-bold md:text-xl lg:text-4xl">Профиль</h1>
-      <div className="mb-12 mt-10 rounded-3xl border bg-white p-6 shadow-lg">
-        <div className="flex flex-wrap gap-6">
+      <h1 className="mb-8 text-center text-lg font-bold md:text-xl lg:text-4xl">
+        Профиль
+      </h1>
+      <div className="mx-auto mb-12 mt-10 w-full max-w-[343px] rounded-3xl border bg-white p-6 shadow-lg sm:max-w-[453px] md:max-w-[600px] md:p-10 lg:max-w-[800px] lg:p-[30px] xl:max-w-[1160px] xl:gap-[10px]">
+        <div className="flex flex-wrap gap-6 xl:gap-[10px]">
           <div className="mx-auto flex items-center justify-center">
             <img
               src={auth.currentUser?.photoURL ?? "Mask group.svg"}
-              className="h-auto max-w-full justify-center rounded-[20px]"
+              className="h-auto w-[205px] max-w-full justify-center rounded-[20px] md:w-[250px] lg:w-[300px]"
               alt="Profile"
-              width={205}
-              height={205}
             />
           </div>
-          <div className="flex flex-1 flex-col justify-center gap-[12px]">
-            <div className="relative flex items-center gap-[12px]">
+          <div className="flex flex-1 flex-col justify-center">
+            <div className="relative mb-[20px] flex items-center gap-[12px]">
               <input
                 ref={refName}
                 name="name"
@@ -158,43 +157,44 @@ export const UserCabinet = () => {
               )}
             </div>
 
-            <div className="flex flex-col gap-[18px]">
+            <div className="mb-[20px] flex flex-col">
               <span className="font-small text-[18px]">
                 Логин: {userinfo.email}
               </span>
-              <div className="font-small flex items-center text-[18px]">
-                <p>Пароль:</p>
-                <input
-                  ref={refPass}
-                  name="pass"
-                  onChange={inputChange}
-                  className={
-                    activInpuPass
-                      ? "box-border h-[36px] w-[170px] border-none placeholder-black"
-                      : "ml-[6px] box-border h-[36px] w-[170px]"
-                  }
-                  type="password"
-                  placeholder="••••••••"
-                  readOnly={activInpuPass}
-                />
-                {entry.loadings && (
-                  <p className="ml-[12px] animate-pulse font-bold text-btnPrimaryHover">
-                    Готово 👌
-                  </p>
-                )}
-              </div>
+            </div>
+
+            <div className="font-small mb-[20px] flex items-center text-[18px]">
+              <p>Пароль:</p>
+              <input
+                ref={refPass}
+                name="pass"
+                onChange={inputChange}
+                className={
+                  activInpuPass
+                    ? "box-border h-[36px] w-[170px] border-none placeholder-black"
+                    : "ml-[6px] box-border h-[36px] w-[170px]"
+                }
+                type="password"
+                placeholder="••••••••"
+                readOnly={activInpuPass}
+              />
+              {entry.loadings && (
+                <p className="ml-[12px] animate-pulse font-bold text-btnPrimaryHover">
+                  Готово 👌
+                </p>
+              )}
             </div>
 
             <div className="flex max-w-full flex-col items-center gap-2 md:flex-row">
               <button
                 onClick={handlePassChange}
-                className="buttonPrimary w-[192px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
+                className="buttonPrimary mb-[20px] w-full hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive md:mb-0 md:w-[192px]"
               >
                 {activInpuPass ? "Изменить пароль" : "Сохранить"}
               </button>
               <button
                 onClick={handleLogout}
-                className="buttonSecondary w-[192px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
+                className="buttonSecondary w-full border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive md:w-[192px]"
               >
                 Выйти
               </button>

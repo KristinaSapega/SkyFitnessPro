@@ -43,9 +43,13 @@ const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
   item,
 }) => {
   return (
-    <div key={index}>
-      <div className="flex items-center gap-x-[8px]">
-        <img src="/star.svg" alt="logo" width={26} height={26} />
+    <div key={index} className="flex sm:mb-0">
+      <div className="flex items-center gap-x-[8px] sm:gap-x-[30px]">
+        <img
+          src="/star.svg"
+          alt="logo"
+          className="w-[19.5px] h-[19.5px] sm:w-[26px] sm:h-[26px]"
+        />
         <p className="text-[18px] sm:text-[24px] font-normal leading-[22px] sm:leading-[26.4px] text-black">
           {item}
         </p>
@@ -53,6 +57,7 @@ const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
     </div>
   );
 };
+
 
 
 export const CoursePagesComp = () => {
@@ -193,27 +198,27 @@ export const CoursePagesComp = () => {
           ))}
         </div>
         <section className="relative ">
-          <div className="relative">
+          <div className="relative z-[1]">
             <p className="mt-[40px] mb-[24px] text-left font-['Roboto'] text-[24px] font-medium leading-[26.4px] text-black sm:text-[44px] desktop:text-[40px] desktop:leading-[44px]">
               Направления
             </p>
 
-            <div className="z-3 relative box-border grid h-auto w-[343px] grid-cols-1 gap-[10px] rounded-[28px] bg-btnPrimaryRegular p-[30px] sm:h-[336px] sm:w-[1160px] sm:grid-cols-3 desktop:h-[146px] desktop:w-[1160px] desktop:content-center">
+            <div className="z-[3] relative box-border grid h-auto w-[343px] grid-cols-1 gap-[10px] rounded-[28px] bg-btnPrimaryRegular p-[30px] sm:h-[336px] sm:w-[1160px] sm:grid-cols-3 gap-[30px]  desktop:h-[146px] desktop:w-[1160px] desktop:content-center ">
               {directions.map((item, index) => (
                 <ItemsComponentItem item={item} index={index} key={index} />
               ))}
-              <img
-                className="desktop:hidden absolute left-[-40px] w-[900px] top-[300px] z-0 mx-auto"
+
+            </div>
+          </div>
+          <img
+                className=" desktop:hidden absolute left-[-40px] w-[900px] top-[420px]  mx-auto "
                 src="/vector_6084.png"
                 alt="overlay"
                 width={300}
                 height={100}
                 />
-            </div>
-          </div>
-
           <img
-            className="desktop:hidden z-5 absolute right-0 left-[80px] top-[235px] mx-auto"
+            className="desktop:hidden z-[5] absolute right-0 left-[80px] top-[287px] mx-auto"
             src="/forestGump.png"
             alt="logo"
             width={505}
@@ -227,22 +232,22 @@ export const CoursePagesComp = () => {
                   Начните путь <br /> к новому телу
                 </p>
                 <ul className="mb-[28px] pl-[20px]">
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    проработка всех групп мышц
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    тренировка суставов
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    улучшение циркуляции крови
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    упражнения заряжают бодростью
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    помогают противостоять стрессам
-                  </li>
-                </ul>
+                    <li className="corPageTextBlack06 list-disc text-[18px] leading-[36px] desktop:text-[24px] desktop:leading-[28px]">
+                      проработка всех групп мышц
+                    </li>
+                    <li className="corPageTextBlack06 list-disc text-[18px] leading-[36px] desktop:text-[24px] desktop:leading-[28px]">
+                      тренировка суставов
+                    </li>
+                    <li className="corPageTextBlack06 list-disc text-[18px] leading-[36px] desktop:text-[24px] desktop:leading-[28px]">
+                      улучшение циркуляции крови
+                    </li>
+                    <li className="corPageTextBlack06 list-disc text-[18px] leading-[36px] desktop:text-[24px] desktop:leading-[28px]">
+                      упражнения заряжают бодростью
+                    </li>
+                    <li className="corPageTextBlack06 list-disc text-[18px] leading-[36px] desktop:text-[24px] desktop:leading-[28px]">
+                      помогают противостоять стрессам
+                    </li>
+                  </ul>
                 {isAuth ? (
                   isCourseAdded ? (
                     <button className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]">
