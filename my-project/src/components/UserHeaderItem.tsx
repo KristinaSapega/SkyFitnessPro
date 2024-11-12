@@ -33,31 +33,26 @@ function UserHeaderItem() {
   return (
     <>
       {isAuth ? (
-        <div className="z-40 flex items-center">
+        <div className="flex items-center">
           <div
             onClick={() => togglePopup()}
             className="flex cursor-pointer items-center"
           >
             <img
-              className="rounded-[46px] mr-[12px]  w-[36px] h-[36px]  desktop:w-[42px] desktop:h-[42px]"
+              className="mr-[12px] h-[36px] w-[36px] rounded-[46px] desktop:h-[42px] desktop:w-[42px]"
               src={auth.currentUser?.photoURL ?? "/profile.svg"}
               alt="logo"
             />
-            <p className="ml-[16px] mr-[12px] select-none font-[roboto] text-[24px] font-normal hidden sm:block">
+            <p className="ml-[16px] mr-[12px] hidden select-none font-[roboto] text-[24px] font-normal sm:block">
               {auth.currentUser?.displayName ?? "Гость"}
             </p>
-            <img
-              src="/rectangle_3765.svg"
-              alt="logo"
-              width={14}
-              height={11}
-            />
+            <img src="/rectangle_3765.svg" alt="logo" width={14} height={11} />
           </div>
         </div>
       ) : (
         <button
           onClick={openModal}
-          className="buttonPrimary z-40 h-[36px] w-[83px]  desktop:h-[52px] desktop:w-[103px]  hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive "
+          className="buttonPrimaryMobile hover:buttonPrimaryMobile active:buttonPrimaryMobile desktop:buttonPrimary h-[36px] w-[83px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive desktop:h-[52px] desktop:w-[103px]"
         >
           Войти
         </button>

@@ -6,7 +6,7 @@ import Registry from "./Registry";
 
 const Main = () => {
   return (
-    <main className="flex flex-col items-center">
+    <main className="flex flex-col items-center py-[50px]">
       <div className="min-h-[500px] min-w-[375px] max-w-[1160px]">
         <Header />
         <div className="mt-[40px] flex justify-between px-6 sm:px-0 desktop:mt-[60px]">

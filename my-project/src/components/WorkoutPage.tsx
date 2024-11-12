@@ -1,6 +1,6 @@
 import Header from "./Header";
 import { workout } from "./dataList";
-import MyProgressPopup from "./MyProgressPopup"; // Import the popup component
+import MyProgressPopup from "./MyProgressPopup";
 import { useState } from "react";
 
 export const WorkoutPage = () => {
@@ -16,7 +16,7 @@ export const WorkoutPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-[375px] px-[16px] desktop:w-[1440px] desktop:px-[140px]">
+      <div className="w-[375px] px-[16px] desktop:w-[1440px] desktop:px-[140px] py-[50px]">
         <Header />
         <main className="">
           <section className="">

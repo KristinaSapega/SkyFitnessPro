@@ -33,7 +33,7 @@ const MyCorses = ({ userCourses, setSelectedCourseId, setShowWorkoutPopup }) => 
   }
 
   return (
-    <div className="mt-12 flex flex-wrap justify-start gap-[40px]">
+    <div className="mt-12 flex flex-wrap justify-start gap-[40px] ">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div
@@ -174,7 +174,7 @@ export const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center py-[50px]">
       <div className="max-w-[1160px] ">
         <Header />
         <div className="mt-14">

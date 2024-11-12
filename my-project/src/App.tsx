@@ -3,7 +3,7 @@ import UserProvider from "./providers/userProvider";
 
 function App() {
   return (
-    <div className="w-screen max-w-full bg-[#FAFAFA] px-[140px] py-[50px]">
+    <div className="w-screen max-w-full bg-[#FAFAFA]  desktop:px-[140px] ">
       <UserProvider>
         <Outlet />
       </UserProvider>
