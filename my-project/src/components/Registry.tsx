@@ -83,14 +83,6 @@ const Form = () => {
       if (err instanceof Error) {
         setError(err.message);
       }
-      //   if (err instanceof Error) {
-      //     if (err.message.includes("already")) {
-      //       setError("Данная почта уже используется. Попробуйте войти.");
-      //     } else {
-      //       setError(err.message.replace("Firebase:", ""));
-      //     }
-      //   }
-      // }
     }
   };
 
