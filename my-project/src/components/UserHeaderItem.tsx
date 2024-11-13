@@ -10,6 +10,7 @@ function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const { changeOpenValue, kindOfModal } = useModal();
+  ///
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
