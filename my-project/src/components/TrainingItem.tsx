@@ -26,8 +26,8 @@ export type Component = {
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
-  const { changeOpenValue, kindOfModal } = useModal();
   const [userCourses, setUserCourses] = useState<string[]>([]);
+  const { changeOpenValue, kindOfModal, changeModal } = useModal();
 
   const handleClickAddTrain = async () => {
     if (auth.currentUser && train._id) {
@@ -35,7 +35,8 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
       await useWriteDataInBase(auth.currentUser.uid, train._id, setUserCourses);
       navigate("/user");
     } else {
-      alert("Пользователь не авторизован");
+      // alert("Пользователь не авторизован");
+      changeModal("event");
       changeOpenValue();
     }
   };
@@ -67,19 +68,23 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   }
 
   return (
-    <li className="relative h-[492px] w-[343px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]  desktop:h-[501px] desktop:w-[360px]">
+    <li className="relative h-[492px] w-[343px] cursor-pointer rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021] desktop:h-[501px] desktop:w-[360px]">
       <button
         onClick={handleClickAddTrain}
-        className="group cursor-[url(coursor.svg),_pointer] absolute right-[20px] top-[20px]"
+        className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
       >
         <img src="add-in-Circle.svg" alt="plus" />
-        <div className="absolute hidden group-hover:block left-[43px] top-[45px] w-[110px] h-[27px] border-[0.5px] border-black rounded-[5px] bg-white z-10"><p className="text-sm mt-1">Добавить курс</p></div>
+        <div className="absolute left-[43px] top-[45px] z-10 hidden h-[27px] w-[110px] rounded-[5px] border-[0.5px] border-black bg-white group-hover:block">
+          <p className="mt-1 text-sm">Добавить курс</p>
+        </div>
       </button>
       <div onClick={handleClick}>
         <MainCardsImage param={train._id} />
 
         <div className="pb-[15px] pl-[21.5px] pt-[24px] desktop:pb-[15px] desktop:pl-[30px] desktop:pt-[24px]">
-          <h3 className="mb-[20px] text-[24px] font-medium desktop:text-[32px] desktop:leading-[32.5px]">{train.nameRU}</h3>
+          <h3 className="mb-[20px] text-[24px] font-medium desktop:text-[32px] desktop:leading-[32.5px]">
+            {train.nameRU}
+          </h3>
           <ul className="flex flex-wrap gap-[6px]">
             {[
               `${train.workouts.length} ${dayTitle(train.workouts.length)}`,
@@ -91,8 +96,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           </ul>
         </div>
       </div>
-      {kindOfModal === "login" && <Login />}
-      {kindOfModal === "registry" && <Registry />}
+      {kindOfModal === "login" || (kindOfModal === "event" && <Login />)}
     </li>
   );
 };

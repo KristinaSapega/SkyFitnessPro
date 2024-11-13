@@ -32,6 +32,27 @@ const RestorePassword = ({ email }: Pick<EntryType, "email">) => {
   );
 };
 
+const EventToLogin = () => {
+  const { changeModal } = useModal();
+
+  return (
+    <>
+      <div className="mb-9 mt-12 text-center text-[18px]">
+        Для добавления курса необходимо зарегистрироваться.
+      </div>
+      <button
+        name="reg"
+        className="buttonPrimary w-[278px] border-[1px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+        onClick={() => {
+          changeModal("registry");
+        }}
+      >
+        Зарегистрироваться
+      </button>
+    </>
+  );
+};
+
 type ReqPassword = {
   setEmail: (email: string) => void;
 };
@@ -203,8 +224,10 @@ const Login = () => {
             <Form setEmail={handleEmail} />
           ) : kindOfModal === "registry" ? (
             <Registry />
-          ) : (
+          ) : kindOfModal === "info" ? (
             <RestorePassword email={email} />
+          ) : (
+            <EventToLogin />
           )}
         </section>
       </div>
