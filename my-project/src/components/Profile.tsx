@@ -37,7 +37,7 @@ const MyCorses = ({
   }
 
   return (
-    <div className="mt-12 flex flex-wrap items-center justify-center gap-[40px]">
+    <div className="mt-[34px] desktop:mt-[50px] flex min-h-[1000px] flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div

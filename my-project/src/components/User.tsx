@@ -125,7 +125,7 @@ export const UserCabinet = () => {
             />
           </div>
           <div className="flex flex-1 flex-col justify-center">
-            <div className="relative desktop:mb-[10px] flex items-center gap-[12px]">
+            <div className="relative desktop:mb-[10px] mb-[20px] flex items-center gap-[12px]">
               <input
                 ref={refName}
                 name="name"
