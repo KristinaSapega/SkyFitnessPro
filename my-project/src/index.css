@@ -26,6 +26,15 @@
   .buttonPrimary:active {
     @apply h-[52px] rounded-[46px] bg-btnPrimaryActive text-white;
   }
+  .buttonPrimaryMobile {
+    @apply h-[36px] rounded-[46px] bg-btnPrimaryRegular;
+  }
+  .buttonPrimaryMobile:hover {
+    @apply  bg-btnPrimaryHover;
+  }
+  .buttonPrimaryMobile:active {
+    @apply  bg-btnPrimaryActive text-white;
+  }
   .buttonPrimary:invalid {
     @apply h-[52px] rounded-[46px] bg-btnPrimaryInactive text-[#999];
   }

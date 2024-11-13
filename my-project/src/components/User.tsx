@@ -112,20 +112,20 @@ export const UserCabinet = () => {
   };
   return (
     <>
-      <h1 className="mb-8 text-center text-lg font-bold md:text-xl lg:text-4xl">
+      <h1 className="ml-[16px] desktop:ml-[0px] mb-[24px] text-[24px] desktop:text-[40px] desktop:leading-[44px] leading-[26.4px] font-bold ">
         Профиль
       </h1>
-      <div className="mx-auto mb-12 mt-10 w-full max-w-[343px] rounded-3xl border bg-white p-6 shadow-lg sm:max-w-[453px] md:max-w-[600px] md:p-10 lg:max-w-[800px] lg:p-[30px] xl:max-w-[1160px] xl:gap-[10px]">
-        <div className="flex flex-wrap gap-6 xl:gap-[10px]">
+      <div className=" desktop:h-[257px] mx-auto mb-12 w-full max-w-[343px] rounded-3xl border bg-white p-6 shadow-lg sm:max-w-[453px] md:max-w-[600px] md:p-10 lg:max-w-[800px] lg:p-[30px] xl:max-w-[1160px] xl:gap-[10px]">
+        <div className="flex flex-wrap gap-6 desktop:gap-[33px]">
           <div className="mx-auto flex items-center justify-center">
             <img
               src={auth.currentUser?.photoURL ?? "Mask group.svg"}
-              className="h-auto w-[205px] max-w-full justify-center rounded-[20px] md:w-[250px] lg:w-[300px]"
+              className="desktop:w-[197px] w-[141px]  max-w-full justify-center rounded-[20px] md:w-[250px] lg:w-[300px]"
               alt="Profile"
             />
           </div>
           <div className="flex flex-1 flex-col justify-center">
-            <div className="relative mb-[20px] flex items-center gap-[12px]">
+            <div className="relative desktop:mb-[10px] flex items-center gap-[12px]">
               <input
                 ref={refName}
                 name="name"
@@ -157,7 +157,7 @@ export const UserCabinet = () => {
               )}
             </div>
 
-            <div className="mb-[20px] flex flex-col">
+            <div className="desktop:mb-[6px] flex flex-col">
               <span className="font-small text-[18px]">
                 Логин: {userinfo.email}
               </span>
@@ -185,10 +185,10 @@ export const UserCabinet = () => {
               )}
             </div>
 
-            <div className="flex max-w-full flex-col items-center gap-2 md:flex-row">
+            <div className="flex max-w-full flex-col items-center gap-[10px] md:flex-row">
               <button
                 onClick={handlePassChange}
-                className="buttonPrimary mb-[20px] w-full hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive md:mb-0 md:w-[192px]"
+                className="buttonPrimary  w-full hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive md:mb-0 md:w-[192px]"
               >
                 {activInpuPass ? "Изменить пароль" : "Сохранить"}
               </button>
