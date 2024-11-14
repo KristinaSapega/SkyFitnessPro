@@ -10,6 +10,7 @@ import { courseProgress } from "./CourseProgress";
 const MyCorses = ({
   userCourses,
   setSelectedCourseId,
+
   setShowWorkoutPopup,
 }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
