@@ -1,13 +1,12 @@
 import Header from "./Header";
 import { useParams, useNavigate } from "react-router-dom";
 import { HeroImage } from "./HeroImages";
-import { useModal } from "../hooks/useModal";
-import Registry from "./Registry";
 import Login from "./Login";
-import { onValue, ref } from "firebase/database";
-import { database } from "../firebase";
+import { auth, database } from "../firebase";
 import { useEffect, useState } from "react";
-
+import { ref, set, get, update, onValue } from "firebase/database";
+import { useModal } from "../hooks/useModal";
+import useWriteDataInBase from "../hooks/useWriteDataInBase";
 
 type TrainingItem = {
   _id: string | undefined;
@@ -27,69 +26,49 @@ const ItemsComponent: React.FC<{ index: number; item: string }> = ({
   item,
 }) => {
   return (
-    <>
-      <div
-        key={index}
-        className="corPageBlockGradient box-border flex h-[141px] w-[368px] items-center gap-x-[25px] rounded-[20px] p-[20px]"
-      >
-        <p className="text-[75px] font-medium text-btnPrimaryRegular">
-          {index + 1}
-        </p>
-        <p className="text-[20px] font-normal leading-[22.4px] text-white">
-          {item}
-        </p>
-      </div>
-    </>
+    <div
+      key={index}
+      className="flex h-[141px] w-[343px] desktop:w-[370px] items-center gap-x-[17px] rounded-[28px] bg-gradient-to-r from-[#151720] to-[#1E212E] p-[20px] first:h-[141px] mr-[8px]"
+    >
+      <p className="text-[75px] font-medium text-[#BCEC30]">{index + 1}</p>
+      <p className="text-[20px] font-normal leading-[22.4px] text-white">
+        {item}
+      </p>
+    </div>
   );
 };
+
 const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
   index,
   item,
 }) => {
   return (
-    <>
-      <div key={index}>
-        <div className="flex items-center gap-x-[8px]">
-          <img src="/star.svg" alt="logo" width={26} height={26} />
-          <p className="text-[24px] font-normal leading-[26.4px] text-black">
-            {item}
-          </p>
-        </div>
+    <div key={index}>
+      <div className="flex items-center gap-x-[8px]">
+        <img src="/star.svg" alt="logo" width={26} height={26} />
+        <p className="text-[18px] sm:text-[24px] font-normal leading-[22px] sm:leading-[26.4px] text-black">
+          {item}
+        </p>
       </div>
-    </>
+    </div>
   );
 };
-import { useModal } from "../hooks/useModal";
-import Registry from "./Registry";
-import Login from "./Login";
-import { auth, database } from "../firebase";
-import { useEffect, useState } from "react";
-import { ref, set, get, update } from "firebase/database";
+
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
-  const { isRegistry, changeValue } = useModal();
-  const [items, setItems] = useState([]);
+  const { kindOfModal, changeOpenValue } = useModal();
+  const [userCourses, setUserCourses] = useState<string[]>([]);
+  const [items, setItems] = useState<TrainingItem[]>([]);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-  const train: TrainingItem = items.find(
+  const train = items.find(
     (item: TrainingItem) => item._id === params?.nameEN,
-  );
+  ) as TrainingItem | undefined;
 
   const fittings: string[] = train ? train.fitting : [];
   const directions: string[] = train ? train.directions : [];
-
-  useEffect(() => {
-    const dataRef = ref(database, "/courses");
-    onValue(dataRef, (snapshot) => {
-      const data = snapshot.val();
-      setItems(data);
-    });
-  }, [database]);
-
-  const { isRegistry, changeValue } = useModal();
-  const [isAuth, setIsAuth] = useState<boolean>(false);
-  const [userCourses, setUserCourses] = useState<string[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
@@ -111,145 +90,183 @@ export const CoursePagesComp = () => {
     }
   };
 
-  const writeUserDataInBase = async (uid: string, courseID: string) => {
-    try {
-      const coursesRef = ref(database, "/courses");
-      const coursesSnapshot = await get(coursesRef);
-      const allCourses = coursesSnapshot.val();
+  useEffect(() => {
+    const dataRef = ref(database, "/courses");
+    onValue(dataRef, (snapshot) => {
+      const data = snapshot.val();
+      setItems(data);
+    });
+  }, [database]);
 
-      if (!allCourses || !Array.isArray(allCourses)) {
-        console.error("Courses data массив не правильного формата");
-        return;
-      }
+  // const writeUserDataInBase = async (uid: string, courseID: string) => {
+  //   try {
+  //     const coursesRef = ref(database, "/courses");
+  //     const coursesSnapshot = await get(coursesRef);
+  //     const allCourses = coursesSnapshot.val();
 
-      const courseData = allCourses.find((course: any) => course._id === courseID);
-      if (!courseData) {
-        console.error("в Course data не найден course ID:", courseID);
-        return;
-      }
+  //     if (!allCourses || !Array.isArray(allCourses)) {
+  //       console.error("Courses data массив не правильного формата");
+  //       return;
+  //     }
 
-      const courseWorkouts = courseData.workouts || [];
-      const userRef = ref(database, `users/${uid}`);
-      const snapshot = await get(userRef);
+  //     const courseData = allCourses.find(
+  //       (course: any) => course._id === courseID,
+  //     );
+  //     if (!courseData) {
+  //       console.error("в Course data не найден course ID:", courseID);
+  //       return;
+  //     }
 
-      if (snapshot.exists()) {
-        const userData = snapshot.val();
-        const currentCourses = userData.courses || [];
-        const currentWorkouts = userData.workouts || [];
+  //     const courseWorkouts = courseData.workouts || [];
+  //     const userRef = ref(database, `users/${uid}`);
+  //     const snapshot = await get(userRef);
 
-        if (!currentCourses.includes(courseID)) {
-          await update(userRef, {
-            courses: [...currentCourses, courseID],
-            workouts: [...new Set([...currentWorkouts, ...courseWorkouts])],
-          });
-          setUserCourses([...currentCourses, courseID]);
-        }
-      } else {
-        const newUserData = {
-          _id: uid,
-          courses: [courseID],
-          workouts: courseWorkouts,
-        };
-        await set(userRef, newUserData);
-        setUserCourses([courseID]);
-      }
-    } catch (error) {
-      console.error("Ошибка при добавлении данных к пользователю", error);
-    }
-  };
+  //     if (snapshot.exists()) {
+  //       const userData = snapshot.val();
+  //       const currentCourses = userData.courses || [];
+  //       const currentWorkouts = userData.workouts || [];
+
+  //       if (!currentCourses.includes(courseID)) {
+  //         await update(userRef, {
+  //           courses: [...currentCourses, courseID],
+  //           workouts: {
+  //             ...currentWorkouts,
+  //             ...Object.fromEntries(
+  //               courseWorkouts.map((workout: string) => [workout, 0]),
+  //             ),
+  //           },
+  //         });
+  //         setUserCourses([...currentCourses, courseID]);
+  //       }
+  //     } else {
+  //       const formattedWorkouts = Object.fromEntries(
+  //         courseWorkouts.map((workout: string) => [workout, 0]),
+  //       );
+
+  //       const newUserData = {
+  //         _id: uid,
+  //         courses: [courseID],
+  //         workouts: formattedWorkouts,
+  //       };
+  //       await set(userRef, newUserData);
+  //       setUserCourses([courseID]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Ошибка при добавлении данных к пользователю", error);
+  //   }
+  // };
 
   const handleAddCourse = async () => {
     if (auth.currentUser && params.nameEN) {
-      await writeUserDataInBase(auth.currentUser.uid, params.nameEN);
+      await useWriteDataInBase(
+        auth.currentUser.uid,
+        params.nameEN,
+        setUserCourses,
+      );
       navigate("/user");
     } else {
-      console.error("Пользователь не авторизован или идентификатор курса отсутствует");
+      console.error(
+        "Пользователь не авторизован или идентификатор курса отсутствует",
+      );
     }
   };
 
   const isCourseAdded = userCourses.includes(params.nameEN || "");
 
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-[1440px] px-[140px]">
-        <Header />
+  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    changeOpenValue();
+  };
 
+  return (
+    <div className="max-width-[375px] flex min-h-screen flex-col items-center justify-center">
+      <div className="min-h-[500px] min-w-[375px] max-w-[1160px] overflow-x-hidden desktop:overflow-visible">
+      <Header />
+      <div className=" w-[375px] desktop:mt-[60px] mt-[40px] px-[16px] desktop:px-[0px] desktop:w-[1160px] ">
         <HeroImage param={params.nameEN} />
-        <p className="mb-[40px] text-[44px] font-semibold text-black">
+        <p className="decoration-skip-ink-none mb-0 desktop:mb-[40px] desktop:mt-[60px] h-[26px]  gap-0 text-left text-[24px] font-medium leading-[26.4px] text-black desktop:text-[40px] desktop:leading-[44px]">
           Подойдет для вас, если:
         </p>
-        <div className="flex gap-x-[17px]">
-          <div className="corPageBlockGradient box-border flex h-[141px] w-[368px] items-center gap-x-[25px] rounded-[20px] p-[20px]">
-            <p className="text-btnPrimaryRegular text-[75px] font-medium">1</p>
-            <p className="text-[24px] font-normal leading-[26.4px] text-white">
-              Давно хотели попробовать йогу, но не решались начать
-            </p>
-          </div>
-          <div className="corPageBlockGradient box-border flex h-[141px] w-[431px] items-center gap-x-[25px] rounded-[20px] p-[20px]">
-            <p className="text-btnPrimaryRegular text-[75px] font-medium">2</p>
-            <p className="text-[24px] font-normal leading-[26.4px] text-white">
-              Хотите укрепить позвоночник, избавиться от болей в спине и суставах
-            </p>
-          </div>
-          <div className="corPageBlockGradient box-border flex h-[141px] w-[327px] items-center gap-x-[25px] rounded-[20px] p-[20px]">
-            <p className="text-btnPrimaryRegular text-[75px] font-medium">3</p>
-            <p className="text-[24px] font-normal leading-[26.4px] text-white">
-              Ищете активность, полезную для тела и души
-            </p>
-          </div>
+        <div className="mt-[26px] flex h-[457px] flex-wrap justify-between  sm:h-auto">
+          {fittings.map((item, index) => (
+            <ItemsComponent item={item} index={index} key={index} />
+          ))}
         </div>
-        <section>
-          <div className="mt-[60px]">
-            <p className="mb-[40px] text-[44px] font-semibold text-black">
+        <section className="relative ">
+          <div className="relative">
+            <p className="mt-[40px] mb-[24px] text-left font-['Roboto'] text-[24px] font-medium leading-[26.4px] text-black sm:text-[44px] desktop:text-[40px] desktop:leading-[44px]">
               Направления
             </p>
-            <div className="bg-btnPrimaryRegular box-border flex h-[146px] w-[1160px] justify-around gap-x-[124px] rounded-[30px] p-[30px]">
-              <div className="flex flex-col gap-y-[34px]">
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Йога для новичков
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Классическая йога
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-y-[34px]">
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Йогатерапия
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Кундалини-йога
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-y-[34px]">
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Хатха-йога
-                  </p>
-                </div>
-                <div className="flex items-center gap-x-[8px]">
-                  <img src="/star.svg" alt="logo" width={26} height={26} />
-                  <p className="text-[24px] font-normal leading-[26.4px] text-black">
-                    Аштанга-йога
-                  </p>
-                </div>
-              </div>
+
+            <div className="z-3 relative box-border grid h-auto w-[343px] grid-cols-1 gap-[10px] rounded-[28px] bg-btnPrimaryRegular p-[30px] sm:h-[336px] sm:w-[1160px] sm:grid-cols-3 desktop:h-[146px] desktop:w-[1160px] desktop:content-center">
+              {directions.map((item, index) => (
+                <ItemsComponentItem item={item} index={index} key={index} />
+              ))}
+              <img
+                className="desktop:hidden absolute left-[-40px] w-[900px] top-[300px] z-0 mx-auto"
+                src="/vector_6084.png"
+                alt="overlay"
+                width={300}
+                height={100}
+                />
             </div>
           </div>
-          <div className="mb-[60px] mt-[102px]">
-            <div className="shadowBlack013 relative box-border flex h-[486px] w-[1160px] rounded-[30px] bg-white bg-[url(/vector_6084.png)] bg-[right_55px_top_120px] bg-no-repeat p-[40px]">
+
+          <img
+            className="desktop:hidden z-5 absolute right-0 left-[80px] top-[235px] mx-auto"
+            src="/forestGump.png"
+            alt="logo"
+            width={505}
+            height={100}
+            />
+
+          <div className="mb-[60px] mt-[200px] desktop:mt-[105px]">
+            <div className="desktop:hidden shadowBlack013 [412px] relative z-20 box-border flex w-[343px] rounded-[30px] bg-white bg-[right_55px_top_120px] bg-no-repeat p-[40px] desktop:h-[486px] desktop:w-[1160px]">
+              <div className="pb-[40px]">
+                <p className="mb-[28px] text-[32px] font-semibold leading-[35.2px] text-black desktop:text-[60px] desktop:leading-[60px]">
+                  Начните путь <br /> к новому телу
+                </p>
+                <ul className="mb-[28px] pl-[20px]">
+                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
+                    проработка всех групп мышц
+                  </li>
+                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
+                    тренировка суставов
+                  </li>
+                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
+                    улучшение циркуляции крови
+                  </li>
+                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
+                    упражнения заряжают бодростью
+                  </li>
+                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
+                    помогают противостоять стрессам
+                  </li>
+                </ul>
+                {isAuth ? (
+                  isCourseAdded ? (
+                    <button className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]">
+                      Перейти
+                    </button>
+                  ) : (
+                    <button
+                      className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
+                      onClick={handleAddCourse}
+                      >
+                      Добавить курс
+                    </button>
+                  )
+                ) : (
+                  <button
+                  className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
+                    onClick={openModal}
+                  >
+                    Войдите, чтобы добавить курс
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="hidden desktop:block shadowBlack013 relative box-border flex h-[486px] w-[1160px] rounded-[30px] bg-white bg-[url(/vector_6084.png)] bg-[right_55px_top_120px] bg-no-repeat p-[40px]">
               <div className="pb-[40px]">
                 <p className="mb-[28px] text-[60px] font-semibold leading-[60px] text-black">
                   Начните путь <br /> к новому телу
@@ -273,14 +290,12 @@ export const CoursePagesComp = () => {
                 </ul>
                 {isAuth ? (
                   isCourseAdded ? (
-                    <button
-                      className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive w-[437px]"
-                    >
+                    <button className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive">
                       Перейти
                     </button>
                   ) : (
                     <button
-                      className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive w-[437px]"
+                      className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
                       onClick={handleAddCourse}
                     >
                       Добавить курс
@@ -288,8 +303,8 @@ export const CoursePagesComp = () => {
                   )
                 ) : (
                   <button
-                    className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive w-[437px]"
-                    onClick={changeValue}
+                    className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+                    onClick={openModal}
                   >
                     Войдите, чтобы добавить курс
                   </button>
@@ -305,7 +320,9 @@ export const CoursePagesComp = () => {
             </div>
           </div>
         </section>
-        {isRegistry ? <Registry /> : <Login />}
+
+        {kindOfModal === "login" && <Login />}
+      </div>
       </div>
     </div>
   );

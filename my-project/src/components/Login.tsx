@@ -1,9 +1,13 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 
 import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useModal } from "../hooks/useModal";
 import { auth } from "../firebase";
+import Registry from "./Registry";
 
 type EntryType = {
   email: string;
@@ -11,25 +15,44 @@ type EntryType = {
   rePass: string;
   matchPasswords: boolean;
   isEmptyField: boolean;
-  err: boolean;
 };
 
-const Form = () => {
+const RestorePassword = ({ email }: Pick<EntryType, "email">) => {
+  const { changeModal } = useModal();
+  return (
+    <>
+      <div
+        className="mt-12 text-center text-[18px]"
+        onClick={() => changeModal("login")}
+      >
+        Ссылка для восстановления пароля отправлена на &nbsp;
+        {email}
+      </div>
+    </>
+  );
+};
+
+type ReqPassword = {
+  setEmail: (email: string) => void;
+};
+
+const Form = ({ setEmail }: ReqPassword) => {
   const refLogin = useRef<HTMLInputElement | null>(null);
   const refPass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
-  const { changeModal, changeValue } = useModal();
+  const { changeModal, changeOpenValue } = useModal();
 
+  const [error, setError] = useState<string | null>(null);
+  const [reqChangePass, setReqChangePass] = useState<string | null>(null);
   const [entry, setEntry] = useState<EntryType>({
     email: "",
     pass: "",
     rePass: "",
     matchPasswords: true,
     isEmptyField: false,
-    err: false,
   });
-  const { email, pass, matchPasswords, isEmptyField, err } = entry;
+  const { email, pass, matchPasswords, isEmptyField } = entry;
 
   const inputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setEntry({
@@ -42,6 +65,7 @@ const Form = () => {
 
   const loginUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!email || !pass) {
       refBtn.current?.setAttribute("disabled", "");
       setEntry({ ...entry, isEmptyField: true });
@@ -49,19 +73,40 @@ const Form = () => {
       !pass && refPass.current?.classList.add("border-red-600");
       return;
     }
-  };
 
-  // авторизация Firebase
-  const handleLogin = () => {
+    if (
+      !email.match(
+        /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu,
+      )
+    ) {
+      setError("Ведите корректный адрес электронной почты");
+      refLogin.current?.classList.add("border-red-600");
+      return null;
+    }
+    if (isEmptyField) return null;
+
     signInWithEmailAndPassword(auth, entry.email, entry.pass)
       .then(() => {
-        changeValue();
+        changeOpenValue();
       })
-      .catch((data) => {
-        if (data) {
-          setEntry({ ...entry, err: true });
+      .catch((err) => {
+        if (err) {
+          if ("code" in err) {
+            if (err.code === "auth/invalid-credential") {
+              setError("Пароль введен неверно, попробуйте еще раз. ");
+              setReqChangePass("Восстановить пароль?");
+            } else {
+              setError(err.message.replace("Firebase:", ""));
+            }
+          }
         }
       });
+  };
+
+  const restorePassword = () => {
+    sendPasswordResetEmail(auth, email);
+    setEmail(email);
+    changeModal("info");
   };
 
   return (
@@ -69,11 +114,9 @@ const Form = () => {
       <div className="mt-12 flex flex-col gap-[10px]">
         <input
           ref={refLogin}
-          className="focus:invalid:border-red-600"
           type="email"
           name="email"
           onChange={inputChange}
-          onClick={() => console.log(refLogin)}
           onFocus={() => {
             setEntry({ ...entry, isEmptyField: false });
             refLogin.current?.classList.remove("border-red-600");
@@ -84,7 +127,6 @@ const Form = () => {
         />
         <input
           ref={refPass}
-          className="focus:invalid:border-red-600"
           type="password"
           name="pass"
           onChange={inputChange}
@@ -97,18 +139,29 @@ const Form = () => {
           required
         />
       </div>
-      <div className="h-[34px]">
+      <div className="h-fit min-h-[34px] text-center">
         {isEmptyField && (
           <h3 className="err animate-err">Заполните все поля!</h3>
         )}
         {!matchPasswords && (
           <h3 className="err animate-err">Пароли не совпадают</h3>
         )}
-        {err && <h3 className="err animate-err">Не верный логин или пароль</h3>}
+        {error && (
+          <h3 className="err inline-block animate-err align-middle text-[14px] leading-[15px] before:h-full before:content-['']">
+            {error}
+            {reqChangePass && (
+              <span
+                className="underLineText cursor-pointer"
+                onClick={restorePassword}
+              >
+                {reqChangePass}
+              </span>
+            )}
+          </h3>
+        )}
       </div>
       <div className="m-0 flex flex-col gap-[10px] p-0">
         <button
-          onClick={handleLogin}
           ref={refBtn}
           name="reg"
           className="buttonPrimary hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive"
@@ -119,7 +172,9 @@ const Form = () => {
         <button
           name="reg"
           className="buttonSecondary w-[278px] border-[1px] border-solid border-black bg-white invalid:bg-btnSecondaryInactive hover:bg-btnSecondaryHover active:bg-btnSecondaryActive"
-          onClick={changeModal}
+          onClick={() => {
+            changeModal("registry");
+          }}
         >
           Зарегистрироваться
         </button>
@@ -129,23 +184,37 @@ const Form = () => {
 };
 
 const Login = () => {
-  const { isOpen, changeValue } = useModal();
+  const { isOpen, changeOpenValue, kindOfModal } = useModal();
   if (!isOpen) return null;
+
+  const [email, setEmail] = useState<string>("");
+
+  const handleEmail = (email: string) => {
+    setEmail(email);
+  };
 
   return (
     <div
       className="entry fixed left-0 top-0 z-50 h-full w-full min-w-[375px]"
-      onClick={() => changeValue()}
+      onClick={() => {
+        changeOpenValue();
+      }}
     >
       <div className="flex h-full w-full items-center justify-center bg-black/[.1]">
         <section
-          className="flex h-[425px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
+          className="flex h-fit min-h-[233px] w-[360px] flex-col items-center rounded-[30px] bg-white p-10"
           onClick={(e) => e.stopPropagation()}
         >
           <Link to={"/"}>
             <img src="/skyFitness.svg" alt="logo" width={220} height={35} />
           </Link>
-          <Form />
+          {kindOfModal === "login" ? (
+            <Form setEmail={handleEmail} />
+          ) : kindOfModal === "registry" ? (
+            <Registry />
+          ) : (
+            <RestorePassword email={email} />
+          )}
         </section>
       </div>
     </div>

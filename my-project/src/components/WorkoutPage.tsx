@@ -1,10 +1,13 @@
 import Header from "./Header";
 import { workout } from "./dataList";
-import MyProgressPopup from "./MyProgressPopup"; // Import the popup component
+import MyProgressPopup from "./MyProgressPopup";
 import { useState } from "react";
 
 export const WorkoutPage = () => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [progressData, setProgressData] = useState(
+    workout.exercises.map(() => 0)
+  );
 
   const openPopup = () => {
     setIsPopupVisible(true);
@@ -12,6 +15,14 @@ export const WorkoutPage = () => {
 
   const closePopup = () => {
     setIsPopupVisible(false);
+  };
+
+  const updateProgress = (index:number, value:number) => {
+    setProgressData(prevProgressData => {
+      const newProgressData = [...prevProgressData];
+      newProgressData[index] = Math.min(newProgressData[index] + value, 100);
+      return newProgressData;
+    });
   };
 
   return (
@@ -34,20 +45,20 @@ export const WorkoutPage = () => {
           <div className="mb-[84px] rounded-[30px] shadow-[0px_4px_67px_-12px_#00000021] desktop:mb-[200px] desktop:rounded-3xl">
             <section className="p-[30px] desktop:p-[40px]">
               <h2 className="text-[32px]">Упражнения тренировки 2</h2>
-              <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[60px]">
+              <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[35px]">
                 {workout.exercises.map((items, index) => (
                   <li key={index} className="flex flex-col">
                     <label
                       className="pb-[10px] text-[18px] desktop:text-lg"
                       htmlFor=""
                     >
-                      {items.name} {100 / items.quantity}%
+                      {items.name} {progressData[index]}%
                     </label>
                     <progress
                       className="h-[6px] w-[283px] desktop:w-80 [&::-moz-progress-bar]:bg-[#00C1FF] [&::-webkit-progress-bar]:rounded-3xl [&::-webkit-progress-bar]:bg-[#F7F7F7] [&::-webkit-progress-value]:rounded-3xl [&::-webkit-progress-value]:bg-[#00C1FF]"
                       id="progress"
-                      value="5"
-                      max={items.quantity}
+                      value={progressData[index]}
+                      max="100"
                     ></progress>
                   </li>
                 ))}
@@ -62,7 +73,7 @@ export const WorkoutPage = () => {
           </div>
         </main>
       </div>
-      {isPopupVisible && <MyProgressPopup onClose={closePopup} />}
+      {isPopupVisible && <MyProgressPopup onClose={closePopup} updateProgress={updateProgress} />}
     </div>
   );
 };
