@@ -4,9 +4,10 @@ import { HeroImage } from "./HeroImages";
 import Login from "./Login";
 import { auth, database } from "../firebase";
 import { useEffect, useState } from "react";
-import { ref, set, get, update, onValue } from "firebase/database";
+import { ref, get, onValue } from "firebase/database";
 import { useModal } from "../hooks/useModal";
 import useWriteDataInBase from "../hooks/useWriteDataInBase";
+import { courseProgress } from "./CourseProgress";
 
 type TrainingItem = {
   _id: string | undefined;
@@ -66,6 +67,8 @@ export const CoursePagesComp = () => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  courseProgress(params.nameEN);
+
   const train = items.find(
     (item: TrainingItem) => item._id === params?.nameEN,
   ) as TrainingItem | undefined;
@@ -100,64 +103,6 @@ export const CoursePagesComp = () => {
       setItems(data);
     });
   }, [database]);
-
-  // const writeUserDataInBase = async (uid: string, courseID: string) => {
-  //   try {
-  //     const coursesRef = ref(database, "/courses");
-  //     const coursesSnapshot = await get(coursesRef);
-  //     const allCourses = coursesSnapshot.val();
-
-  //     if (!allCourses || !Array.isArray(allCourses)) {
-  //       console.error("Courses data массив не правильного формата");
-  //       return;
-  //     }
-
-  //     const courseData = allCourses.find(
-  //       (course: any) => course._id === courseID,
-  //     );
-  //     if (!courseData) {
-  //       console.error("в Course data не найден course ID:", courseID);
-  //       return;
-  //     }
-
-  //     const courseWorkouts = courseData.workouts || [];
-  //     const userRef = ref(database, `users/${uid}`);
-  //     const snapshot = await get(userRef);
-
-  //     if (snapshot.exists()) {
-  //       const userData = snapshot.val();
-  //       const currentCourses = userData.courses || [];
-  //       const currentWorkouts = userData.workouts || [];
-
-  //       if (!currentCourses.includes(courseID)) {
-  //         await update(userRef, {
-  //           courses: [...currentCourses, courseID],
-  //           workouts: {
-  //             ...currentWorkouts,
-  //             ...Object.fromEntries(
-  //               courseWorkouts.map((workout: string) => [workout, 0]),
-  //             ),
-  //           },
-  //         });
-  //         setUserCourses([...currentCourses, courseID]);
-  //       }
-  //     } else {
-  //       const formattedWorkouts = Object.fromEntries(
-  //         courseWorkouts.map((workout: string) => [workout, 0]),
-  //       );
-
-  //       const newUserData = {
-  //         _id: uid,
-  //         courses: [courseID],
-  //         workouts: formattedWorkouts,
-  //       };
-  //       await set(userRef, newUserData);
-  //       setUserCourses([courseID]);
-  //     }
-  //   } catch (error) {
-  //     console.error("Ошибка при добавлении данных к пользователю", error);
-  //   }
-  // };
 
   const handleAddCourse = async () => {
     if (auth.currentUser && params.nameEN) {

@@ -7,34 +7,44 @@ import { MainCardsImage } from "./MainCardsImage";
 import WorkoutSelectPopup from "./WorkoutSelectPopup";
 import { courseProgress } from "./CourseProgress";
 
-const MyCorses = ({
-  userCourses,
-  setSelectedCourseId,
-  setShowWorkoutPopup,
-}) => {
+type Course = {
+  _id: string;
+  nameRU: string;
+  workouts: { id: number; name: string }[];
+  time: string;
+  level: string;
+  progress: number;
+};
+
+type MyCoursesProps = {
+  userCourses: Course[];
+  setSelectedCourseId: (id: string | null) => void;
+  setShowWorkoutPopup: (show: boolean) => void;
+};
+
+const MyCorses = ({ userCourses, setSelectedCourseId, setShowWorkoutPopup }: MyCoursesProps) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
+const handleMouseDown = (id: string) => {
+  setActiveButton(id);
+};
 
-  const handleMouseDown = (id: number) => {
-    setActiveButton(id);
-  };
+const handleMouseUp = () => {
+  setActiveButton(null);
+};
 
-  const handleMouseUp = () => {
-    setActiveButton(null);
-  };
+const handleWorkoutButtonClick = (courseId: string) => {
+  setSelectedCourseId(courseId);
+  setShowWorkoutPopup(true);
+};
 
-  const handleWorkoutButtonClick = (courseId: string) => {
-    setSelectedCourseId(courseId); // Устанавливаем выбранный курс
-    setShowWorkoutPopup(true); // Открываем попап
-  };
+function dayTitle(number: number): string {
+  if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
+  const lastNum = number % 10;
+  if (lastNum === 1) return "День";
+  if ([2, 3, 4].includes(lastNum)) return "Дня";
+  return "Дней";
+}
 
-  function dayTitle(number: number) {
-    let lastNum;
-    if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
-    lastNum = number % 10;
-    if (lastNum == 1) return "День";
-    if ([2, 3, 4].includes(lastNum)) return "Дня";
-    if ([5, 6, 7, 8, 9, 0].includes(lastNum)) return "Дней";
-  }
 
   return (
     <div className="mt-[34px] flex min-h-[1000px] flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
@@ -46,16 +56,9 @@ const MyCorses = ({
           >
             <button
               className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
-              onClick={() =>
-                alert("Удалим в следующий раз, а пока время тренировок")
-              }
+              onClick={() => alert("Удалим в следующий раз, а пока время тренировок")}
             >
-              <img
-                src="/remove-in-Circle.svg"
-                alt="minus"
-                width={32}
-                height={32}
-              />
+              <img src="/remove-in-Circle.svg" alt="minus" width={32} height={32} />
               <div className="absolute left-[43px] top-[45px] z-10 hidden h-[27px] w-[100px] rounded-[5px] border-[0.5px] border-black bg-white group-hover:block">
                 <p className="mt-1 text-sm">Удалить курс</p>
               </div>
@@ -63,9 +66,7 @@ const MyCorses = ({
             <MainCardsImage param={course._id} />
 
             <div className="px-[30px] py-[24px]">
-              <h3 className="mb-[20px] text-3xl font-medium">
-                {course.nameRU}
-              </h3>
+              <h3 className="mb-[20px] text-3xl font-medium">{course.nameRU}</h3>
               <ul className="flex flex-wrap gap-[6px]">
                 <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
                   <img src="/calendar.svg" alt="" />
@@ -102,8 +103,8 @@ const MyCorses = ({
                 {course.progress === 0
                   ? "Начать тренировки"
                   : course.progress === 100
-                    ? "Начать заново"
-                    : "Продолжить"}
+                  ? "Начать заново"
+                  : "Продолжить"}
               </button>
             </div>
           </div>
@@ -116,7 +117,7 @@ const MyCorses = ({
 };
 
 export const Profile = () => {
-  const [userCourses, setUserCourses] = useState<any[]>([]);
+  const [userCourses, setUserCourses] = useState<Course[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [showWorkoutPopup, setShowWorkoutPopup] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -128,7 +129,7 @@ export const Profile = () => {
         const coursesSnapshot = await get(userCoursesRef);
 
         if (coursesSnapshot.exists()) {
-          const courseIDs = coursesSnapshot.val();
+          const courseIDs: string[] = coursesSnapshot.val();
 
           const allCoursesRef = ref(database, "courses");
           const allCoursesSnapshot = await get(allCoursesRef);
@@ -136,22 +137,22 @@ export const Profile = () => {
             ? allCoursesSnapshot.val()
             : [];
 
-          const allCourses = Array.isArray(allCoursesData)
+          const allCourses: Course[] = Array.isArray(allCoursesData)
             ? allCoursesData
             : Object.values(allCoursesData);
 
-          const userrrrCoursesData = allCourses.filter((course: any) =>
-            courseIDs.includes(course._id),
+          const userCoursesData = allCourses.filter((course) =>
+            courseIDs.includes(course._id)
           );
 
-          const userCoursesData = userrrrCoursesData.map((course: any) => ({
+          const processedUserCourses = userCoursesData.map((course) => ({
             ...course,
             calendar: "30 дней",
             time: "20-50 мин/день",
             level: "Сложность",
           }));
 
-          setUserCourses(userCoursesData);
+          setUserCourses(processedUserCourses);
         }
       } catch (error) {
         console.error("Ошибка при получении данных пользователя", error);
@@ -171,7 +172,7 @@ export const Profile = () => {
     };
 
     initialize();
-  }, []);
+  }, [database]);
 
   if (isLoading) {
     return "";
@@ -193,7 +194,6 @@ export const Profile = () => {
           />
         </div>
       </div>
-      {/* WorkoutSelectPopup отображается при showWorkoutPopup */}
       {showWorkoutPopup && selectedCourseId && (
         <WorkoutSelectPopup
           courseId={selectedCourseId}
