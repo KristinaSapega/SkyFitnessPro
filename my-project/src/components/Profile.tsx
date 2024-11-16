@@ -47,7 +47,7 @@ function dayTitle(number: number): string {
 
 
   return (
-    <div className="mt-[34px] flex min-h-[1000px] flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
+    <div className="mt-[34px] flex  flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div
@@ -180,7 +180,7 @@ export const Profile = () => {
 
   return (
     <div className="flex flex-col items-center py-[50px]">
-      <div className="desktop:w-[1160px]">
+      <div className="min-w-[375px] desktop:w-[1160px]">
         <Header />
         <div className="mt-14">
           <UserCabinet />
