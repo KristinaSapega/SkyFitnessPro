@@ -10,7 +10,6 @@ import { courseProgress } from "./CourseProgress";
 const MyCorses = ({
   userCourses,
   setSelectedCourseId,
-
   setShowWorkoutPopup,
 }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
@@ -38,7 +37,7 @@ const MyCorses = ({
   }
 
   return (
-    <div className="mt-12 flex flex-wrap justify-start gap-[40px]">
+    <div className="mt-[34px] desktop:mt-[50px] flex min-h-[1000px] flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div
@@ -179,8 +178,8 @@ export const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="max-w-[1160px] ">
+    <div className="flex flex-col items-center py-[50px]">
+      <div className="max-w-[1160px]">
         <Header />
         <div className="mt-14">
           <UserCabinet />
