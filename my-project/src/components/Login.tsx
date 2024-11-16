@@ -74,6 +74,15 @@ const Form = ({ setEmail }: ReqPassword) => {
       return;
     }
 
+    if (
+      !email.match(
+        /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu,
+      )
+    ) {
+      setError("Ведите корректный адрес электронной почты");
+      refLogin.current?.classList.add("border-red-600");
+      return null;
+    }
     if (isEmptyField) return null;
 
     signInWithEmailAndPassword(auth, entry.email, entry.pass)

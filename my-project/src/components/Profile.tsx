@@ -7,11 +7,9 @@ import { MainCardsImage } from "./MainCardsImage";
 import WorkoutSelectPopup from "./WorkoutSelectPopup";
 import { courseProgress } from "./CourseProgress";
 
-const MyCorses = ({
-  userCourses,
-  setSelectedCourseId,
-  setShowWorkoutPopup,
-}) => {
+
+
+const MyCorses = ({ userCourses, setSelectedCourseId, setShowWorkoutPopup }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleMouseDown = (id: number) => {
