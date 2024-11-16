@@ -1,10 +1,28 @@
 import Header from "./Header";
 import { workout } from "./dataList";
 import MyProgressPopup from "./MyProgressPopup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { onValue, ref } from "firebase/database";
+import { database } from "../firebase";
 
 export const WorkoutPage = () => {
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [workouts, setWorkouts] = useState([]);
+  const params = useParams();
+  const workoutId = params.id;
+
+
+
+  useEffect(() => {
+    const dataRef = ref(database, '/workouts');
+    onValue(dataRef, (snapshot) => {
+      const data = snapshot.val();
+      setWorkouts(data);
+      console.log(data)
+    });
+  }, []);
+
 
   const openPopup = () => {
     setIsPopupVisible(true);
@@ -16,14 +34,14 @@ export const WorkoutPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-[375px] px-[16px] desktop:w-[1440px] desktop:px-[140px] py-[50px]">
+      <div className="w-[375px] px-[16px] py-[50px] desktop:w-[1440px] desktop:px-[140px]">
         <Header />
         <main className="">
           <section className="">
             <h1 className="mb-[10px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
               Йога
             </h1>
-            <h3 className="text-[18px] underline desktop:text-[32px] ">
+            <h3 className="text-[18px] underline desktop:text-[32px]">
               {workout.name}
             </h3>
             <iframe
