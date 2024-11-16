@@ -78,22 +78,21 @@ export const courseProgress = (courseID: CourseIDType) => {
   const currentCourse: CurrentCourse | undefined = allCourses.find((item) =>
     courseID ? item.hasOwnProperty(courseID) : false,
   );
-  // Initialize currentCourseprogress
+
+  // Прогресс текущего курса
   const currentCourseprogress: CourseProgress = {};
 
-  // Iterate over currentCourseWorkouts
   for (const courseId in currentCourse) {
     const workoutIds = currentCourse[courseId];
     let totalProgress = 0;
 
-    // Итерация по workoutId и поиск соответствующих объектов userEx
     workoutIds.forEach((workoutId) => {
-      // Ищем объект с тренировкой по идентификатору
+      // Ищем тренировку
       const workoutObj = userEx.find((obj) => obj[workoutId]);
 
       if (workoutObj) {
         const exercises = workoutObj[workoutId];
-        // Определяем прогресс для текущего workoutId
+        // Определяем прогресс для текущей тренировки 
         const progress = Object.values(exercises).some((value) => value > 0)
           ? 1
           : 0;
@@ -104,7 +103,7 @@ export const courseProgress = (courseID: CourseIDType) => {
     // Присваиваем вычисленный прогресс в currentCourseprogress
     currentCourseprogress[courseId] = totalProgress;
   }
-  // Вычислим процентное соотношение
+  // Вычислим процентное соотношение текущей тренировки от общего прогресса 
   let progress: number = 0;
   for (const courseId in currentCourseprogress) {
     if (baseProgress[courseId] !== undefined) {
