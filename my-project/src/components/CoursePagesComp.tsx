@@ -330,7 +330,11 @@ export const CoursePagesComp = () => {
           </div>
         </div>
       </div>
+<<<<<<< HEAD
 
+=======
+      
+>>>>>>> 148f174f36b9ddce99b5012d8f98008c2a090cf1
     </>
   );
 };
