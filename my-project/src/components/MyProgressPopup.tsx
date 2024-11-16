@@ -3,6 +3,7 @@ import ProgressSuccess from "./ProgressSuccess";
 
 interface MyProgressPopupProps {
     onClose: () => void;
+    workoutId?: string;
   }
 
 function MyProgressPopup({ onClose }: MyProgressPopupProps) {
