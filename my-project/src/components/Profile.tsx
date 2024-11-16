@@ -7,9 +7,11 @@ import { MainCardsImage } from "./MainCardsImage";
 import WorkoutSelectPopup from "./WorkoutSelectPopup";
 import { courseProgress } from "./CourseProgress";
 
-
-
-const MyCorses = ({ userCourses, setSelectedCourseId, setShowWorkoutPopup }) => {
+const MyCorses = ({
+  userCourses,
+  setSelectedCourseId,
+  setShowWorkoutPopup,
+}) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
 
   const handleMouseDown = (id: number) => {
@@ -35,12 +37,12 @@ const MyCorses = ({ userCourses, setSelectedCourseId, setShowWorkoutPopup }) => 
   }
 
   return (
-    <div className="mt-[34px] desktop:mt-[50px] flex min-h-[1000px] flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px]">
+    <div className="mt-[34px] flex min-h-[1000px] flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div
             key={course._id}
-            className="relative h-[649px] w-[343px] desktop:w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
+            className="relative h-[649px] w-[343px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021] desktop:w-[360px]"
           >
             <button
               className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
@@ -177,7 +179,7 @@ export const Profile = () => {
 
   return (
     <div className="flex flex-col items-center py-[50px]">
-      <div className="max-w-[1160px]">
+      <div className="desktop:w-[1160px]">
         <Header />
         <div className="mt-14">
           <UserCabinet />

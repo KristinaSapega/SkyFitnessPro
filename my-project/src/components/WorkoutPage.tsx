@@ -16,14 +16,14 @@ export const WorkoutPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-[375px] px-[16px] desktop:w-[1440px] desktop:px-[140px] py-[50px]">
+      <div className="w-[375px]  py-[50px] desktop:w-[1160px]">
         <Header />
         <main className="">
-          <section className="">
-            <h1 className="mb-[10px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
+          <section className="px-[16px] desktop:px-[0px]">
+            <h1 className="mb-[10px] mt-[40px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
               Йога
             </h1>
-            <h3 className="text-[18px] underline desktop:text-[32px] ">
+            <h3 className="text-[18px] leading-[19.8px] desktop:leading-[35.2px] desktop:text-[32px] desktop:underline">
               {workout.name}
             </h3>
             <iframe
@@ -33,12 +33,12 @@ export const WorkoutPage = () => {
           </section>
           <div className="mb-[84px] rounded-[30px] shadow-[0px_4px_67px_-12px_#00000021] desktop:mb-[200px] desktop:rounded-3xl">
             <section className="p-[30px] desktop:p-[40px]">
-              <h2 className="text-[32px]">Упражнения тренировки 2</h2>
-              <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[60px]">
+              <h2 className="text-[32px] leading-[35.2px]">Упражнения тренировки 2</h2>
+              <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[20px]">
                 {workout.exercises.map((items, index) => (
                   <li key={index} className="flex flex-col">
                     <label
-                      className="pb-[10px] text-[18px] desktop:text-lg"
+                      className="pb-[10px] text-[18px] leading-[19.8px] desktop:text-lg"
                       htmlFor=""
                     >
                       {items.name} {100 / items.quantity}%
