@@ -28,7 +28,7 @@ const ItemsComponent: React.FC<{ index: number; item: string }> = ({
   return (
     <div
       key={index}
-      className="flex h-[141px] w-[343px] desktop:w-[370px] items-center gap-x-[17px] rounded-[28px] bg-gradient-to-r from-[#151720] to-[#1E212E] p-[20px] first:h-[141px] mr-[8px]"
+      className="desktop:mr-[8px] flex h-[141px] w-[343px] items-center gap-x-[17px] rounded-[28px] bg-gradient-to-r from-[#151720] to-[#1E212E] p-[20px] first:h-[141px] desktop:w-[370px]"
     >
       <p className="text-[75px] font-medium text-[#BCEC30]">{index + 1}</p>
       <p className="text-[20px] font-normal leading-[22.4px] text-white">
@@ -43,17 +43,20 @@ const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
   item,
 }) => {
   return (
-    <div key={index}>
-      <div className="flex items-center gap-x-[8px]">
-        <img src="/star.svg" alt="logo" width={26} height={26} />
-        <p className="text-[18px] sm:text-[24px] font-normal leading-[22px] sm:leading-[26.4px] text-black">
+    <div key={index} className="flex sm:mb-0">
+      <div className="flex items-center gap-x-[8px] sm:gap-x-[30px]">
+        <img
+          src="/star.svg"
+          alt="logo"
+          className="h-[19.5px] w-[19.5px] sm:h-[26px] sm:w-[26px]"
+        />
+        <p className="text-[18px] font-normal leading-[22px] text-black sm:text-[24px] sm:leading-[26.4px]">
           {item}
         </p>
       </div>
     </div>
   );
 };
-
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
@@ -179,151 +182,155 @@ export const CoursePagesComp = () => {
   };
 
   return (
-    <div className="max-width-[375px] flex min-h-screen flex-col items-center justify-center">
-      <div className="min-h-[500px] min-w-[375px] max-w-[1160px] overflow-x-hidden desktop:overflow-visible">
-      <Header />
-      <div className=" w-[375px] desktop:mt-[60px] mt-[40px] px-[16px] desktop:px-[0px] desktop:w-[1160px] ">
-        <HeroImage param={params.nameEN} />
-        <p className="decoration-skip-ink-none mb-0 desktop:mb-[40px] desktop:mt-[60px] h-[26px]  gap-0 text-left text-[24px] font-medium leading-[26.4px] text-black desktop:text-[40px] desktop:leading-[44px]">
-          Подойдет для вас, если:
-        </p>
-        <div className="mt-[26px] flex h-[457px] flex-wrap justify-between  sm:h-auto">
-          {fittings.map((item, index) => (
-            <ItemsComponent item={item} index={index} key={index} />
-          ))}
-        </div>
-        <section className="relative ">
-          <div className="relative">
-            <p className="mt-[40px] mb-[24px] text-left font-['Roboto'] text-[24px] font-medium leading-[26.4px] text-black sm:text-[44px] desktop:text-[40px] desktop:leading-[44px]">
-              Направления
+    <>
+      <div className="max-width-[375px] flex flex-col items-center justify-center overflow-x-hidden py-[50px] ">
+        <div className="min-w-[375px] max-w-[1160px] desktop:overflow-visible">
+          <Header />
+          <div className="mt-[40px] w-[375px] px-[16px] desktop:mt-[60px] desktop:w-[1160px] desktop:px-[0px]">
+            <HeroImage param={params.nameEN} />
+            <p className="decoration-skip-ink-none mb-0 h-[26px] gap-0 text-left text-[24px] font-medium leading-[26.4px] text-black desktop:mb-[40px] desktop:mt-[60px] desktop:text-[40px] desktop:leading-[44px]">
+              Подойдет для вас, если:
             </p>
-
-            <div className="z-3 relative box-border grid h-auto w-[343px] grid-cols-1 gap-[10px] rounded-[28px] bg-btnPrimaryRegular p-[30px] sm:h-[336px] sm:w-[1160px] sm:grid-cols-3 desktop:h-[146px] desktop:w-[1160px] desktop:content-center">
-              {directions.map((item, index) => (
-                <ItemsComponentItem item={item} index={index} key={index} />
+            <div className="mt-[26px] flex h-[457px] flex-wrap justify-between sm:h-auto">
+              {fittings.map((item, index) => (
+                <ItemsComponent item={item} index={index} key={index} />
               ))}
-              <img
-                className="desktop:hidden absolute left-[-40px] w-[900px] top-[300px] z-0 mx-auto"
-                src="/vector_6084.png"
-                alt="overlay"
-                width={300}
-                height={100}
-                />
             </div>
-          </div>
 
-          <img
-            className="desktop:hidden z-5 absolute right-0 left-[80px] top-[235px] mx-auto"
-            src="/forestGump.png"
-            alt="logo"
-            width={505}
-            height={100}
-            />
+            <div className="relative">
+              <p className="mb-[24px] mt-[40px] text-left font-['Roboto'] text-[24px] font-medium leading-[26.4px] text-black sm:text-[44px] desktop:text-[40px] desktop:leading-[44px]">
+                Направления
+              </p>
 
-          <div className="mb-[60px] mt-[200px] desktop:mt-[105px]">
-            <div className="desktop:hidden shadowBlack013 [412px] relative z-20 box-border flex w-[343px] rounded-[30px] bg-white bg-[right_55px_top_120px] bg-no-repeat p-[40px] desktop:h-[486px] desktop:w-[1160px]">
-              <div className="pb-[40px]">
-                <p className="mb-[28px] text-[32px] font-semibold leading-[35.2px] text-black desktop:text-[60px] desktop:leading-[60px]">
-                  Начните путь <br /> к новому телу
-                </p>
-                <ul className="mb-[28px] pl-[20px]">
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    проработка всех групп мышц
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    тренировка суставов
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    улучшение циркуляции крови
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    упражнения заряжают бодростью
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[18px] leading-[19.8px] desktop:text-[24px]">
-                    помогают противостоять стрессам
-                  </li>
-                </ul>
-                {isAuth ? (
-                  isCourseAdded ? (
-                    <button className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]">
-                      Перейти
-                    </button>
+              <div className="box-border grid h-auto w-[343px] grid-cols-1 gap-[30px] rounded-[28px] bg-btnPrimaryRegular p-[30px] sm:h-[336px] sm:w-[1160px] sm:grid-cols-3 desktop:h-[146px] desktop:w-[1160px] desktop:content-center">
+                {directions.map((item, index) => (
+                  <ItemsComponentItem item={item} index={index} key={index} />
+                ))}
+              </div>
+              <div className="relative ">
+                <img
+                  className="left-[-40px] mx-auto mt-[30px] w-[900px] desktop:hidden "
+                  src="/vector_6084.png"
+                  alt="overlay"
+                  width={300}
+                  height={100}
+                />
+
+                  <img
+                    className="absolute left-[80px] right-0 top-[-120px] mx-auto desktop:hidden"
+                    src="/forestGump.png"
+                    alt="logo"
+                    width={505}
+                    height={100}
+                  />
+
+              </div>
+            </div>
+
+            <div className="relative mb-[290px] desktop:mb-[0px] w-[375px] desktop:mt-[105px]">
+              <div className="shadowBlack013 absolute top-[-100px] box-border flex h-[412px] w-[343px] rounded-[30px] bg-white bg-[right_55px_top_120px] bg-no-repeat p-[30px] desktop:hidden desktop:h-[486px] desktop:w-[1160px]">
+                <div className="mb-[40px]">
+                  <p className="mb-[28px] text-[32px] font-semibold leading-[35.2px] text-black desktop:text-[60px] desktop:leading-[60px]">
+                    Начните путь <br /> к новому телу
+                  </p>
+                  <ul className="mb-[28px] pl-[20px] text-[18px] leading-[19.8px] desktop:text-[24px] desktop:leading-[28px]">
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      проработка всех групп мышц
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      тренировка суставов
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      улучшение циркуляции крови
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      упражнения заряжают бодростью
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      помогают противостоять стрессам
+                    </li>
+                  </ul>
+                  {isAuth ? (
+                    isCourseAdded ? (
+                      <button className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]">
+                        Перейти
+                      </button>
+                    ) : (
+                      <button
+                        className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
+                        onClick={handleAddCourse}
+                      >
+                        Добавить курс
+                      </button>
+                    )
                   ) : (
                     <button
                       className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
-                      onClick={handleAddCourse}
-                      >
-                      Добавить курс
+                      onClick={openModal}
+                    >
+                      Войдите, чтобы добавить курс
                     </button>
-                  )
-                ) : (
-                  <button
-                  className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
-                    onClick={openModal}
-                  >
-                    Войдите, чтобы добавить курс
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="hidden desktop:block shadowBlack013 relative box-border flex h-[486px] w-[1160px] rounded-[30px] bg-white bg-[url(/vector_6084.png)] bg-[right_55px_top_120px] bg-no-repeat p-[40px]">
-              <div className="pb-[40px]">
-                <p className="mb-[28px] text-[60px] font-semibold leading-[60px] text-black">
-                  Начните путь <br /> к новому телу
-                </p>
-                <ul className="mb-[28px] pl-[20px]">
-                  <li className="corPageTextBlack06 list-disc text-[24px]">
-                    проработка всех групп мышц
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[24px]">
-                    тренировка суставов
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[24px]">
-                    улучшение циркуляции крови
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[24px]">
-                    упражнения заряжают бодростью
-                  </li>
-                  <li className="corPageTextBlack06 list-disc text-[24px]">
-                    помогают противостоять стрессам
-                  </li>
-                </ul>
-                {isAuth ? (
-                  isCourseAdded ? (
-                    <button className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive">
-                      Перейти
-                    </button>
+              <div className="shadowBlack013 relative box-border flex hidden h-[486px] w-[1160px] rounded-[30px] bg-white bg-[url(/vector_6084.png)] bg-[right_55px_top_120px] bg-no-repeat p-[40px] desktop:block">
+                <div className="pb-[40px]">
+                  <p className="mb-[28px] text-[60px] font-semibold leading-[60px] text-black">
+                    Начните путь <br /> к новому телу
+                  </p>
+                  <ul className="mb-[28px] pl-[20px] text-[18px] leading-[19.8px] desktop:text-[24px] desktop:leading-[28px]">
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      проработка всех групп мышц
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      тренировка суставов
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      улучшение циркуляции крови
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      упражнения заряжают бодростью
+                    </li>
+                    <li className="corPageTextBlack06 mb-[10px] list-disc">
+                      помогают противостоять стрессам
+                    </li>
+                  </ul>
+                  {isAuth ? (
+                    isCourseAdded ? (
+                      <button className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive">
+                        Перейти
+                      </button>
+                    ) : (
+                      <button
+                        className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+                        onClick={handleAddCourse}
+                      >
+                        Добавить курс
+                      </button>
+                    )
                   ) : (
                     <button
                       className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
-                      onClick={handleAddCourse}
+                      onClick={openModal}
                     >
-                      Добавить курс
+                      Войдите, чтобы добавить курс
                     </button>
-                  )
-                ) : (
-                  <button
-                    className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
-                    onClick={openModal}
-                  >
-                    Войдите, чтобы добавить курс
-                  </button>
-                )}
+                  )}
+                </div>
+                <img
+                  className="absolute bottom-5 right-10"
+                  src="/forestGump.png"
+                  alt="logo"
+                  width={505}
+                  height={100}
+                />
               </div>
-              <img
-                className="absolute bottom-5 right-10"
-                src="/forestGump.png"
-                alt="logo"
-                width={505}
-                height={100}
-              />
             </div>
+            {kindOfModal === "login" && <Login />}
           </div>
-        </section>
+        </div>
+      </div>
 
-        {kindOfModal === "login" && <Login />}
-      </div>
-      </div>
-    </div>
+    </>
   );
 };
