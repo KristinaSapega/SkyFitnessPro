@@ -47,12 +47,12 @@ function dayTitle(number: number): string {
 
 
   return (
-    <div className="mt-12 flex flex-wrap justify-start gap-[40px]">
+    <div className="mt-[34px] desktop:mt-[50px] flex min-h-[1000px] flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div
             key={course._id}
-            className="relative h-[649px] w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
+            className="relative h-[649px] w-[343px] desktop:w-[360px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021]"
           >
             <button
               className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
@@ -179,12 +179,12 @@ export const Profile = () => {
   }
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="w-[1160px]">
+    <div className="flex flex-col items-center py-[50px]">
+      <div className="max-w-[1160px]">
         <Header />
         <div className="mt-14">
           <UserCabinet />
-          <h1 className="my-8 text-lg font-bold md:text-xl lg:text-4xl">
+          <h1 className="mb-[24px] ml-[16px] text-[24px] font-bold leading-[26.4px] desktop:ml-[0px] desktop:text-[40px] desktop:leading-[44px]">
             Мои курсы
           </h1>
           <MyCorses
