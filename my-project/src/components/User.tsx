@@ -112,11 +112,7 @@ export const UserCabinet = () => {
   };
   return (
     <>
-<<<<<<< HEAD
       <h1 className="ml-[16px] desktop:ml-[0px] mb-[24px] text-[24px] desktop:text-[40px] desktop:leading-[44px] leading-[26.4px] font-bold ">
-=======
-      <h1 className="ml-[16px] desktop:ml-[0px] mb-8 text-lg font-bold md:text-xl lg:text-4xl">
->>>>>>> 148f174f36b9ddce99b5012d8f98008c2a090cf1
         Профиль
       </h1>
       <div className=" desktop:h-[257px] mx-auto mb-12 w-full max-w-[343px] rounded-3xl border bg-white p-6 shadow-lg sm:max-w-[453px] md:max-w-[600px] md:p-10 lg:max-w-[800px] lg:p-[30px] xl:max-w-[1160px] xl:gap-[10px]">
