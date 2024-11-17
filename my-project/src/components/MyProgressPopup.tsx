@@ -1,19 +1,124 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProgressSuccess from "./ProgressSuccess";
+import { auth, database } from "../firebase";
+import { get, onValue, ref, update } from "firebase/database";
 
 interface MyProgressPopupProps {
     onClose: () => void;
     workoutId?: string;
   }
 
-function MyProgressPopup({ onClose }: MyProgressPopupProps) {
-  const [isPopupVisible, setIsPopupVisible] = useState(true);
-  const [isSuccessPopupVisible, setIsSuccessPopupVisible] = useState(false);
+interface Exercise {
+  name: string;
+  quantity: number;
+}
+
+interface Workout {
+  _id: string;
+  name: string;
+  video: string;
+  exercises?: Exercise[];
+}
+
+interface WorkoutItem {
+  name: string;
+  quantity: number;
+}
+
+interface UserExercise {
+  [key: string]: { [exerciseKey: string]: number };
+}
+
+interface UserData {
+  _id: string;
+  courses: string[];
+  userExercises: UserExercise[];
+}
+
+function MyProgressPopup({ onClose, workoutId }: MyProgressPopupProps) {
+  const [isPopupVisible, setIsPopupVisible] = useState<boolean>(true);
+  const [isSuccessPopupVisible, setIsSuccessPopupVisible] =
+    useState<boolean>(false);
+  const [userExers, setUserExers] = useState<Workout[]>([]);
+
+  useEffect(() => {
+    const dataRef = ref(database, "/workouts");
+    onValue(dataRef, (snapshot) => {
+      const data = snapshot.val() || [];
+      setUserExers(data);
+    });
+  }, []);
+
+  // Найдем текущую тренировку по id
+  const currentWorkout: Workout | undefined = userExers.find(
+    (workout) => workout._id === workoutId,
+  );
+
+  // Сохраним упражнения текущей тренировки
+  const exercises: WorkoutItem[] = currentWorkout?.exercises || [];
+
+  // Если упражнения есть, сохраняем их названия, если нет — предложим оценить тренировку
+  const exersiseNames =
+    exercises.length > 0
+      ? exercises.map((exercise) => exercise.name)
+      : currentWorkout
+        ? ["Оцените тренировку от 1 до 5"]
+        : [];
+
+  const [values, setValues] = useState<{ [key: string]: number }>(
+    exersiseNames.reduce(
+      (acc, _, index) => {
+        acc[`ex_${index + 1}`] = 0;
+        return acc;
+      },
+      {} as { [key: string]: number },
+    ),
+  );
+
+  // Обработчик изменения ввода
+  const handleInputChange = (key: string, newValue: number) => {
+    setValues((prevValues) => ({
+      ...prevValues,
+      [key]: isNaN(newValue) ? 0 : newValue,
+    }));
+  };
+
+  // Обновляем данные в ФБ
+  const handleUpdate = async () => {
+    try {
+      const userRef = ref(database, `users/${auth.currentUser?.uid}`);
+      const snapshot = await get(userRef);
+
+      if (snapshot.exists()) {
+        const userData: UserData = snapshot.val();
+        const updatedExercises = userData.userExercises.map((exercise) => {
+          if (exercise[workoutId]) {
+            return {
+              ...exercise,
+              [workoutId]: {
+                ...exercise[workoutId],
+                ...values,
+              },
+            };
+          }
+          return exercise;
+        });
+
+        await update(userRef, {
+          userExercises: updatedExercises,
+        });
+      } else {
+        console.error("Данные пользователя не найдены");
+      }
+    } catch (error) {
+      console.error("Ошибка обновления данных", error);
+    }
+  };
 
   const handleSave = () => {
     setIsPopupVisible(false);
     setIsSuccessPopupVisible(true);
-
+    handleUpdate();
     setTimeout(() => {
       setIsSuccessPopupVisible(false);
       onClose();
@@ -23,74 +128,34 @@ function MyProgressPopup({ onClose }: MyProgressPopupProps) {
   return (
     <>
       {isPopupVisible && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="absolute inset-0 bg-black opacity-50" onClick={onClose}></div>
-          <div className="relative w-[426px] bg-white p-10 rounded-[30px] shadow-lg z-10">
-            <h2 className="text-3xl font-semibold mb-4">Мой прогресс</h2>
-            <form className="h-[380px] max-w-[346px] w-full overflow-auto">
-              <div className="flex flex-col mb-4 max-w-[320px] w-full">
-                <label className="text-lg mb-2">
-                  Сколько раз вы сделали наклоны вперед?
-                </label>
-                <input
-                  type="text"
-                  placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
-                />
-              </div>
-              <div className="flex flex-col mb-4 max-w-[320px] w-full">
-                <label className="text-lg mb-2">
-                  Сколько раз вы сделали наклоны назад?
-                </label>
-                <input
-                  type="text"
-                  placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
-                />
-              </div>
-              <div className="flex flex-col mb-4 max-w-[320px] w-full">
-                <label className="text-lg mb-2">
-                  Сколько раз вы сделали поднятие ног, согнутых в коленях?
-                </label>
-                <input
-                  type="text"
-                  placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
-                />
-              </div>
-              <div className="flex flex-col mb-4 max-w-[320px] w-full">
-                <label className="text-lg mb-2">
-                  Сколько раз вы сделали наклоны вперед?
-                </label>
-                <input
-                  type="text"
-                  placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
-                />
-              </div>
-              <div className="flex flex-col mb-4 max-w-[320px] w-full">
-                <label className="text-lg mb-2">
-                  Сколько раз вы сделали наклоны назад?
-                </label>
-                <input
-                  type="text"
-                  placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
-                />
-              </div>
-              <div className="flex flex-col mb-4 max-w-[320px] w-full">
-                <label className="text-lg mb-2">
-                  Сколько раз вы сделали поднятие ног, согнутых в коленях?
-                </label>
-                <input
-                  type="text"
-                  placeholder="0"
-                  className="py-3 px-[18px] rounded-lg border-solid border-[1px] border-borderInputPrimary"
-                />
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black opacity-50"
+            onClick={onClose}
+          ></div>
+          <div className="relative z-10 w-[426px] rounded-[30px] bg-white p-10 shadow-lg">
+            <h2 className="mb-4 text-3xl font-semibold">Мой прогресс</h2>
+            <form className="max-h-[380px] w-full max-w-[346px] overflow-auto">
+              {exersiseNames.map((item, i) => (
+                <div
+                  key={i}
+                  className="mb-4 flex w-full max-w-[320px] flex-col"
+                >
+                  <label className="mb-2 text-lg">{item}</label>
+                  <input
+                    type="text"
+                    value={values[`ex_${i + 1}`] ?? ""}
+                    onChange={(e) =>
+                      handleInputChange(`ex_${i + 1}`, Number(e.target.value))
+                    }
+                    placeholder="0"
+                    className="rounded-lg border-[1px] border-solid border-borderInputPrimary px-[18px] py-3"
+                  />
+                </div>
+              ))}
             </form>
             <button
-              className="mt-4 buttonPrimary bg-btnPrimaryRegular px-4 py-2  rounded w-full rounded-full hover:bg-btnPrimaryHover active:bg-btnPrimaryActive disabled:bg-btnPrimaryInactive active:text-white"
+              className="buttonPrimary mt-4 w-full rounded rounded-full bg-btnPrimaryRegular px-4 py-2 hover:bg-btnPrimaryHover active:bg-btnPrimaryActive active:text-white disabled:bg-btnPrimaryInactive"
               onClick={handleSave}
             >
               Сохранить

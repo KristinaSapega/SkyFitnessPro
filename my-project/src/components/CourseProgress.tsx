@@ -2,6 +2,7 @@ import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { auth, database } from "../firebase";
 
+// Типы и интерфейсы
 type Course = { [key: string]: string[] };
 type Progress = { [key: string]: number };
 type CurrentCourse = { [courseId: string]: string[] };
@@ -58,7 +59,8 @@ export const courseProgress = (courseID: CourseIDType) => {
     const dataRef = ref(database, `users/${uid}/userExercises`);
     onValue(dataRef, (snapshot) => {
       const data = snapshot.val() || {};
-      setUserEx(data);
+      // Проверка: если data это объект, преобразуем его в массив
+      setUserEx(Array.isArray(data) ? data : Object.values(data));
     });
   }, []);
 
@@ -76,7 +78,7 @@ export const courseProgress = (courseID: CourseIDType) => {
 
   // Поиск текущего курса
   const currentCourse: CurrentCourse | undefined = allCourses.find((item) =>
-    courseID ? item.hasOwnProperty(courseID) : false,
+    courseID ? item.hasOwnProperty(courseID) : false
   );
 
   // Прогресс текущего курса
@@ -87,12 +89,12 @@ export const courseProgress = (courseID: CourseIDType) => {
     let totalProgress = 0;
 
     workoutIds.forEach((workoutId) => {
-      // Ищем тренировку
+      // Ищем тренировку в массиве userEx
       const workoutObj = userEx.find((obj) => obj[workoutId]);
 
       if (workoutObj) {
         const exercises = workoutObj[workoutId];
-        // Определяем прогресс для текущей тренировки 
+        // Определяем прогресс для текущей тренировки
         const progress = Object.values(exercises).some((value) => value > 0)
           ? 1
           : 0;
@@ -103,7 +105,8 @@ export const courseProgress = (courseID: CourseIDType) => {
     // Присваиваем вычисленный прогресс в currentCourseprogress
     currentCourseprogress[courseId] = totalProgress;
   }
-  // Вычислим процентное соотношение текущей тренировки от общего прогресса 
+
+  // Вычислим процентное соотношение текущей тренировки от общего прогресса
   let progress: number = 0;
   for (const courseId in currentCourseprogress) {
     if (baseProgress[courseId] !== undefined) {
