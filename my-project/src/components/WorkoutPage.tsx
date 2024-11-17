@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { database } from "../firebase";
 import { onValue, ref } from "firebase/database";
 import { useParams } from "react-router";
+import { auth } from "../firebase";
 
 type Exercise = {
   name: string;
@@ -18,11 +19,47 @@ type Workout = {
   exercises?: Exercise[];
 };
 
+type UserExercises = {
+  [exerciseId: string]: number;
+};
+
+type UserWorkoutProgress = {
+  [workoutId: string]: UserExercises;
+};
+
+
 export const WorkoutPage = () => {
   const { id } = useParams<{ id: string }>();
   const [userExers, setUserExers] = useState<Workout[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [userExercises, setUserExercises] = useState<UserWorkoutProgress>({});
+
+  const uid = auth.currentUser?.uid;
+
+  // Загрузка тренировок пользователя
+  useEffect(() => {
+    if (uid) {
+      const userExRef = ref(database, `users/${uid}/userExercises`);
+      onValue(userExRef, (snapshot) => {
+        const data = snapshot.val() || [];
+        console.log(data);
+
+        // Преобразование массива в объект 
+        const formattedData = Array.isArray(data)
+          ? data.reduce((acc: UserWorkoutProgress, item: any) => {
+            const [workoutId, exercises] = Object.entries(item)[0] as [string, UserExercises];
+            acc[workoutId] = exercises;
+            return acc;
+          }, {})
+          : data;
+
+        console.log(formattedData);
+        setUserExercises(formattedData);
+      });
+    }
+  }, [uid]);
+
 
   useEffect(() => {
     const dataRef = ref(database, "/workouts");
@@ -41,12 +78,28 @@ export const WorkoutPage = () => {
     );
   }, []);
 
+
+  // Проверка на наличие id
+  if (!id) {
+    return <p>ID тренировки не определен</p>;
+  }
+
   const currentWorkout: Workout | undefined = userExers.find(
     (workout) => workout._id === id
   );
 
-  if (isLoading) {
-    return <p>Загрузка...</p>;
+  const calculateProgress = (exerciseIndex: number, quantity: number): number => {
+    console.log("Текуший id:", id);
+    console.log("Тренировки юзера:", userExercises);
+
+    const exerciseKey = `ex_${exerciseIndex + 1}`;
+    const completed = userExercises[id][exerciseKey] || 0;
+    const progress = Math.min((completed / quantity) * 100, 100);
+    return progress;
+  };
+
+  if (isLoading || Object.keys(userExercises).length === 0 || !userExercises[id]) {
+    return <p>Загрузка данных...</p>;
   }
 
   if (!currentWorkout) {
@@ -60,9 +113,6 @@ export const WorkoutPage = () => {
   const closePopup = () => {
     setIsPopupVisible(false);
   };
-
-
-
 
   return (
     <div className="flex flex-col items-center">
@@ -95,7 +145,7 @@ export const WorkoutPage = () => {
                 <p>Загрузка упражнений...</p>
               ) : currentWorkout?.exercises?.length ? (
                 <>
-                  <h2 className="text-[32px] leading-[35.2px]">Упражнения тренировки 2</h2>
+                  <h2 className="text-[32px] leading-[35.2px]"> Упражнения </h2>
                   <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[20px]">
                     {currentWorkout.exercises.map((exercise, index) => (
                       <li key={index} className="flex flex-col">
@@ -103,12 +153,12 @@ export const WorkoutPage = () => {
                           className="pb-[10px] text-[18px] leading-[19.8px] desktop:text-lg"
                           htmlFor=""
                         >
-                          {exercise.name} {100 / exercise.quantity}%
+                          {exercise.name} {calculateProgress(index, exercise.quantity)}%
                         </label>
                         <progress
                           className="h-[6px] w-[283px] desktop:w-80 [&::-moz-progress-bar]:bg-[#00C1FF] [&::-webkit-progress-bar]:rounded-3xl [&::-webkit-progress-bar]:bg-[#F7F7F7] [&::-webkit-progress-value]:rounded-3xl [&::-webkit-progress-value]:bg-[#00C1FF]"
                           id="progress"
-                          value="5"
+                          value={userExercises[id]?.[`ex_${index + 1}`] || 0}
                           max={exercise.quantity}
                         ></progress>
                       </li>
