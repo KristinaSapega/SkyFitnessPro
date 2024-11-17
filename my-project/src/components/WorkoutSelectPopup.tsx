@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { database } from "../firebase";
-import { ref, get } from "firebase/database";
+import { auth, database } from "../firebase";
+import { ref, get, onValue } from "firebase/database";
 
 interface WorkoutOption {
   _id: string;
@@ -14,26 +14,66 @@ interface WorkoutSelectPopupProps {
   onClose: () => void;
 }
 
+type UserEx = { [workoutId: string]: { [exerciseId: string]: number } };
+
 const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
   courseId,
   onClose,
 }) => {
   const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null);
   const [workoutOptions, setWorkoutOptions] = useState<WorkoutOption[]>([]);
+  const [userEx, setUserEx] = useState<UserEx[]>([]);
+
   const popupRef = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
 
+  const getMatchingIds = (): string[] => {
+    const matchingIds: string[] = [];
+
+    workoutOptions.forEach((lesson) => {
+      const lessonId = lesson._id;
+      const matchingItem = userEx.find((item) => lessonId in item);
+
+      if (
+        matchingItem &&
+        Object.values(matchingItem[lessonId]).some((ex) => ex > 0)
+      ) {
+        matchingIds.push(lessonId);
+      }
+    });
+
+    return matchingIds;
+  };
+
+  const completedWorkouts = getMatchingIds();
+
   const handleSelection = (id: string) => {
-    setSelectedWorkout(id);
+    if (completedWorkouts.includes(id)) {
+      setSelectedWorkout(id);
+    } else {
+      setSelectedWorkout(id);
+    }
   };
 
   const handleStart = () => {
     if (selectedWorkout) {
-      navigate(`/task/${selectedWorkout!}`);
+      if (!completedWorkouts.includes(selectedWorkout)) {
+        const updatedCompletedWorkouts = [
+          ...completedWorkouts,
+          selectedWorkout,
+        ];
+        localStorage.setItem(
+          "completedWorkouts",
+          JSON.stringify(updatedCompletedWorkouts),
+        );
+      }
+      navigate(`/task/${selectedWorkout}`);
       onClose();
-    } else {
-      alert("Пожалуйста, выберите тренировку");
     }
+  };
+
+  const handleRestart = () => {
+    handleStart();
   };
 
   useEffect(() => {
@@ -55,6 +95,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
   useEffect(() => {
     const fetchFilteredWorkouts = async () => {
       try {
+        // Получение всех курсов
         const coursesRef = ref(database, "courses");
         const coursesSnapshot = await get(coursesRef);
         const allCoursesData = coursesSnapshot.val();
@@ -74,6 +115,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
 
         const workoutKeys = courseData.workouts;
 
+        // Получение всех тренировок
         const dataRef = ref(database, "workouts");
         const workoutsSnapshot = await get(dataRef);
         const allWorkoutsData = workoutsSnapshot.val();
@@ -84,8 +126,17 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
           return;
         }
 
-        const workoutsArray = Object.values(allWorkoutsData) as WorkoutOption[];
+        // Получние всех упражнений пользователя
+        const dataUsEx = ref(
+          database,
+          `users/${auth.currentUser?.uid}/userExercises`,
+        );
+        onValue(dataUsEx, (snapshot) => {
+          const data = snapshot.val() || {};
+          setUserEx(data);
+        });
 
+        const workoutsArray = Object.values(allWorkoutsData) as WorkoutOption[];
         const filteredWorkouts = workoutsArray.filter((workout) =>
           workoutKeys.includes(workout._id),
         );
@@ -100,46 +151,53 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
     fetchFilteredWorkouts();
   }, [courseId]);
 
+  const isButtonDisabled = !selectedWorkout; // Проверка на состояние кнопки
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div ref={popupRef} className="w-[460px] rounded-[30px] bg-white p-10">
         <h2 className="mb-4 text-center text-3xl font-normal">
           Выберите тренировку
         </h2>
-        <form className="mt-12 h-[450px] w-full max-w-[400px] overflow-auto">
+        <form className="mt-12 mb-12 max-h-[450px] w-full max-w-[400px] overflow-auto">
           <ul>
             {workoutOptions.map((workout) => {
-              // Разделяем название тренировки на основную часть и дополнительную информацию
               const [mainTitle, subtitle] = workout.name.split(" / ");
-
+              const isCompleted = completedWorkouts.includes(workout._id);
               return (
                 <li
                   key={workout._id}
-                  className="flex items-center justify-between border-b p-3"
+                  className="flex cursor-pointer items-center justify-between border-b p-3 hover:bg-gray-200 has-[:checked]:bg-gray-300"
+                  onClick={() => handleSelection(workout._id)}
                 >
                   <div>
-                    <label className="flex cursor-pointer items-center">
+                    <label className="flex items-center">
                       <input
                         type="radio"
                         name="workout"
                         value={workout._id}
                         checked={selectedWorkout === workout._id}
-                        onChange={() => handleSelection(workout._id)}
+                        readOnly
                         className="peer hidden"
+                        disabled={
+                          isCompleted && selectedWorkout !== workout._id
+                        }
                       />
                       <span
-                        className={`mr-3 flex h-5 w-5 items-center justify-center rounded-full border-2 border-gray-300 peer-checked:border-btnPrimaryRegular`}
+                        className={`mr-3 flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-gray-200 active:border-gray-300 ${
+                          isCompleted ? "bg-white" : "bg-gray-300"
+                        } peer-checked:border-btnPrimaryRegular peer-checked:bg-gray-200`}
                         style={{
-                          backgroundImage:
-                            selectedWorkout === workout._id
-                              ? "url('../../../checked.svg')"
-                              : "none",
+                          backgroundImage: isCompleted
+                            ? "url('../../../checked.svg')"
+                            : "none",
                           backgroundSize: "cover",
                           backgroundPosition: "center",
+                          backgroundColor: isCompleted ? "white" : "",
                         }}
                       ></span>
                       <div>
-                        <p className="text-2xl">{mainTitle}</p>
+                        <p className="cursor-pointer text-2xl">{mainTitle}</p>
                         <p className="text-base text-gray-600">{subtitle}</p>
                       </div>
                     </label>
@@ -150,10 +208,23 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
           </ul>
         </form>
         <button
-          onClick={handleStart}
-          className="buttonPrimary mt-4 w-full rounded-[46px] bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive active:text-white disabled:bg-btnPrimaryInactive"
+          onClick={
+            isButtonDisabled
+              ? undefined 
+              : selectedWorkout && completedWorkouts.includes(selectedWorkout)
+                ? handleRestart
+                : handleStart
+          }
+          className={`buttonPrimary mt-4 w-full rounded-[46px] ${
+            isButtonDisabled
+              ? "cursor-not-allowed bg-btnPrimaryInactive"
+              : "bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+          }`}
+          disabled={isButtonDisabled} 
         >
-          Начать
+          {selectedWorkout && completedWorkouts.includes(selectedWorkout)
+            ? "Начать заново"
+            : "Начать"}
         </button>
       </div>
     </div>
