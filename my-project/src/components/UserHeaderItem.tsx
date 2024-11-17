@@ -9,7 +9,7 @@ import Registry from "./Registry";
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { changeOpenValue, kindOfModal } = useModal();
+  const { changeOpenValue, kindOfModal, changeModal, isOpen } = useModal();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -23,6 +23,7 @@ function UserHeaderItem() {
 
   const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    changeModal("login");
     changeOpenValue();
   };
 
@@ -62,8 +63,9 @@ function UserHeaderItem() {
           <HeaderUserPopUp setPopupOpen={setPopupOpen} />
         </div>
       )}
-      {kindOfModal === "login" && <Login />}
-      {kindOfModal === "registry" && <Registry />}
+      {/* {kindOfModal === "login" && <Login />}
+      {kindOfModal === "info" && <Login />}
+      {kindOfModal === "registry" && <Registry />} */}
     </>
   );
 }

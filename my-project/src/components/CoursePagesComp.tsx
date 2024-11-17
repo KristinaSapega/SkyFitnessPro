@@ -29,7 +29,7 @@ const ItemsComponent: React.FC<{ index: number; item: string }> = ({
   return (
     <div
       key={index}
-      className="desktop:mr-[8px] flex h-[141px] w-[343px] items-center gap-x-[17px] rounded-[28px] bg-gradient-to-r from-[#151720] to-[#1E212E] p-[20px] first:h-[141px] desktop:w-[370px]"
+      className="flex h-[141px] w-[343px] items-center gap-x-[17px] rounded-[28px] bg-gradient-to-r from-[#151720] to-[#1E212E] p-[20px] first:h-[141px] desktop:mr-[8px] desktop:w-[370px]"
     >
       <p className="text-[75px] font-medium text-[#BCEC30]">{index + 1}</p>
       <p className="text-[20px] font-normal leading-[22.4px] text-white">
@@ -61,7 +61,7 @@ const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
-  const { kindOfModal, changeOpenValue } = useModal();
+  const { isOpen, changeOpenValue } = useModal();
   const [userCourses, setUserCourses] = useState<string[]>([]);
   const [items, setItems] = useState<TrainingItem[]>([]);
   const [isAuth, setIsAuth] = useState<boolean>(false);
@@ -128,7 +128,7 @@ export const CoursePagesComp = () => {
 
   return (
     <>
-      <div className="max-width-[375px] flex flex-col items-center justify-center overflow-x-hidden py-[50px] ">
+      <div className="max-width-[375px] flex flex-col items-center justify-center overflow-x-hidden py-[50px]">
         <div className="min-w-[375px] max-w-[1160px] desktop:overflow-visible">
           <Header />
           <div className="mt-[40px] w-[375px] px-[16px] desktop:mt-[60px] desktop:w-[1160px] desktop:px-[0px]">
@@ -152,27 +152,26 @@ export const CoursePagesComp = () => {
                   <ItemsComponentItem item={item} index={index} key={index} />
                 ))}
               </div>
-              <div className="relative ">
+              <div className="relative">
                 <img
-                  className="left-[-40px] mx-auto mt-[30px] w-[900px] desktop:hidden "
+                  className="left-[-40px] mx-auto mt-[30px] w-[900px] desktop:hidden"
                   src="/vector_6084.png"
                   alt="overlay"
                   width={300}
                   height={100}
                 />
 
-                  <img
-                    className="absolute left-[80px] right-0 top-[-120px] mx-auto desktop:hidden"
-                    src="/forestGump.png"
-                    alt="logo"
-                    width={505}
-                    height={100}
-                  />
-
+                <img
+                  className="absolute left-[80px] right-0 top-[-120px] mx-auto desktop:hidden"
+                  src="/forestGump.png"
+                  alt="logo"
+                  width={505}
+                  height={100}
+                />
               </div>
             </div>
 
-            <div className="relative mb-[290px] desktop:mb-[0px] w-[375px] desktop:mt-[105px]">
+            <div className="relative mb-[290px] w-[375px] desktop:mb-[0px] desktop:mt-[105px]">
               <div className="shadowBlack013 absolute top-[-100px] box-border flex h-[412px] w-[343px] rounded-[30px] bg-white bg-[right_55px_top_120px] bg-no-repeat p-[30px] desktop:hidden desktop:h-[486px] desktop:w-[1160px]">
                 <div className="mb-[40px]">
                   <p className="mb-[28px] text-[32px] font-semibold leading-[35.2px] text-black desktop:text-[60px] desktop:leading-[60px]">
@@ -271,11 +270,10 @@ export const CoursePagesComp = () => {
                 />
               </div>
             </div>
-            {kindOfModal === "login" && <Login />}
+            {isOpen && <Login />}
           </div>
         </div>
       </div>
-
     </>
   );
 };

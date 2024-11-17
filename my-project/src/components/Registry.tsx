@@ -51,6 +51,17 @@ const Form = () => {
       refBtn.current?.setAttribute("disabled", "");
       return;
     }
+    console.log(email);
+    if (
+      !email.match(
+        /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu,
+      )
+    ) {
+      console.log("object");
+      setError("Ведите корректный адрес электронной почты");
+      refLogin.current?.classList.add("border-red-600");
+      return null;
+    }
 
     if (isEmptyField) return;
 
@@ -64,9 +75,6 @@ const Form = () => {
                 setError("Данная почта уже используется. Попробуйте войти.");
               } else if (err.code.includes("weak-password")) {
                 setError("Пароль должен содержать не менее 6 символов");
-              } else if (err.code.includes("invalid-email")) {
-                setError("Введите корректный email");
-                refLogin.current?.classList.add("border-red-600");
               } else {
                 setError(err.message.replace("Firebase:", ""));
               }
