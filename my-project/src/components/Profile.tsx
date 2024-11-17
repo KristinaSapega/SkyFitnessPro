@@ -29,6 +29,7 @@ const MyCorses = ({
   setShowWorkoutPopup,
 }: MyCoursesProps) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
+
   const handleMouseDown = (id: string) => {
     setActiveButton(id);
   };
@@ -50,7 +51,7 @@ const MyCorses = ({
     return "Дней";
   }
 
-  // обработчик удаление курса (временное решение находится в процессе разработки)
+  // обработчик удаления курса
   const handleDeleteCourse = (courseId: string) => {
     deleteCourseData(courseId).finally(() => {
       window.location.reload();
@@ -60,73 +61,74 @@ const MyCorses = ({
   return (
     <div className="mt-[34px] flex flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
       {userCourses.length > 0 ? (
-        userCourses.map((course) => (
-          <div
-            key={course._id}
-            className="relative h-[649px] w-[343px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021] desktop:w-[360px]"
-          >
-            <button
-              className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
-              onClick={() => handleDeleteCourse(course._id)}
+        userCourses.map((course) => {
+          const progress = courseProgress(course._id); 
+          return (
+            <div
+              key={course._id}
+              className="relative h-[649px] w-[343px] rounded-[30px] bg-[white] shadow-[0px_4px_67px_-12px_#00000021] desktop:w-[360px]"
             >
-              <img
-                src="/remove-in-Circle.svg"
-                alt="minus"
-                width={32}
-                height={32}
-              />
-              <div className="absolute left-[43px] top-[45px] z-10 hidden w-[110px] rounded-[5px] border-[0.5px] border-black bg-white p-[4px] text-center group-hover:block">
-                <p className="mt-1 text-sm">Удалить курс </p>
-              </div>
-            </button>
-            <MainCardsImage param={course._id} />
-
-            <div className="px-[30px] py-[24px]">
-              <h3 className="mb-[20px] text-3xl font-medium">
-                {course.nameRU}
-              </h3>
-              <ul className="flex flex-wrap gap-[6px]">
-                <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
-                  <img src="/calendar.svg" alt="" />
-                  {course.workouts.length} {dayTitle(course.workouts.length)}
-                </li>
-                <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
-                  <img src="/time.svg" alt="" />
-                  {course.time}
-                </li>
-                <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
-                  <img src="/level.svg" alt="" />
-                  {course.level}
-                </li>
-              </ul>
-              <div className="mt-5">
-                <div className="flex justify-between text-sm">
-                  {<span>Прогресс: {courseProgress(course._id)}%</span>}
-                </div>
-                <div className="h-2 rounded bg-gray-200">
-                  <div
-                    className="h-full rounded bg-blue-500"
-                    style={{ width: `${courseProgress(course._id)}%` }}
-                  ></div>
-                </div>
-              </div>
               <button
-                className={`mb-[15px] mt-[40px] h-[52px] w-full rounded-full bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive ${
-                  activeButton === course._id ? "text-white" : "text-black"
-                }`}
-                onMouseDown={() => handleMouseDown(course._id)}
-                onMouseUp={handleMouseUp}
-                onClick={() => handleWorkoutButtonClick(course._id)}
+                className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
+                onClick={() => handleDeleteCourse(course._id)}
               >
-                {course.progress === 0
-                  ? "Начать тренировки"
-                  : course.progress === 100
-                    ? "Начать заново"
-                    : "Продолжить"}
+                <img
+                  src="/remove-in-Circle.svg"
+                  alt="minus"
+                  width={32}
+                  height={32}
+                />
+                <div className="absolute left-[43px] top-[45px] z-10 hidden w-[110px] rounded-[5px] border-[0.5px] border-black bg-white p-[4px] text-center group-hover:block">
+                  <p className="mt-1 text-sm">Удалить курс </p>
+                </div>
               </button>
+              <MainCardsImage param={course._id} />
+
+              <div className="px-[30px] py-[24px]">
+                <h3 className="mb-[20px] text-3xl font-medium">
+                  {course.nameRU}
+                </h3>
+                <ul className="flex flex-wrap gap-[6px]">
+                  <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
+                    <img src="/calendar.svg" alt="" />
+                    {course.workouts.length} {dayTitle(course.workouts.length)}
+                  </li>
+                  <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
+                    <img src="/time.svg" alt="" />
+                    {course.time}
+                  </li>
+                  <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
+                    <img src="/level.svg" alt="" />
+                    {course.level}
+                  </li>
+                </ul>
+                <div className="mt-5">
+                  <div className="flex justify-between text-sm">
+                    <span>Прогресс: {progress}%</span>
+                  </div>
+                  <div className="h-2 rounded bg-gray-200">
+                    <div
+                      className="h-full rounded bg-blue-500"
+                      style={{ width: `${progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <button
+                  className={`mb-[15px] mt-[40px] h-[52px] w-full rounded-full bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive ${
+                    activeButton === course._id ? "text-white" : "text-black"
+                  }`}
+                  onMouseDown={() => handleMouseDown(course._id)}
+                  onMouseUp={handleMouseUp}
+                  onClick={() => handleWorkoutButtonClick(course._id)}
+                >
+                  {progress === 0 && "Начать тренировки"}
+                  {progress === 100 && "Начать заново"}
+                  {progress >= 1 && progress <= 99 && "Продолжить"}
+                </button>
+              </div>
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
         <p>У вас пока нет добавленных курсов.</p>
       )}
