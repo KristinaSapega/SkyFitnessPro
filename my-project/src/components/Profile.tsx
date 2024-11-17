@@ -6,6 +6,7 @@ import { ref, get } from "firebase/database";
 import { MainCardsImage } from "./MainCardsImage";
 import WorkoutSelectPopup from "./WorkoutSelectPopup";
 import { courseProgress } from "./CourseProgress";
+import { deleteCourseData } from "./DellCourse";
 
 type Course = {
   _id: string;
@@ -22,32 +23,42 @@ type MyCoursesProps = {
   setShowWorkoutPopup: (show: boolean) => void;
 };
 
-const MyCorses = ({ userCourses, setSelectedCourseId, setShowWorkoutPopup }: MyCoursesProps) => {
+const MyCorses = ({
+  userCourses,
+  setSelectedCourseId,
+  setShowWorkoutPopup,
+}: MyCoursesProps) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
-const handleMouseDown = (id: string) => {
-  setActiveButton(id);
-};
+  const handleMouseDown = (id: string) => {
+    setActiveButton(id);
+  };
 
-const handleMouseUp = () => {
-  setActiveButton(null);
-};
+  const handleMouseUp = () => {
+    setActiveButton(null);
+  };
 
-const handleWorkoutButtonClick = (courseId: string) => {
-  setSelectedCourseId(courseId);
-  setShowWorkoutPopup(true);
-};
+  const handleWorkoutButtonClick = (courseId: string) => {
+    setSelectedCourseId(courseId);
+    setShowWorkoutPopup(true);
+  };
 
-function dayTitle(number: number): string {
-  if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
-  const lastNum = number % 10;
-  if (lastNum === 1) return "День";
-  if ([2, 3, 4].includes(lastNum)) return "Дня";
-  return "Дней";
-}
+  function dayTitle(number: number): string {
+    if (number > 10 && [11, 12, 13, 14].includes(number % 100)) return "дней";
+    const lastNum = number % 10;
+    if (lastNum === 1) return "День";
+    if ([2, 3, 4].includes(lastNum)) return "Дня";
+    return "Дней";
+  }
 
+  // обработчик удаление курса (временное решение находится в процессе разработки)
+  const handleDeleteCourse = (courseId: string) => {
+    deleteCourseData(courseId).finally(() => {
+      window.location.reload();
+    });
+  };
 
   return (
-    <div className="mt-[34px] flex  flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
+    <div className="mt-[34px] flex flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => (
           <div
@@ -56,17 +67,24 @@ function dayTitle(number: number): string {
           >
             <button
               className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
-              onClick={() => alert("Удалим в следующий раз, а пока время тренировок")}
+              onClick={() => handleDeleteCourse(course._id)}
             >
-              <img src="/remove-in-Circle.svg" alt="minus" width={32} height={32} />
-              <div className="absolute left-[43px] top-[45px] z-10 hidden h-[27px] w-[100px] rounded-[5px] border-[0.5px] border-black bg-white group-hover:block">
-                <p className="mt-1 text-sm">Удалить курс</p>
+              <img
+                src="/remove-in-Circle.svg"
+                alt="minus"
+                width={32}
+                height={32}
+              />
+              <div className="absolute left-[43px] top-[45px] z-10 hidden w-[110px] rounded-[5px] border-[0.5px] border-black bg-white p-[4px] text-center group-hover:block">
+                <p className="mt-1 text-sm">Удалить курс </p>
               </div>
             </button>
             <MainCardsImage param={course._id} />
 
             <div className="px-[30px] py-[24px]">
-              <h3 className="mb-[20px] text-3xl font-medium">{course.nameRU}</h3>
+              <h3 className="mb-[20px] text-3xl font-medium">
+                {course.nameRU}
+              </h3>
               <ul className="flex flex-wrap gap-[6px]">
                 <li className="flex items-center gap-[7.5px] rounded-[50px] bg-btnPrimaryInactive p-[10px] text-base">
                   <img src="/calendar.svg" alt="" />
@@ -83,7 +101,7 @@ function dayTitle(number: number): string {
               </ul>
               <div className="mt-5">
                 <div className="flex justify-between text-sm">
-                  <span>Прогресс: {courseProgress(course._id)}%</span>
+                  {<span>Прогресс: {courseProgress(course._id)}%</span>}
                 </div>
                 <div className="h-2 rounded bg-gray-200">
                   <div
@@ -103,8 +121,8 @@ function dayTitle(number: number): string {
                 {course.progress === 0
                   ? "Начать тренировки"
                   : course.progress === 100
-                  ? "Начать заново"
-                  : "Продолжить"}
+                    ? "Начать заново"
+                    : "Продолжить"}
               </button>
             </div>
           </div>
@@ -142,7 +160,7 @@ export const Profile = () => {
             : Object.values(allCoursesData);
 
           const userCoursesData = allCourses.filter((course) =>
-            courseIDs.includes(course._id)
+            courseIDs.includes(course._id),
           );
 
           const processedUserCourses = userCoursesData.map((course) => ({
