@@ -1,10 +1,140 @@
 import Header from "./Header";
-import { workout } from "./dataList";
+//import { workout } from "./dataList";
 import MyProgressPopup from "./MyProgressPopup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { database } from "../firebase";
+import { onValue, ref } from "firebase/database";
+import { useParams } from "react-router";
+import { auth } from "../firebase";
+
+type Exercise = {
+  name: string;
+  quantity: number;
+};
+
+type Workout = {
+  _id: string;
+  name: string;
+  video: string;
+  exercises?: Exercise[];
+};
+
+type UserExercises = {
+  [exerciseId: string]: number;
+};
+
+type UserWorkoutProgress = {
+  [workoutId: string]: UserExercises;
+};
+
+type Course = {
+  _id: string;
+  nameRU: string;
+  workouts: string[];
+};
+
 
 export const WorkoutPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const [userExers, setUserExers] = useState<Workout[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
+  const [userExercises, setUserExercises] = useState<UserWorkoutProgress>({});
+
+  const uid = auth.currentUser?.uid;
+
+  // Загрузка тренировок пользователя
+  useEffect(() => {
+    if (uid) {
+      const userExRef = ref(database, `users/${uid}/userExercises`);
+      onValue(userExRef, (snapshot) => {
+        const data = snapshot.val() || [];
+        console.log(data);
+
+        // Преобразование массива в объект 
+        const formattedData = Array.isArray(data)
+          ? data.reduce((acc: UserWorkoutProgress, item: any) => {
+            const [workoutId, exercises] = Object.entries(item)[0] as [string, UserExercises];
+            acc[workoutId] = exercises;
+            return acc;
+          }, {})
+          : data;
+
+        console.log(formattedData);
+        setUserExercises(formattedData);
+      });
+    }
+  }, [uid]);
+
+
+  useEffect(() => {
+    const dataRef = ref(database, "/workouts");
+    onValue(
+      dataRef,
+      (snapshot) => {
+        const data = snapshot.val() || {};
+        const workoutsArray = Object.values(data) as Workout[];
+        setUserExers(workoutsArray);
+        setIsLoading(false);
+      },
+      (error) => {
+        console.error("Ошибка загрузки данных:", error);
+        setIsLoading(false);
+      }
+    );
+  }, []);
+
+  // Загрузка курсов
+  useEffect(() => {
+    const coursesRef = ref(database, "/courses");
+    onValue(
+      coursesRef,
+      (snapshot) => {
+        const data = snapshot.val() || [];
+        const coursesArray = Object.values(data) as Course[];
+        console.log(coursesArray);
+        setCourses(coursesArray);
+      },
+      (error) => {
+        console.error("Ошибка загрузки курсов:", error);
+      }
+    );
+  }, []);
+  
+
+  // Проверка на наличие id
+  if (!id) {
+    return <p>ID тренировки не определен</p>;
+  }
+
+  const currentWorkout: Workout | undefined = userExers.find(
+    (workout) => workout._id === id
+  );
+
+  // Получение названия курса
+  const courseName =
+  courses.find((course) =>
+    course.workouts.includes(id || "")
+  )?.nameRU || "Название курса отсутствует";
+
+  const calculateProgress = (exerciseIndex: number, quantity: number): number => {
+    console.log("Текуший id:", id);
+    console.log("Тренировки юзера:", userExercises);
+
+    const exerciseKey = `ex_${exerciseIndex + 1}`;
+    const completed = userExercises[id][exerciseKey] || 0;
+    const progress = Math.min((completed / quantity) * 100, 100);
+    return progress;
+  };
+
+  if (isLoading || Object.keys(userExercises).length === 0 || !userExercises[id]) {
+    return <p>Загрузка данных...</p>;
+  }
+
+  if (!currentWorkout) {
+    return <p>Тренировка не найдена.</p>;
+  }
 
   const openPopup = () => {
     setIsPopupVisible(true);
@@ -21,48 +151,65 @@ export const WorkoutPage = () => {
         <main className="">
           <section className="px-[16px] desktop:px-[0px]">
             <h1 className="mb-[10px] mt-[40px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
-              Йога
+            {courseName}
             </h1>
             <h3 className="text-[18px] leading-[19.8px] desktop:leading-[35.2px] desktop:text-[32px] desktop:underline">
-              {workout.name}
+            {currentWorkout?.name || "Название отсутствует"}
             </h3>
-            <iframe
-              className="my-6 aspect-video h-auto w-full max-w-full rounded-[8.87px] desktop:my-[40px] desktop:rounded-3xl"
-              src={workout.video}
-            ></iframe>
+            {currentWorkout && (
+              <>
+                <iframe
+                  className="my-6 aspect-video h-auto w-full max-w-full rounded-[8.87px] desktop:my-[40px] desktop:rounded-3xl"
+                  src={currentWorkout.video}
+                  title={currentWorkout.name}
+                  width="600"
+                  height="400"
+                  allowFullScreen
+                ></iframe>
+              </>
+            )}
           </section>
           <div className="mb-[84px] rounded-[30px] shadow-[0px_4px_67px_-12px_#00000021] desktop:mb-[200px] desktop:rounded-3xl">
             <section className="p-[30px] desktop:p-[40px]">
-              <h2 className="text-[32px] leading-[35.2px]">Упражнения тренировки 2</h2>
-              <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[20px]">
-                {workout.exercises.map((items, index) => (
-                  <li key={index} className="flex flex-col">
-                    <label
-                      className="pb-[10px] text-[18px] leading-[19.8px] desktop:text-lg"
-                      htmlFor=""
-                    >
-                      {items.name} {100 / items.quantity}%
-                    </label>
-                    <progress
-                      className="h-[6px] w-[283px] desktop:w-80 [&::-moz-progress-bar]:bg-[#00C1FF] [&::-webkit-progress-bar]:rounded-3xl [&::-webkit-progress-bar]:bg-[#F7F7F7] [&::-webkit-progress-value]:rounded-3xl [&::-webkit-progress-value]:bg-[#00C1FF]"
-                      id="progress"
-                      value="5"
-                      max={items.quantity}
-                    ></progress>
-                  </li>
-                ))}
-              </ul>
+              {isLoading ? (
+                <p>Загрузка упражнений...</p>
+              ) : currentWorkout?.exercises?.length ? (
+                <>
+                  <h2 className="text-[32px] leading-[35.2px]"> Упражнения </h2>
+                  <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[20px]">
+                    {currentWorkout.exercises.map((exercise, index) => (
+                      <li key={index} className="flex flex-col">
+                        <label
+                          className="pb-[10px] text-[18px] leading-[19.8px] desktop:text-lg"
+                          htmlFor=""
+                        >
+                          {exercise.name} {calculateProgress(index, exercise.quantity)}%
+                        </label>
+                        <progress
+                          className="h-[6px] w-[283px] desktop:w-80 [&::-moz-progress-bar]:bg-[#00C1FF] [&::-webkit-progress-bar]:rounded-3xl [&::-webkit-progress-bar]:bg-[#F7F7F7] [&::-webkit-progress-value]:rounded-3xl [&::-webkit-progress-value]:bg-[#00C1FF]"
+                          id="progress"
+                          value={userExercises[id]?.[`ex_${index + 1}`] || 0}
+                          max={exercise.quantity}
+                        ></progress>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p>Нет доступных упражнений для этой тренировки.</p>
+              )}
               <button
-                onClick={openPopup}
-                className="mt-10 h-[52px] w-[283px] rounded-full bg-[#BCEC30] text-lg hover:bg-[#C6FF00] active:bg-black active:text-white desktop:w-80"
-              >
-                Заполнить свой прогресс
-              </button>
+                    onClick={openPopup}
+                    className="mt-10 h-[52px] w-[283px] rounded-full bg-[#BCEC30] text-lg hover:bg-[#C6FF00] active:bg-black active:text-white desktop:w-80"
+                  >
+                    Заполнить свой прогресс
+                  </button>
             </section>
           </div>
         </main>
       </div>
-      {isPopupVisible && <MyProgressPopup onClose={closePopup} />}
+      {isPopupVisible && <MyProgressPopup onClose={closePopup} workoutId={id} />}
+      {/* {isPopupVisible && <MyProgressPopup onClose={closePopup} />} */}
     </div>
   );
 };

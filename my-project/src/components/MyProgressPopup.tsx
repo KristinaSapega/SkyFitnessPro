@@ -4,9 +4,9 @@ import { auth, database } from "../firebase";
 import { get, onValue, ref, update } from "firebase/database";
 
 interface MyProgressPopupProps {
-  onClose: () => void;
-  workoutId: string;
-}
+    onClose: () => void;
+    workoutId?: string;
+  }
 
 interface Exercise {
   name: string;
