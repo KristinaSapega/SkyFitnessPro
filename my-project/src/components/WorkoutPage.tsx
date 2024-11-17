@@ -27,10 +27,17 @@ type UserWorkoutProgress = {
   [workoutId: string]: UserExercises;
 };
 
+type Course = {
+  _id: string;
+  name: string;
+  workouts: string[];
+};
+
 
 export const WorkoutPage = () => {
   const { id } = useParams<{ id: string }>();
   const [userExers, setUserExers] = useState<Workout[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isPopupVisible, setIsPopupVisible] = useState(false);
   const [userExercises, setUserExercises] = useState<UserWorkoutProgress>({});
@@ -78,6 +85,23 @@ export const WorkoutPage = () => {
     );
   }, []);
 
+  // Загрузка курсов
+  useEffect(() => {
+    const coursesRef = ref(database, "/courses");
+    onValue(
+      coursesRef,
+      (snapshot) => {
+        const data = snapshot.val() || [];
+        const coursesArray = Object.values(data) as Course[];
+        console.log(coursesArray);
+        setCourses(coursesArray);
+      },
+      (error) => {
+        console.error("Ошибка загрузки курсов:", error);
+      }
+    );
+  }, []);
+  
 
   // Проверка на наличие id
   if (!id) {
@@ -87,6 +111,12 @@ export const WorkoutPage = () => {
   const currentWorkout: Workout | undefined = userExers.find(
     (workout) => workout._id === id
   );
+
+  // Получение названия курса
+  const courseName =
+  courses.find((course) =>
+    course.workouts.includes(id || "")
+  )?.nameRU || "Название курса отсутствует";
 
   const calculateProgress = (exerciseIndex: number, quantity: number): number => {
     console.log("Текуший id:", id);
@@ -121,10 +151,10 @@ export const WorkoutPage = () => {
         <main className="">
           <section className="px-[16px] desktop:px-[0px]">
             <h1 className="mb-[10px] mt-[40px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
-            
+            {courseName}
             </h1>
             <h3 className="text-[18px] leading-[19.8px] desktop:leading-[35.2px] desktop:text-[32px] desktop:underline">
-            {isLoading ? "Загрузка..." : currentWorkout?.name || "Название отсутствует"}
+            {currentWorkout?.name || "Название отсутствует"}
             </h3>
             {currentWorkout && (
               <>
