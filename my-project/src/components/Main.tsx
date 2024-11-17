@@ -2,9 +2,10 @@ import Header from "./Header";
 import Login from "./Login";
 import TrainingList from "./TrainingList";
 import { useModal } from "../hooks/useModal";
-import Registry from "./Registry";
+
 
 const Main = () => {
+  const { isOpen } = useModal();
   return (
     <main className="flex flex-col items-center py-[50px]">
       <div className="min-h-[500px] min-w-[375px] max-w-[1160px]">
@@ -33,6 +34,7 @@ const Main = () => {
           </button>
         </div>
       </div>
+      {isOpen && <Login />}
     </main>
   );
 };

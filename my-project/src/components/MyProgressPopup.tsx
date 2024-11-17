@@ -4,9 +4,9 @@ import { auth, database } from "../firebase";
 import { get, onValue, ref, update } from "firebase/database";
 
 interface MyProgressPopupProps {
-    onClose: () => void;
-    workoutId?: string;
-  }
+  onClose: () => void;
+  workoutId?: string;
+}
 
 interface Exercise {
   name: string;
@@ -26,7 +26,9 @@ interface WorkoutItem {
 }
 
 interface UserExercise {
-  [key: string]: { [exerciseKey: string]: number };
+  [workoutId: string]: {
+    [exerciseKey: string]: number;
+  };
 }
 
 interface UserData {
@@ -37,8 +39,7 @@ interface UserData {
 
 function MyProgressPopup({ onClose, workoutId }: MyProgressPopupProps) {
   const [isPopupVisible, setIsPopupVisible] = useState<boolean>(true);
-  const [isSuccessPopupVisible, setIsSuccessPopupVisible] =
-    useState<boolean>(false);
+  const [isSuccessPopupVisible, setIsSuccessPopupVisible] = useState<boolean>(false);
   const [userExers, setUserExers] = useState<Workout[]>([]);
 
   useEffect(() => {
@@ -51,7 +52,7 @@ function MyProgressPopup({ onClose, workoutId }: MyProgressPopupProps) {
 
   // Найдем текущую тренировку по id
   const currentWorkout: Workout | undefined = userExers.find(
-    (workout) => workout._id === workoutId,
+    (workout) => workout._id === workoutId
   );
 
   // Сохраним упражнения текущей тренировки
@@ -62,8 +63,8 @@ function MyProgressPopup({ onClose, workoutId }: MyProgressPopupProps) {
     exercises.length > 0
       ? exercises.map((exercise) => exercise.name)
       : currentWorkout
-        ? ["Оцените тренировку от 1 до 5"]
-        : [];
+      ? ["Оцените тренировку от 1 до 5"]
+      : [];
 
   const [values, setValues] = useState<{ [key: string]: number }>(
     exersiseNames.reduce(
@@ -71,8 +72,8 @@ function MyProgressPopup({ onClose, workoutId }: MyProgressPopupProps) {
         acc[`ex_${index + 1}`] = 0;
         return acc;
       },
-      {} as { [key: string]: number },
-    ),
+      {} as { [key: string]: number }
+    )
   );
 
   // Обработчик изменения ввода
@@ -91,12 +92,13 @@ function MyProgressPopup({ onClose, workoutId }: MyProgressPopupProps) {
 
       if (snapshot.exists()) {
         const userData: UserData = snapshot.val();
+
         const updatedExercises = userData.userExercises.map((exercise) => {
-          if (exercise[workoutId]) {
+          if (exercise[workoutId!]) {
             return {
               ...exercise,
-              [workoutId]: {
-                ...exercise[workoutId],
+              [workoutId!]: {
+                ...exercise[workoutId!],
                 ...values,
               },
             };

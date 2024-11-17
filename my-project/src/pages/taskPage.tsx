@@ -1,4 +1,5 @@
-import { WorkoutPage } from "../components/Workoutpage";
+import WorkoutPage from "../components/WorkoutPage";
+
 
 
 export function TaskPage() {
