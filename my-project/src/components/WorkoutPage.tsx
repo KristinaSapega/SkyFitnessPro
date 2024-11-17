@@ -2,8 +2,10 @@ import Header from "./Header";
 import { workout } from "./dataList";
 import MyProgressPopup from "./MyProgressPopup";
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 
 export const WorkoutPage = () => {
+  const { id } = useParams<{ id: string }>();
   const [isPopupVisible, setIsPopupVisible] = useState(false);
 
   const openPopup = () => {
@@ -14,16 +16,17 @@ export const WorkoutPage = () => {
     setIsPopupVisible(false);
   };
 
+  
   return (
     <div className="flex flex-col items-center">
-      <div className="w-[375px]  py-[50px] desktop:w-[1160px]">
+      <div className="w-[375px] py-[50px] desktop:w-[1160px]">
         <Header />
         <main className="">
           <section className="px-[16px] desktop:px-[0px]">
             <h1 className="mb-[10px] mt-[40px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
               Йога
             </h1>
-            <h3 className="text-[18px] leading-[19.8px] desktop:leading-[35.2px] desktop:text-[32px] desktop:underline">
+            <h3 className="text-[18px] leading-[19.8px] desktop:text-[32px] desktop:leading-[35.2px] desktop:underline">
               {workout.name}
             </h3>
             <iframe
@@ -33,7 +36,9 @@ export const WorkoutPage = () => {
           </section>
           <div className="mb-[84px] rounded-[30px] shadow-[0px_4px_67px_-12px_#00000021] desktop:mb-[200px] desktop:rounded-3xl">
             <section className="p-[30px] desktop:p-[40px]">
-              <h2 className="text-[32px] leading-[35.2px]">Упражнения тренировки 2</h2>
+              <h2 className="text-[32px] leading-[35.2px]">
+                Упражнения тренировки 2
+              </h2>
               <ul className="flex grid-cols-3 flex-col gap-6 pt-5 desktop:grid desktop:gap-x-[20px]">
                 {workout.exercises.map((items, index) => (
                   <li key={index} className="flex flex-col">
@@ -62,7 +67,7 @@ export const WorkoutPage = () => {
           </div>
         </main>
       </div>
-      {isPopupVisible && <MyProgressPopup onClose={closePopup} />}
+      {isPopupVisible && <MyProgressPopup onClose={closePopup} workoutId={id} />}
     </div>
   );
 };
