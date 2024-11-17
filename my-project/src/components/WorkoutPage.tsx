@@ -29,7 +29,7 @@ type UserWorkoutProgress = {
 
 type Course = {
   _id: string;
-  name: string;
+  nameRU: string;
   workouts: string[];
 };
 
