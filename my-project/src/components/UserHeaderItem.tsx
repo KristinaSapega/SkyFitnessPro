@@ -9,7 +9,7 @@ import Registry from "./Registry";
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { changeOpenValue, kindOfModal, changeModal } = useModal();
+  const { changeOpenValue, kindOfModal, changeModal, isOpen } = useModal();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -64,6 +64,7 @@ function UserHeaderItem() {
         </div>
       )}
       {kindOfModal === "login" && <Login />}
+      {kindOfModal === "info" && <Login />}
       {kindOfModal === "registry" && <Registry />}
     </>
   );

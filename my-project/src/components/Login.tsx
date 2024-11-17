@@ -62,7 +62,7 @@ const Form = ({ setEmail }: ReqPassword) => {
   const refPass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
-  const { changeModal, changeOpenValue } = useModal();
+  const { changeModal, changeOpenValue, kindOfModal } = useModal();
 
   const [error, setError] = useState<string | null>(null);
   const [reqChangePass, setReqChangePass] = useState<string | null>(null);
@@ -95,30 +95,39 @@ const Form = ({ setEmail }: ReqPassword) => {
       return;
     }
 
+    if (
+      !email.match(
+        /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/iu,
+      )
+    ) {
+      setError("Введите корректный адрес электронной почты");
+      refLogin.current?.classList.add("border-red-600");
+      return null;
+    }
+
     if (isEmptyField) return null;
 
-    signInWithEmailAndPassword(auth, entry.email, entry.pass)
-      .then(() => {
-        changeOpenValue();
-      })
-      .catch((err) => {
-        if (err) {
-          if ("code" in err) {
-            if (err.code === "auth/invalid-credential") {
-              setError("Пароль введен неверно, попробуйте еще раз. ");
-              setReqChangePass("Восстановить пароль?");
-            } else {
-              setError(err.message.replace("Firebase:", ""));
-            }
+    try {
+      await signInWithEmailAndPassword(auth, entry.email, entry.pass);
+      changeOpenValue();
+    } catch (err) {
+      if (err instanceof Error) {
+        if ("code" in err) {
+          if (err.code === "auth/invalid-credential") {
+            setError("Пароль введен неверно, попробуйте еще раз. ");
+            setReqChangePass("Восстановить пароль?");
+          } else {
+            setError(err.message.replace("Firebase:", ""));
           }
         }
-      });
+      }
+    }
   };
 
   const restorePassword = () => {
-    sendPasswordResetEmail(auth, email);
-    setEmail(email);
+    // sendPasswordResetEmail(auth, email);
     changeModal("info");
+    setEmail(email);
   };
 
   return (
@@ -199,10 +208,11 @@ const Login = () => {
   const [email, setEmail] = useState<string>("");
 
   const { isOpen, changeOpenValue, kindOfModal } = useModal();
+
   if (!isOpen) return null;
 
   const handleEmail = (email: string) => {
-    setEmail(email);
+    if (email) setEmail(email);
   };
 
   return (

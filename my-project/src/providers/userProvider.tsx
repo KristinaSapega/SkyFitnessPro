@@ -19,7 +19,9 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     setIsOpen(!isOpen);
   };
   const changeModal = (name: "login" | "registry" | "info" | "event") => {
+    // debugger;
     setKindOfModal(name);
+    console.log("🚀 ~ UserProvider ~ kindOfModal:", kindOfModal);
   };
 
   return (

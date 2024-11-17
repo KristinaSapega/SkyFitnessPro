@@ -271,6 +271,7 @@ export const CoursePagesComp = () => {
               </div>
             </div>
             {kindOfModal === "login" && <Login />}
+            {kindOfModal === "info" && <Login />}
           </div>
         </div>
       </div>
