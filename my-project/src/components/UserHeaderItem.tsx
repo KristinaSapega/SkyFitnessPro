@@ -7,9 +7,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import Registry from "./Registry";
 
 function UserHeaderItem() {
+  const { changeOpenValue, kindOfModal } = useModal();
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { changeOpenValue, kindOfModal } = useModal();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {

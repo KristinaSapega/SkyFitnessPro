@@ -184,10 +184,9 @@ const Form = ({ setEmail }: ReqPassword) => {
 };
 
 const Login = () => {
+  const [email, setEmail] = useState<string>("");
   const { isOpen, changeOpenValue, kindOfModal } = useModal();
   if (!isOpen) return null;
-
-  const [email, setEmail] = useState<string>("");
 
   const handleEmail = (email: string) => {
     setEmail(email);
