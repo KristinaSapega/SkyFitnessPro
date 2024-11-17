@@ -63,9 +63,9 @@ function UserHeaderItem() {
           <HeaderUserPopUp setPopupOpen={setPopupOpen} />
         </div>
       )}
-      {kindOfModal === "login" && <Login />}
+      {/* {kindOfModal === "login" && <Login />}
       {kindOfModal === "info" && <Login />}
-      {kindOfModal === "registry" && <Registry />}
+      {kindOfModal === "registry" && <Registry />} */}
     </>
   );
 }

@@ -95,7 +95,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           </ul>
         </div>
       </div>
-      {kindOfModal === "login" || (kindOfModal === "event" && <Login />)}
+      {/* {kindOfModal === "login" || (kindOfModal === "event" && <Login />)} */}
     </li>
   );
 };

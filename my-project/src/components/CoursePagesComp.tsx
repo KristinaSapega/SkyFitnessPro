@@ -61,7 +61,7 @@ const ItemsComponentItem: React.FC<{ index: number; item: string }> = ({
 
 export const CoursePagesComp = () => {
   const params = useParams<{ nameEN: string | undefined }>();
-  const { kindOfModal, changeOpenValue } = useModal();
+  const { isOpen, changeOpenValue } = useModal();
   const [userCourses, setUserCourses] = useState<string[]>([]);
   const [items, setItems] = useState<TrainingItem[]>([]);
   const [isAuth, setIsAuth] = useState<boolean>(false);
@@ -270,8 +270,7 @@ export const CoursePagesComp = () => {
                 />
               </div>
             </div>
-            {kindOfModal === "login" && <Login />}
-            {kindOfModal === "info" && <Login />}
+            {isOpen && <Login />}
           </div>
         </div>
       </div>
