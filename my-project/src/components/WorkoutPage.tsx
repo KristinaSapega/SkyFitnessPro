@@ -121,11 +121,11 @@ export const WorkoutPage = () => {
         <main className="">
           <section className="px-[16px] desktop:px-[0px]">
             <h1 className="mb-[10px] mt-[40px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
-              {isLoading ? "Загрузка..." : currentWorkout?.name || "Название отсутствует"}
+            
             </h1>
-            {/* <h3 className="text-[18px] leading-[19.8px] desktop:leading-[35.2px] desktop:text-[32px] desktop:underline">
-              {workout.name}
-            </h3> */}
+            <h3 className="text-[18px] leading-[19.8px] desktop:leading-[35.2px] desktop:text-[32px] desktop:underline">
+            {isLoading ? "Загрузка..." : currentWorkout?.name || "Название отсутствует"}
+            </h3>
             {currentWorkout && (
               <>
                 <iframe
@@ -164,16 +164,16 @@ export const WorkoutPage = () => {
                       </li>
                     ))}
                   </ul>
-                  <button
+                </>
+              ) : (
+                <p>Нет доступных упражнений для этой тренировки.</p>
+              )}
+              <button
                     onClick={openPopup}
                     className="mt-10 h-[52px] w-[283px] rounded-full bg-[#BCEC30] text-lg hover:bg-[#C6FF00] active:bg-black active:text-white desktop:w-80"
                   >
                     Заполнить свой прогресс
                   </button>
-                </>
-              ) : (
-                <p>Нет доступных упражнений для этой тренировки.</p>
-              )}
             </section>
           </div>
         </main>
