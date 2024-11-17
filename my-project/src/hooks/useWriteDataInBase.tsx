@@ -68,7 +68,7 @@ const useWriteDataInBase = async (
           [item._id]: {},
         };
         if (item.exercises) {
-          item.exercises.forEach((exercise, index) => {
+          item.exercises.forEach((_exercise, index) => {
             // Если упражнения есть в нумерации ex_ используем индекс упражнения + 1
             exerciseObj[item._id][`ex_${index + 1}`] = 0;
           });
