@@ -125,7 +125,7 @@ const Form = ({ setEmail }: ReqPassword) => {
   };
 
   const restorePassword = () => {
-    // sendPasswordResetEmail(auth, email);
+    sendPasswordResetEmail(auth, email);
     changeModal("info");
     setEmail(email);
   };
