@@ -26,7 +26,7 @@ export type Component = {
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
   const { changeOpenValue, changeModal } = useModal();
-  const [userCourses, setUserCourses] = useState<string[]>([]);
+  const [, setUserCourses] = useState<string[]>([]);
 
   const handleClickAddTrain = async () => {
     if (auth.currentUser && train._id) {

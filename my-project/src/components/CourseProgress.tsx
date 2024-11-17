@@ -31,7 +31,7 @@ type CourseIDType = string | undefined;
 
 export const courseProgress = (courseID: CourseIDType) => {
   const [items, setItems] = useState<TrainingItem[]>([]);
-  const [workouts, setWorkouts] = useState<AllWorkoutsType[]>([]);
+  const [, setWorkouts] = useState<AllWorkoutsType[]>([]);
   const [userEx, setUserEx] = useState<UserEx[]>([]);
 
   const uid = auth.currentUser?.uid;

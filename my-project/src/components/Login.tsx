@@ -62,7 +62,7 @@ const Form = ({ setEmail }: ReqPassword) => {
   const refPass = useRef<HTMLInputElement | null>(null);
   const refBtn = useRef<HTMLButtonElement | null>(null);
 
-  const { changeModal, changeOpenValue, kindOfModal } = useModal();
+  const { changeModal, changeOpenValue } = useModal();
 
   const [error, setError] = useState<string | null>(null);
   const [reqChangePass, setReqChangePass] = useState<string | null>(null);
