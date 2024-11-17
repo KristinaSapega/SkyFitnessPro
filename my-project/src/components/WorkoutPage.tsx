@@ -209,7 +209,6 @@ export const WorkoutPage = () => {
         </main>
       </div>
       {isPopupVisible && <MyProgressPopup onClose={closePopup} workoutId={id} />}
-      {/* {isPopupVisible && <MyProgressPopup onClose={closePopup} />} */}
     </div>
   );
 };

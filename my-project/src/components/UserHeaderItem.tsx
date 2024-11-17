@@ -2,14 +2,12 @@ import { auth } from "../firebase";
 import React, { useEffect, useState } from "react";
 import { HeaderUserPopUp } from "./HeaderPopUp";
 import { useModal } from "../hooks/useModal";
-import Login from "./Login";
 import { onAuthStateChanged } from "firebase/auth";
-import Registry from "./Registry";
 
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { changeOpenValue, kindOfModal } = useModal();
+  const { changeOpenValue } = useModal();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -62,8 +60,6 @@ function UserHeaderItem() {
           <HeaderUserPopUp setPopupOpen={setPopupOpen} />
         </div>
       )}
-      {kindOfModal === "login" && <Login />}
-      {kindOfModal === "registry" && <Registry />}
     </>
   );
 }

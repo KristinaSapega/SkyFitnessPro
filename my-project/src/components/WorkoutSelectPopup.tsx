@@ -159,7 +159,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
         <h2 className="mb-4 text-center text-3xl font-normal">
           Выберите тренировку
         </h2>
-        <form className="mt-12 mb-12 max-h-[450px] w-full max-w-[400px] overflow-auto">
+        <form className="mb-12 mt-12 max-h-[450px] w-full max-w-[400px] overflow-auto">
           <ul>
             {workoutOptions.map((workout) => {
               const [mainTitle, subtitle] = workout.name.split(" / ");
@@ -210,7 +210,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
         <button
           onClick={
             isButtonDisabled
-              ? undefined 
+              ? undefined
               : selectedWorkout && completedWorkouts.includes(selectedWorkout)
                 ? handleRestart
                 : handleStart
@@ -220,7 +220,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
               ? "cursor-not-allowed bg-btnPrimaryInactive"
               : "bg-btnPrimaryRegular hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
           }`}
-          disabled={isButtonDisabled} 
+          disabled={isButtonDisabled}
         >
           {selectedWorkout && completedWorkouts.includes(selectedWorkout)
             ? "Начать заново"

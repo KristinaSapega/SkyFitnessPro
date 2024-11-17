@@ -1,10 +1,9 @@
 import { MainCardsImage } from "./MainCardsImage";
 import Tags from "./Tags";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useModal } from "../hooks/useModal";
-import Login from "./Login";
-import Registry from "./Registry";
+
 import useWriteDataInBase from "../hooks/useWriteDataInBase";
 import { auth, database } from "../firebase";
 import { useState } from "react";
@@ -26,7 +25,7 @@ export type Component = {
 //список занятий пользователя
 const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
   const navigate = useNavigate();
-  const { changeOpenValue, kindOfModal } = useModal();
+  const { changeOpenValue, changeModal } = useModal();
   const [userCourses, setUserCourses] = useState<string[]>([]);
 
   const handleClickAddTrain = async () => {
@@ -35,7 +34,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
       await useWriteDataInBase(auth.currentUser.uid, train._id, setUserCourses);
       navigate("/user");
     } else {
-      alert("Пользователь не авторизован");
+      changeModal("event");
       changeOpenValue();
     }
   };
@@ -91,8 +90,7 @@ const TrainingItem: React.FC<{ train: Component }> = ({ train }) => {
           </ul>
         </div>
       </div>
-      {kindOfModal === "login" && <Login />}
-      {kindOfModal === "registry" && <Registry />}
+
     </li>
   );
 };
