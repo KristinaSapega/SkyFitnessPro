@@ -142,10 +142,6 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
           .sort(
             (a, b) => Number(a.name.match(/\d+/)) - Number(b.name.match(/\d+/)),
           );
-        console.log(
-          "🚀 ~ fetchFilteredWorkouts ~ filteredWorkouts:",
-          filteredWorkouts,
-        );
 
         setWorkoutOptions(filteredWorkouts);
       } catch (error) {
