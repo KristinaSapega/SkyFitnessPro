@@ -6,7 +6,7 @@ import { ref, get } from "firebase/database";
 import { MainCardsImage } from "./MainCardsImage";
 import WorkoutSelectPopup from "./WorkoutSelectPopup";
 import { courseProgress } from "./CourseProgress";
-import { deleteCourseData } from "./DellCourse";
+// import { deleteCourseData } from "./DellCourse";
 
 type Course = {
   _id: string;
@@ -52,11 +52,11 @@ const MyCorses = ({
   }
 
   // обработчик удаления курса
-  const handleDeleteCourse = (courseId: string) => {
-    deleteCourseData(courseId).finally(() => {
-      window.location.reload();
-    });
-  };
+  // const handleDeleteCourse = (courseId: string) => {
+  //   deleteCourseData(courseId).finally(() => {
+  //     window.location.reload();
+  //   });
+  // };
 
   return (
     <div className="mt-[34px] flex flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
@@ -70,7 +70,7 @@ const MyCorses = ({
             >
               <button
                 className="group absolute right-[20px] top-[20px] cursor-[url(coursor.svg),_pointer]"
-                onClick={() => handleDeleteCourse(course._id)}
+                // onClick={() => handleDeleteCourse(course._id)}
               >
                 <img
                   src="/remove-in-Circle.svg"
@@ -78,8 +78,8 @@ const MyCorses = ({
                   width={32}
                   height={32}
                 />
-                <div className="absolute left-[43px] top-[45px] z-10 hidden w-[110px] rounded-[5px] border-[0.5px] border-black bg-white p-[4px] text-center group-hover:block">
-                  <p className="mt-1 text-sm">Удалить курс </p>
+                <div className="absolute left-[43px] top-[45px] z-10 hidden w-[102px] rounded-[5px] border-[0.5px] border-black bg-white pl-[6px] pb-[4px] text-left group-hover:block">
+                  <p className="mt-1 text-sm">Удалить курс <br />пока нельзя </p>
                 </div>
               </button>
               <MainCardsImage param={course._id} />
