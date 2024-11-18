@@ -201,7 +201,9 @@ export const CoursePagesComp = () => {
                   </ul>
                   {isAuth ? (
                     isCourseAdded ? (
-                      <button className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]">
+                      <button className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
+                      onClick={handleUserPage}
+                      >
                         Перейти
                       </button>
                     ) : (
