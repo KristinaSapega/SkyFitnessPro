@@ -137,9 +137,11 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
         });
 
         const workoutsArray = Object.values(allWorkoutsData) as WorkoutOption[];
-        const filteredWorkouts = workoutsArray.filter((workout) =>
-          workoutKeys.includes(workout._id),
-        );
+        const filteredWorkouts = workoutsArray
+          .filter((workout) => workoutKeys.includes(workout._id))
+          .sort(
+            (a, b) => Number(a.name.match(/\d+/)) - Number(b.name.match(/\d+/)),
+          );
 
         setWorkoutOptions(filteredWorkouts);
       } catch (error) {
