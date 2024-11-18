@@ -126,6 +126,10 @@ export const CoursePagesComp = () => {
     changeOpenValue();
   };
 
+  const handleUserPage = () => {
+    navigate(`/user`);
+  };
+
   return (
     <>
       <div className="max-width-[375px] flex flex-col items-center justify-center overflow-x-hidden py-[50px] ">
@@ -242,7 +246,9 @@ export const CoursePagesComp = () => {
                   </ul>
                   {isAuth ? (
                     isCourseAdded ? (
-                      <button className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive">
+                      <button className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+                      onClick={handleUserPage}
+                      >
                         Перейти
                       </button>
                     ) : (
