@@ -71,7 +71,7 @@ export const courseProgress = (courseID: CourseIDType) => {
     };
   });
 
-
+// Проверка выподнения тренировок 
   const checkTrainingCompletion = (
         userProgress: ExerciseProgress,
     trainingProgress: ExerciseProgress
