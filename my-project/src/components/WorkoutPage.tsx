@@ -1,5 +1,4 @@
 import Header from "./Header";
-// import { workout } from "./dataList";
 import MyProgressPopup from "./MyProgressPopup";
 import { useEffect, useState } from "react";
 import { database } from "../firebase";
