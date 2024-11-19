@@ -38,16 +38,16 @@ const EventToLogin = () => {
   return (
     <>
       <div className="mb-9 mt-12 text-center text-[18px]">
-        Для добавления курса необходимо зарегистрироваться.
+        Для добавления курса необходимо войти.
       </div>
       <button
         name="reg"
         className="buttonPrimary w-[278px] border-[1px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
         onClick={() => {
-          changeModal("registry");
+          changeModal("login");
         }}
       >
-        Зарегистрироваться
+        Войти
       </button>
     </>
   );

@@ -1,5 +1,5 @@
 import { auth } from "../firebase";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeaderUserPopUp } from "./HeaderPopUp";
 import { useModal } from "../hooks/useModal";
 import { onAuthStateChanged } from "firebase/auth";
@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { changeOpenValue } = useModal();
+  const { changeOpenValue, changeModal } = useModal();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -19,8 +19,8 @@ function UserHeaderItem() {
     });
   }, []);
 
-  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const openModal = () => {
+    changeModal("login");
     changeOpenValue();
   };
 
