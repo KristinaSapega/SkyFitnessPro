@@ -2,8 +2,7 @@ import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { auth, database } from "../firebase";
 
-type Course = { [key: string]: string[] };
-type CurrentCourse = { [courseId: string]: string[] };
+type ExerciseProgress = { [key: string]: number };
 type UserEx = { [workoutId: string]: { [exerciseId: string]: number } };
 type AllWorkoutsType = {
   _id: string;
@@ -58,82 +57,55 @@ export const courseProgress = (courseID: CourseIDType) => {
       const data = snapshot.val() || {};
       setUserEx(data);
     });
-  }, []);
+  }, [uid]);
 
-  // Массив курсов
-  const allCourses: Course[] = items.map((item) => ({
-    [item._id]: item.workouts,
-  }));
+  // Прогресс тренировок
+  const allTrainingProgress = workouts.map((item) => {
+    const exercisesProgress = item.exercises?.reduce((acc: ExerciseProgress, exercise, index) => {
+      acc[`ex_${index + 1}`] = exercise.quantity;
+      return acc;
+    }, {}) || {};
 
-  // Фильтрация тренировок с и без упражнений
-  const trainingWithExercise = workouts.filter(
-    (item) => item.exercises && item.exercises.length > 0,
-  );
-
-  const trainingWithoutExercise = workouts.filter(
-    (item) => !item.exercises || item.exercises.length === 0,
-  );
-
-  // Прогресс тренировок без упражнений
-  const progressTrainingWithoutExercise = trainingWithoutExercise.map(
-    (item) => ({
-      [item._id]: 1,
-    }),
-  );
-
-  // Прогресс тренировок с упражнениями
-  const progressTrainingWithExercise = trainingWithExercise.map((item) => {
-    const totalQuantity = item.exercises
-      ? item.exercises.reduce((sum, exercise) => sum + exercise.quantity, 0)
-      : 0;
-    return { [item._id]: totalQuantity };
+    return {
+      [item._id]: exercisesProgress,
+    };
   });
 
-  // Прогресс всех тренировок
-  const allTrainingProgress = [
-    ...progressTrainingWithExercise,
-    ...progressTrainingWithoutExercise,
-  ];
 
-  // Поиск текущего курса
-  const currentCourse: CurrentCourse | undefined = allCourses.find((item) =>
-    courseID ? item.hasOwnProperty(courseID) : false,
-  );
-
-  if (!currentCourse) {
-    return 0;
-  }
-
-  // Прогресс для текущего курса
-  const currentCourseTrainingsProgress = userEx.map((obj) => {
-    const [key, exercises] = Object.entries(obj)[0];
-    if (!exercises) return {};
-    const sum = Object.values(exercises).reduce((sum, value) => sum + value, 0);
-    return { [key]: sum };
-  });
-
-  const allProgressObj = Object.assign({}, ...allTrainingProgress);
-  const currentProgressObj: { [key: string]: number } = Object.assign(
-    {},
-    ...currentCourseTrainingsProgress,
-  );
-
-  if (!currentProgressObj || Object.keys(currentProgressObj).length === 0) {
-    return 0;
-  }
-
-  // Подсчет общего прогресса
-  let calculateProgress = 0;
-
-  for (const [key, value] of Object.entries(currentProgressObj)) {
-    // value теперь типизировано как number
-    if (value >= (allProgressObj[key] || 0)) {
-      calculateProgress += 1;
+  const checkTrainingCompletion = (
+        userProgress: ExerciseProgress,
+    trainingProgress: ExerciseProgress
+  ): boolean => {
+    for (let exKey in trainingProgress) {
+      if (userProgress[exKey] < trainingProgress[exKey]) {
+        return false;
+      }
     }
-  }
+    return true;
+  };
 
-  const progress =
-    (calculateProgress * 100) / Object.values(currentCourse)[0].length;
+  // Расчет прогресса для текущего курса
+  const course = items.find((item) => item._id === courseID);
 
-  return Math.floor(progress);
+  if (!course) return 0;
+
+  const courseWorkouts = course.workouts;
+  let completedWorkouts = 0;
+
+  courseWorkouts.forEach((workoutId) => {
+    const userWorkout = userEx.find((item) => workoutId in item);
+    const userProgress = userWorkout ? userWorkout[workoutId] : {};
+    const trainingProgress = allTrainingProgress.find(
+      (item) => item[workoutId]
+    )?.[workoutId];
+
+    if (trainingProgress && checkTrainingCompletion( userProgress, trainingProgress)) {
+      completedWorkouts++;
+    }
+  });
+
+  const courseProgress = (completedWorkouts / courseWorkouts.length) * 100;
+
+
+  return Math.floor(courseProgress); 
 };
