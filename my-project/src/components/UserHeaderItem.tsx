@@ -7,7 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 function UserHeaderItem() {
   const [popupOpen, setPopupOpen] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const { changeOpenValue } = useModal();
+  const { changeOpenValue, changeModal } = useModal();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -20,7 +20,7 @@ function UserHeaderItem() {
   }, []);
 
   const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+    changeModal("login");
     changeOpenValue();
   };
 
