@@ -1,5 +1,5 @@
 import { auth } from "../firebase";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { HeaderUserPopUp } from "./HeaderPopUp";
 import { useModal } from "../hooks/useModal";
 import { onAuthStateChanged } from "firebase/auth";
