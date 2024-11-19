@@ -8,6 +8,7 @@ import { ref, get, onValue } from "firebase/database";
 import { useModal } from "../hooks/useModal";
 import useWriteDataInBase from "../hooks/useWriteDataInBase";
 import { courseProgress } from "./CourseProgress";
+import { deleteCourseData } from "./DellCourse";
 
 type TrainingItem = {
   _id: string | undefined;
@@ -119,16 +120,34 @@ export const CoursePagesComp = () => {
     }
   };
 
-  const isCourseAdded = userCourses.includes(params.nameEN || "");
+  const isCourseAdded = params.nameEN
+  ? userCourses.includes(params.nameEN)
+  : false;
 
   const openModal = () => {
     changeModal("login");
     changeOpenValue();
   };
 
-  const handleUserPage = () => {
-    navigate(`/user`);
+  const handleRemoveCourse = async () => {
+    if (auth.currentUser && params.nameEN) {
+      try {
+        await deleteCourseData(params.nameEN);
+        setUserCourses((prevCourses) => {
+          const updatedCourses = prevCourses.filter(
+            (course) => course !== params.nameEN
+          );
+          console.log("Обновлённый список курсов:", updatedCourses);
+          return updatedCourses;
+        });
+      } catch (error) {
+        console.error("Ошибка при удалении курса:", error);
+      }
+    } else {
+      console.error("Пользователь не авторизован или идентификатор курса отсутствует");
+    }
   };
+  
 
   return (
     <>
@@ -202,9 +221,16 @@ export const CoursePagesComp = () => {
                     isCourseAdded ? (
                       <button
                         className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
-                        onClick={handleUserPage}
+                        onClick={handleRemoveCourse}
                       >
-                        Перейти
+                        Удалить курс
+                      </button>
+                    ) : userCourses.length > 0 ? (
+                      <button
+                        className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
+                        onClick={handleAddCourse}
+                      >
+                        Снова добавить курс
                       </button>
                     ) : (
                       <button
@@ -222,6 +248,7 @@ export const CoursePagesComp = () => {
                       Войдите, чтобы добавить курс
                     </button>
                   )}
+
                 </div>
               </div>
               <div className="shadowBlack013 relative box-border flex hidden h-[486px] w-[1160px] rounded-[30px] bg-white bg-[url(/vector_6084.png)] bg-[right_55px_top_120px] bg-no-repeat p-[40px] desktop:block">
@@ -249,14 +276,21 @@ export const CoursePagesComp = () => {
                   {isAuth ? (
                     isCourseAdded ? (
                       <button
-                        className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
-                        onClick={handleUserPage}
+                        className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
+                        onClick={handleRemoveCourse}
                       >
-                        Перейти
+                        Удалить курс
+                      </button>
+                    ) : userCourses.length > 0 ? (
+                      <button
+                        className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
+                        onClick={handleAddCourse}
+                      >
+                        Снова добавить курс
                       </button>
                     ) : (
                       <button
-                        className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+                        className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
                         onClick={handleAddCourse}
                       >
                         Добавить курс
@@ -264,12 +298,13 @@ export const CoursePagesComp = () => {
                     )
                   ) : (
                     <button
-                      className="buttonPrimary w-[437px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive"
+                      className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
                       onClick={openModal}
                     >
                       Войдите, чтобы добавить курс
                     </button>
                   )}
+
                 </div>
                 <img
                   className="absolute bottom-5 right-10"
