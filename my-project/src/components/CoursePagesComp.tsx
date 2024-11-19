@@ -137,7 +137,6 @@ export const CoursePagesComp = () => {
           const updatedCourses = prevCourses.filter(
             (course) => course !== params.nameEN
           );
-          console.log("Обновлённый список курсов:", updatedCourses);
           return updatedCourses;
         });
       } catch (error) {
@@ -225,13 +224,6 @@ export const CoursePagesComp = () => {
                       >
                         Удалить курс
                       </button>
-                    ) : userCourses.length > 0 ? (
-                      <button
-                        className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
-                        onClick={handleAddCourse}
-                      >
-                        Снова добавить курс
-                      </button>
                     ) : (
                       <button
                         className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
@@ -280,13 +272,6 @@ export const CoursePagesComp = () => {
                         onClick={handleRemoveCourse}
                       >
                         Удалить курс
-                      </button>
-                    ) : userCourses.length > 0 ? (
-                      <button
-                        className="buttonPrimary w-[283px] hover:bg-btnPrimaryHover active:bg-btnPrimaryActive desktop:w-[437px]"
-                        onClick={handleAddCourse}
-                      >
-                        Снова добавить курс
                       </button>
                     ) : (
                       <button
