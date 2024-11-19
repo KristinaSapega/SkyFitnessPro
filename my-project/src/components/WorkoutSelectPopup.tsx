@@ -9,6 +9,11 @@ interface WorkoutOption {
   description: string;
 }
 
+interface Course {
+  _id: string;
+  workouts: string[];
+}
+
 interface WorkoutSelectPopupProps {
   courseId: string;
   onClose: () => void;
@@ -95,14 +100,16 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
   useEffect(() => {
     const fetchFilteredWorkouts = async () => {
       try {
-        // Получение всех курсов
         const coursesRef = ref(database, "courses");
         const coursesSnapshot = await get(coursesRef);
-        const allCoursesData = coursesSnapshot.val();
+        const allCoursesData = coursesSnapshot.val() as Record<
+          string,
+          Course
+        > | null;
 
         const courseData = Array.isArray(allCoursesData)
-          ? allCoursesData.find((course: any) => course._id === courseId)
-          : allCoursesData[courseId];
+          ? allCoursesData.find((course) => course._id === courseId)
+          : allCoursesData?.[courseId];
 
         if (!courseData || !Array.isArray(courseData.workouts)) {
           console.error(
@@ -115,10 +122,12 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
 
         const workoutKeys = courseData.workouts;
 
-        // Получение всех тренировок
         const dataRef = ref(database, "workouts");
         const workoutsSnapshot = await get(dataRef);
-        const allWorkoutsData = workoutsSnapshot.val();
+        const allWorkoutsData = workoutsSnapshot.val() as Record<
+          string,
+          WorkoutOption
+        > | null;
 
         if (!allWorkoutsData) {
           console.error("Нет данных для тренировок в базе данных.");
@@ -126,17 +135,16 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
           return;
         }
 
-        // Получние всех упражнений пользователя
         const dataUsEx = ref(
           database,
           `users/${auth.currentUser?.uid}/userExercises`,
         );
         onValue(dataUsEx, (snapshot) => {
-          const data = snapshot.val() || {};
-          setUserEx(data);
+          const data = snapshot.val() as UserEx[] | null;
+          setUserEx(data || []);
         });
 
-        const workoutsArray = Object.values(allWorkoutsData) as WorkoutOption[];
+        const workoutsArray = Object.values(allWorkoutsData);
         const filteredWorkouts = workoutsArray
           .filter((workout) => workoutKeys.includes(workout._id))
           .sort(
@@ -153,7 +161,7 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
     fetchFilteredWorkouts();
   }, [courseId]);
 
-  const isButtonDisabled = !selectedWorkout; // Проверка на состояние кнопки
+  const isButtonDisabled = !selectedWorkout;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -214,8 +222,8 @@ const WorkoutSelectPopup: React.FC<WorkoutSelectPopupProps> = ({
             isButtonDisabled
               ? undefined
               : selectedWorkout && completedWorkouts.includes(selectedWorkout)
-                ? handleRestart
-                : handleStart
+              ? handleRestart
+              : handleStart
           }
           className={`buttonPrimary mt-4 w-full rounded-[46px] ${
             isButtonDisabled
