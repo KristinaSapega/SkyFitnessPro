@@ -2,12 +2,9 @@ import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { auth, database } from "../firebase";
 
-// Типы и интерфейсы
 type Course = { [key: string]: string[] };
-type Progress = { [key: string]: number };
 type CurrentCourse = { [courseId: string]: string[] };
 type UserEx = { [workoutId: string]: { [exerciseId: string]: number } };
-type CourseProgress = { [courseId: string]: number };
 type AllWorkoutsType = {
   _id: string;
   exercises?: {
@@ -31,12 +28,12 @@ type CourseIDType = string | undefined;
 
 export const courseProgress = (courseID: CourseIDType) => {
   const [items, setItems] = useState<TrainingItem[]>([]);
-  const [, setWorkouts] = useState<AllWorkoutsType[]>([]);
+  const [workouts, setWorkouts] = useState<AllWorkoutsType[]>([]);
   const [userEx, setUserEx] = useState<UserEx[]>([]);
 
   const uid = auth.currentUser?.uid;
 
-  // Загрузка всех курсов
+  // Загрузка данных о курсах
   useEffect(() => {
     const dataRef = ref(database, "/courses");
     onValue(dataRef, (snapshot) => {
@@ -45,7 +42,7 @@ export const courseProgress = (courseID: CourseIDType) => {
     });
   }, []);
 
-  // Загрузка всех тренировок
+  // Загрузка данных о тренировках
   useEffect(() => {
     const dataRef = ref(database, "/workouts");
     onValue(dataRef, (snapshot) => {
@@ -54,67 +51,89 @@ export const courseProgress = (courseID: CourseIDType) => {
     });
   }, []);
 
-  // Загрузка тренировок пользователя
+  // Загрузка данных о упражнениях пользователя
   useEffect(() => {
     const dataRef = ref(database, `users/${uid}/userExercises`);
     onValue(dataRef, (snapshot) => {
       const data = snapshot.val() || {};
-      // Проверка: если data это объект, преобразуем его в массив
-      setUserEx(Array.isArray(data) ? data : Object.values(data));
+      setUserEx(data);
     });
   }, []);
 
-  // Массив с выборками { Курс: [Тренировка1, ...]}
+  // Массив курсов
   const allCourses: Course[] = items.map((item) => ({
     [item._id]: item.workouts,
   }));
 
-  // Базовый прогресс всех тренировок
-  const baseProgress: Progress = allCourses.reduce<Progress>((acc, item) => {
-    const [key, values] = Object.entries(item)[0];
-    acc[key] = values.length;
-    return acc;
-  }, {});
+  // Фильтрация тренировок с и без упражнений
+  const trainingWithExercise = workouts.filter(
+    (item) => item.exercises && item.exercises.length > 0,
+  );
+
+  const trainingWithoutExercise = workouts.filter(
+    (item) => !item.exercises || item.exercises.length === 0,
+  );
+
+  // Прогресс тренировок без упражнений
+  const progressTrainingWithoutExercise = trainingWithoutExercise.map(
+    (item) => ({
+      [item._id]: 1,
+    }),
+  );
+
+  // Прогресс тренировок с упражнениями
+  const progressTrainingWithExercise = trainingWithExercise.map((item) => {
+    const totalQuantity = item.exercises
+      ? item.exercises.reduce((sum, exercise) => sum + exercise.quantity, 0)
+      : 0;
+    return { [item._id]: totalQuantity };
+  });
+
+  // Прогресс всех тренировок
+  const allTrainingProgress = [
+    ...progressTrainingWithExercise,
+    ...progressTrainingWithoutExercise,
+  ];
 
   // Поиск текущего курса
   const currentCourse: CurrentCourse | undefined = allCourses.find((item) =>
-    courseID ? item.hasOwnProperty(courseID) : false
+    courseID ? item.hasOwnProperty(courseID) : false,
   );
 
-  // Прогресс текущего курса
-  const currentCourseprogress: CourseProgress = {};
-
-  for (const courseId in currentCourse) {
-    const workoutIds = currentCourse[courseId];
-    let totalProgress = 0;
-
-    workoutIds.forEach((workoutId) => {
-      // Ищем тренировку в массиве userEx
-      const workoutObj = userEx.find((obj) => obj[workoutId]);
-
-      if (workoutObj) {
-        const exercises = workoutObj[workoutId];
-        // Определяем прогресс для текущей тренировки
-        const progress = Object.values(exercises).some((value) => value > 0)
-          ? 1
-          : 0;
-        totalProgress += progress;
-      }
-    });
-
-    // Присваиваем вычисленный прогресс в currentCourseprogress
-    currentCourseprogress[courseId] = totalProgress;
+  if (!currentCourse) {
+    return 0;
   }
 
-  // Вычислим процентное соотношение текущей тренировки от общего прогресса
-  let progress: number = 0;
-  for (const courseId in currentCourseprogress) {
-    if (baseProgress[courseId] !== undefined) {
-      const current = currentCourseprogress[courseId];
-      const base: number = Number(baseProgress[courseId]);
-      progress = (current / base) * 100;
+  // Прогресс для текущего курса
+  const currentCourseTrainingsProgress = userEx.map((obj) => {
+    const [key, exercises] = Object.entries(obj)[0];
+    if (!exercises) return {};
+    const sum = Object.values(exercises).reduce((sum, value) => sum + value, 0);
+    return { [key]: sum };
+  });
+
+  const allProgressObj = Object.assign({}, ...allTrainingProgress);
+  const currentProgressObj: { [key: string]: number } = Object.assign(
+    {},
+    ...currentCourseTrainingsProgress,
+  );
+
+  if (!currentProgressObj || Object.keys(currentProgressObj).length === 0) {
+    return 0;
+  }
+
+  // Подсчет общего прогресса
+  let calculateProgress = 0;
+
+  for (const [key, value] of Object.entries(currentProgressObj)) {
+    // value теперь типизировано как number
+    if (value >= (allProgressObj[key] || 0)) {
+      calculateProgress += 1;
     }
   }
+
+  const progress =
+    (calculateProgress * 100) / Object.values(currentCourse)[0].length;
 
   return Math.floor(progress);
 };
