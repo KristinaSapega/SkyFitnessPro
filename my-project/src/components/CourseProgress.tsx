@@ -79,7 +79,6 @@ export const courseProgress = (courseID: CourseIDType) => {
     trainingProgress: ExerciseProgress
   ): boolean => {
     for (let exKey in trainingProgress) {
-      console.log(trainingProgress) 
       if (userProgress[exKey] < trainingProgress[exKey]) {
         return false;
       }
