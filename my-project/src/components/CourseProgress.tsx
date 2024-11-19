@@ -61,15 +61,17 @@ export const courseProgress = (courseID: CourseIDType) => {
 
   // Прогресс тренировок
   const allTrainingProgress = workouts.map((item) => {
-    const exercisesProgress = item.exercises?.reduce((acc: ExerciseProgress, exercise, index) => {
-      acc[`ex_${index + 1}`] = exercise.quantity;
-      return acc;
-    }, {}) || {};
-
+    const exercisesProgress =
+      item.exercises?.reduce((acc: Record<string, number>, exercise, index) => {
+        acc[`ex_${index + 1}`] = exercise.quantity;
+        return acc;
+      }, {}) || { ex_1: 1 };
     return {
       [item._id]: exercisesProgress,
     };
   });
+
+
 
 // Проверка выподнения тренировок 
   const checkTrainingCompletion = (
@@ -77,6 +79,7 @@ export const courseProgress = (courseID: CourseIDType) => {
     trainingProgress: ExerciseProgress
   ): boolean => {
     for (let exKey in trainingProgress) {
+      console.log(trainingProgress) 
       if (userProgress[exKey] < trainingProgress[exKey]) {
         return false;
       }
