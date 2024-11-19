@@ -1,5 +1,5 @@
 import Header from "./Header";
-//import { workout } from "./dataList";
+// import { workout } from "./dataList";
 import MyProgressPopup from "./MyProgressPopup";
 import { useEffect, useState } from "react";
 import { database } from "../firebase";
@@ -33,7 +33,6 @@ type Course = {
   workouts: string[];
 };
 
-
 export const WorkoutPage = () => {
   const { id } = useParams<{ id: string }>();
   const [userExers, setUserExers] = useState<Workout[]>([]);
@@ -50,24 +49,28 @@ export const WorkoutPage = () => {
       const userExRef = ref(database, `users/${uid}/userExercises`);
       onValue(userExRef, (snapshot) => {
         const data = snapshot.val() || [];
-        console.log(data);
 
-        // Преобразование массива в объект 
+        // Преобразование массива в объект
         const formattedData = Array.isArray(data)
-          ? data.reduce((acc: UserWorkoutProgress, item: any) => {
-            const [workoutId, exercises] = Object.entries(item)[0] as [string, UserExercises];
-            acc[workoutId] = exercises;
-            return acc;
-          }, {})
-          : data;
+          ? data.reduce(
+              (
+                acc: UserWorkoutProgress,
+                item: Record<string, UserExercises>,
+              ) => {
+                const [workoutId, exercises] = Object.entries(item)[0];
+                acc[workoutId] = exercises;
+                return acc;
+              },
+              {},
+            )
+          : (data as UserWorkoutProgress);
 
-        console.log(formattedData);
         setUserExercises(formattedData);
       });
     }
   }, [uid]);
 
-
+  // Загрузка тренировок
   useEffect(() => {
     const dataRef = ref(database, "/workouts");
     onValue(
@@ -81,7 +84,7 @@ export const WorkoutPage = () => {
       (error) => {
         console.error("Ошибка загрузки данных:", error);
         setIsLoading(false);
-      }
+      },
     );
   }, []);
 
@@ -93,15 +96,13 @@ export const WorkoutPage = () => {
       (snapshot) => {
         const data = snapshot.val() || [];
         const coursesArray = Object.values(data) as Course[];
-        console.log(coursesArray);
         setCourses(coursesArray);
       },
       (error) => {
         console.error("Ошибка загрузки курсов:", error);
-      }
+      },
     );
   }, []);
-  
 
   // Проверка на наличие id
   if (!id) {
@@ -109,26 +110,29 @@ export const WorkoutPage = () => {
   }
 
   const currentWorkout: Workout | undefined = userExers.find(
-    (workout) => workout._id === id
+    (workout) => workout._id === id,
   );
 
   // Получение названия курса
   const courseName =
-  courses.find((course) =>
-    course.workouts.includes(id || "")
-  )?.nameRU || "Название курса отсутствует";
+    courses.find((course) => course.workouts.includes(id || ""))?.nameRU ||
+    "Название курса отсутствует";
 
-  const calculateProgress = (exerciseIndex: number, quantity: number): number => {
-    console.log("Текуший id:", id);
-    console.log("Тренировки юзера:", userExercises);
-
+  const calculateProgress = (
+    exerciseIndex: number,
+    quantity: number,
+  ): number => {
     const exerciseKey = `ex_${exerciseIndex + 1}`;
-    const completed = userExercises[id][exerciseKey] || 0;
+    const completed = userExercises[id]?.[exerciseKey] || 0;
     const progress = Math.min((completed / quantity) * 100, 100);
     return progress;
   };
 
-  if (isLoading || Object.keys(userExercises).length === 0 || !userExercises[id]) {
+  if (
+    isLoading ||
+    Object.keys(userExercises).length === 0 ||
+    !userExercises[id]
+  ) {
     return <p>Загрузка данных...</p>;
   }
 
@@ -146,15 +150,15 @@ export const WorkoutPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <div className="w-[375px]  py-[50px] desktop:w-[1160px]">
+      <div className="w-[375px] py-[50px] desktop:w-[1160px]">
         <Header />
         <main className="">
           <section className="px-[16px] desktop:px-[0px]">
             <h1 className="mb-[10px] mt-[40px] text-[24px] font-medium desktop:mb-6 desktop:text-[60px]">
-            {courseName}
+              {courseName}
             </h1>
-            <h3 className="text-[18px] leading-[19.8px] desktop:leading-[35.2px] desktop:text-[32px] desktop:underline">
-            {currentWorkout?.name || "Название отсутствует"}
+            <h3 className="text-[18px] leading-[19.8px] desktop:text-[32px] desktop:leading-[35.2px] desktop:underline">
+              {currentWorkout?.name || "Название отсутствует"}
             </h3>
             {currentWorkout && (
               <>
@@ -183,7 +187,8 @@ export const WorkoutPage = () => {
                           className="pb-[10px] text-[18px] leading-[19.8px] desktop:text-lg"
                           htmlFor=""
                         >
-                          {exercise.name} {calculateProgress(index, exercise.quantity)}%
+                          {exercise.name}{" "}
+                          {calculateProgress(index, exercise.quantity)}%
                         </label>
                         <progress
                           className="h-[6px] w-[283px] desktop:w-80 [&::-moz-progress-bar]:bg-[#00C1FF] [&::-webkit-progress-bar]:rounded-3xl [&::-webkit-progress-bar]:bg-[#F7F7F7] [&::-webkit-progress-value]:rounded-3xl [&::-webkit-progress-value]:bg-[#00C1FF]"
@@ -196,19 +201,29 @@ export const WorkoutPage = () => {
                   </ul>
                 </>
               ) : (
-                <p>Нет доступных упражнений для этой тренировки.</p>
+                <p>
+                  После завершения упражнения, не забудьте оценить, как прошла
+                  ваша тренировка. <br />
+                  Это важно для точного подсчета вашего прогресса!
+                </p>
               )}
               <button
-                    onClick={openPopup}
-                    className="mt-10 h-[52px] w-[283px] rounded-full bg-[#BCEC30] text-lg hover:bg-[#C6FF00] active:bg-black active:text-white desktop:w-80"
-                  >
-                    Заполнить свой прогресс
-                  </button>
+                onClick={openPopup}
+                className="mt-10 h-[52px] w-[283px] rounded-full bg-[#BCEC30] text-lg hover:bg-[#C6FF00] active:bg-black active:text-white desktop:w-80"
+              >
+                {currentWorkout?.exercises?.length ? (
+                  <p>Заполнить свой прогресс</p>
+                ) : (
+                  <p>Оцените тренировку</p>
+                )}
+              </button>
             </section>
           </div>
         </main>
       </div>
-      {isPopupVisible && <MyProgressPopup onClose={closePopup} workoutId={id} />}
+      {isPopupVisible && (
+        <MyProgressPopup onClose={closePopup} workoutId={id} />
+      )}
     </div>
   );
 };
