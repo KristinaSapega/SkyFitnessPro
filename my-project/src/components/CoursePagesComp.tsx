@@ -121,7 +121,7 @@ export const CoursePagesComp = () => {
 
   const isCourseAdded = userCourses.includes(params.nameEN || "");
 
-  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const openModal = () => {
     changeModal("login");
     changeOpenValue();
   };

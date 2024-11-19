@@ -19,7 +19,7 @@ function UserHeaderItem() {
     });
   }, []);
 
-  const openModal = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const openModal = () => {
     changeModal("login");
     changeOpenValue();
   };
