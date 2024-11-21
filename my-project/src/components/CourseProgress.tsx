@@ -24,6 +24,7 @@ type TrainingItem = {
   directions: string[];
 };
 type CourseIDType = string | undefined;
+type UserExData = { [workoutId: string]: ExerciseProgress }[];
 
 export const courseProgress = (courseID: CourseIDType) => {
   const [items, setItems] = useState<TrainingItem[]>([]);
@@ -55,31 +56,43 @@ export const courseProgress = (courseID: CourseIDType) => {
     const dataRef = ref(database, `users/${uid}/userExercises`);
     onValue(dataRef, (snapshot) => {
       const data = snapshot.val() || {};
-      setUserEx(data);
+      // Преобразуем объект в массив объектов, если необходимо
+      if (!Array.isArray(data)) {
+        const convertedData: UserExData = Object.entries(data).reduce(
+          (acc: UserExData, [key, value]) => {
+            acc.push({ [key]: value as ExerciseProgress });
+            return acc;
+          },
+          [],
+        );
+        setUserEx(convertedData);
+      } else {
+        setUserEx(data);
+      }
     });
   }, [uid]);
 
   // Прогресс тренировок
   const allTrainingProgress = workouts.map((item) => {
-    const exercisesProgress =
-      item.exercises?.reduce((acc: Record<string, number>, exercise, index) => {
+    const exercisesProgress = item.exercises?.reduce(
+      (acc: Record<string, number>, exercise, index) => {
         acc[`ex_${index + 1}`] = exercise.quantity;
         return acc;
-      }, {}) || { ex_1: 1 };
+      },
+      {},
+    ) || { ex_1: 1 };
     return {
       [item._id]: exercisesProgress,
     };
   });
 
-
-
-// Проверка выподнения тренировок 
+  // Проверка выполнения тренировок
   const checkTrainingCompletion = (
-        userProgress: ExerciseProgress,
-    trainingProgress: ExerciseProgress
+    userProgress: ExerciseProgress,
+    trainingProgress: ExerciseProgress,
   ): boolean => {
     for (let exKey in trainingProgress) {
-      if (userProgress[exKey] < trainingProgress[exKey]) {
+      if ((userProgress[exKey] || 0) < trainingProgress[exKey]) {
         return false;
       }
     }
@@ -95,19 +108,28 @@ export const courseProgress = (courseID: CourseIDType) => {
   let completedWorkouts = 0;
 
   courseWorkouts.forEach((workoutId) => {
+    // Проверяем, что userEx — массив
+    if (!Array.isArray(userEx)) {
+      console.error("userEx не является массивом. Пропускаем обработку.");
+      return;
+    }
+
     const userWorkout = userEx.find((item) => workoutId in item);
+
     const userProgress = userWorkout ? userWorkout[workoutId] : {};
     const trainingProgress = allTrainingProgress.find(
-      (item) => item[workoutId]
+      (item) => item[workoutId],
     )?.[workoutId];
 
-    if (trainingProgress && checkTrainingCompletion( userProgress, trainingProgress)) {
+    if (
+      trainingProgress &&
+      checkTrainingCompletion(userProgress, trainingProgress)
+    ) {
       completedWorkouts++;
     }
   });
 
   const courseProgress = (completedWorkouts / courseWorkouts.length) * 100;
 
-
-  return Math.floor(courseProgress); 
+  return Math.floor(courseProgress);
 };

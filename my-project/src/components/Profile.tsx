@@ -51,7 +51,6 @@ const MyCorses = ({
     return "Дней";
   }
 
-  //обработчик удаления курса
   const handleDeleteCourse = (courseId: string) => {
     deleteCourseData(courseId).finally(() => {
       window.location.reload();
@@ -62,7 +61,7 @@ const MyCorses = ({
     <div className="mt-[34px] flex flex-wrap justify-center gap-[20px] sm:justify-start sm:gap-[30px] lg:gap-[40px] desktop:mt-[50px]">
       {userCourses.length > 0 ? (
         userCourses.map((course) => {
-          const progress = courseProgress(course._id); 
+          const progress = courseProgress(course._id);
           return (
             <div
               key={course._id}
@@ -78,7 +77,7 @@ const MyCorses = ({
                   width={32}
                   height={32}
                 />
-                <div className="absolute left-[43px] top-[45px] z-10 hidden w-[102px] rounded-[5px] border-[0.5px] border-black bg-white pl-[6px] pb-[4px] text-left group-hover:block">
+                <div className="absolute left-[43px] top-[45px] z-10 hidden w-[102px] rounded-[5px] border-[0.5px] border-black bg-white pb-[4px] pl-[6px] text-left group-hover:block">
                   <p className="mt-1 text-sm">Удалить курс</p>
                 </div>
               </button>
@@ -194,26 +193,30 @@ export const Profile = () => {
     initialize();
   }, [database]);
 
-  if (isLoading) {
-    return "";
-  }
-
   return (
-    <div className="flex flex-col items-center py-[50px]">
-      <div className="min-w-[375px] desktop:w-[1160px]">
-        <Header />
-        <div className="mt-14">
-          <UserCabinet />
-          <h1 className="mb-[24px] ml-[16px] text-[24px] font-bold leading-[26.4px] desktop:ml-[0px] desktop:text-[40px] desktop:leading-[44px]">
-            Мои курсы
-          </h1>
-          <MyCorses
-            userCourses={userCourses}
-            setSelectedCourseId={setSelectedCourseId}
-            setShowWorkoutPopup={setShowWorkoutPopup}
-          />
+    <div className="relative flex flex-col items-center py-[50px]">
+      {isLoading ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center flex-col bg-white bg-opacity-50 ">
+          
+          <p className="text-xl font-bold text-gray-700 animate-pulse">Загрузка данных...</p>
+          <img src="/wait.svg" alt="Ожидание" className="w-[350px] animate-pulse"/>
         </div>
-      </div>
+      ) : (
+        <div className="min-w-[375px] desktop:w-[1160px]">
+          <Header />
+          <div className="mt-14">
+            <UserCabinet />
+            <h1 className="mb-[24px] ml-[16px] text-[24px] font-bold leading-[26.4px] desktop:ml-[0px] desktop:text-[40px] desktop:leading-[44px]">
+              Мои курсы
+            </h1>
+            <MyCorses
+              userCourses={userCourses}
+              setSelectedCourseId={setSelectedCourseId}
+              setShowWorkoutPopup={setShowWorkoutPopup}
+            />
+          </div>
+        </div>
+      )}{" "}
       {showWorkoutPopup && selectedCourseId && (
         <WorkoutSelectPopup
           courseId={selectedCourseId}
