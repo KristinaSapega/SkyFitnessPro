@@ -123,7 +123,7 @@ export const WorkoutPage = () => {
   ): number => {
     const exerciseKey = `ex_${exerciseIndex + 1}`;
     const completed = userExercises[id]?.[exerciseKey] || 0;
-    const progress = Math.min((completed / quantity) * 100, 100);
+    const progress = Math.floor((completed / quantity) * 100);
     return progress;
   };
 
